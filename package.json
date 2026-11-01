@@ -1,5 +1,5 @@
 {
-  "name": "@loomdev/cli",
+  "name": "loomdev",
   "version": "0.3.7",
   "private": true,
   "description": "Loom - Podman-based local development platform",
@@ -11,7 +11,7 @@
   "scripts": {
     "build": "pnpm exec tsc -b tsconfig.json && node scripts/build-cli-package-assets.mjs",
     "typecheck": "pnpm exec tsc -b tsconfig.json",
-    "dev": "pnpm --filter @loomdev/cli dev",
+    "dev": "pnpm --filter loomdev dev",
     "images:build": "node scripts/images/build.mjs",
     "images:test": "node scripts/images/test-image.mjs",
     "images:sync-stacks": "node scripts/sync-stack-image-pins.mjs",

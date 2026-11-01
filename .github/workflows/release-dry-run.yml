@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   build-release-assets:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -63,5 +63,5 @@ jobs:
             dist/release/loom-darwin-arm64.tar.gz
             dist/release/loom-windows-x64.zip
             dist/release/loom-windows-arm64.zip
-            dist/release/loomdev-cli-*.tgz
+            dist/release/loomdev-*.tgz
           if-no-files-found: error

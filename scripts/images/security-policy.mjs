@@ -99,6 +99,12 @@ function run(argv) {
   );
 
   if (errors.length > 0) {
+    if (process.env.GITHUB_ACTIONS === "true") {
+      for (const error of errors) {
+        const annotation = error.replace(/%/g, "%25").replace(/\r/g, "%0D").replace(/\n/g, "%0A");
+        process.stderr.write(`::error::${annotation}\n`);
+      }
+    }
     throw new Error(errors.join("\n"));
   }
 

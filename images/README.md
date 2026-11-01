@@ -10,8 +10,12 @@ configuration.
 
 Custom runtimes are built from the Containerfiles in this directory: PHP and
 WordPress, Node 22 and 24, Python 3.12, Ruby 3.3, Bun 1, Java 21, .NET 8, and
-SQLite 3. PostgreSQL, MySQL, MariaDB, Redis, MongoDB, Elasticsearch, and SQL
+SQLite 3, and MySQL 8.4. PostgreSQL, MariaDB, Redis, MongoDB, Elasticsearch, and SQL
 Server are unmodified mirrors of digest-pinned upstream manifests.
+
+MySQL preserves the vendor entrypoint and defaults while replacing MySQL Shell’s
+bundled certifi with checksum-pinned 2026.10.19 to fix GHSA-6q48-6c7w-9gw2.
+Its contract checks the package version and database readiness.
 
 Every entry targets `linux/amd64` and `linux/arm64` unless `platformLimit` in
 `catalog.json` records an upstream vendor restriction. SQL Server 2022 is

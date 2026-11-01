@@ -132,9 +132,11 @@ test("npm installs the produced CLI tgz and executes its binary without workspac
       maxBuffer: 10 * 1024 * 1024
     });
 
-    const installedPackage = JSON.parse(await readFile(resolve(installRoot, "node_modules", "@loomdev", "cli", "package.json"), "utf8")) as {
+    const installedPackage = JSON.parse(await readFile(resolve(installRoot, "node_modules", "loomdev", "package.json"), "utf8")) as {
+      name: string;
       dependencies?: Record<string, string>;
     };
+    assert.equal(installedPackage.name, "loomdev");
     assert.deepEqual(installedPackage.dependencies ?? {}, {});
     assert.match(await readFile(resolve(targetDir, "server.js"), "utf8"), /app\.get\('\/health'/);
     const manifest = JSON.parse(await readFile(resolve(targetDir, ".loom", "manifest.json"), "utf8")) as {

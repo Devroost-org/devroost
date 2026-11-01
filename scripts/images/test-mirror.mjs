@@ -10,7 +10,7 @@ const probes = {
   },
   "mysql-8.4": {
     environment: ["MYSQL_ROOT_PASSWORD=loom-test"],
-    command: ["mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-ploom-test", "--silent"]
+    command: ["mysql", "-h", "127.0.0.1", "-uroot", "-ploom-test", "--execute", "SELECT 1"]
   },
   "mariadb-11.8": {
     environment: ["MARIADB_ROOT_PASSWORD=loom-test"],

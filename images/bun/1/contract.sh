@@ -15,10 +15,10 @@ trap cleanup EXIT
 
 podman run --rm "${image_reference}" bun --version | { version=$(cat); printf '%s\n' "$version" >&2; printf '%s\n' "$version"; } | grep -qx '1\.4\.4'
 gnutls_version="$(podman run --rm "${image_reference}" \
-  dpkg-query --show --showformat='${Version}' libgnutls30)"
+  dpkg-query --show --showformat='${Version}' libgnutls30t64)"
 if ! podman run --rm "${image_reference}" dpkg --compare-versions \
-  "${gnutls_version}" ge '3.7.9-2+deb12u7'; then
-  printf 'Expected libgnutls30 3.7.9-2+deb12u7 or newer, got %s\n' \
+  "${gnutls_version}" ge '3.8.9-3+deb13u4'; then
+  printf 'Expected libgnutls30t64 3.8.9-3+deb13u4 or newer, got %s\n' \
     "${gnutls_version}" >&2
   exit 1
 fi

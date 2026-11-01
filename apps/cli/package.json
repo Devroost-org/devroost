@@ -1,11 +1,19 @@
 {
-  "name": "@loomdev/cli",
+  "name": "loomdev",
   "version": "0.3.7",
-  "description": "Command-line interface for Loom local development workflows.",
+  "description": "Loom CLI: Podman-based local development environments with HTTPS, databases, and ready-to-use application stacks.",
   "keywords": [
     "loom",
+    "loomdev",
     "cli",
-    "podman"
+    "podman",
+    "containers",
+    "local-development",
+    "development-environment",
+    "dev-environment",
+    "devtools",
+    "https",
+    "full-stack"
   ],
   "repository": {
     "type": "git",

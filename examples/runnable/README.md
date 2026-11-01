@@ -15,3 +15,8 @@ loom init <stack-id> --dir my-project
 cd my-project
 loom start
 ```
+
+Install the `loomdev` npm package globally to use `loom`, or replace `loom` in
+these commands with `npx loomdev@latest` to run without a global installation.
+See the [installation guide](https://github.com/Loom-development/Loom#install)
+for requirements and update instructions.

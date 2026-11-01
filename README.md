@@ -37,15 +37,51 @@ for the one-time host setup and Podman networking recovery steps.
 
 ### From npm
 
+The npm package is named `loomdev`; its installed command is `loom`. Both options
+below run the same CLI and require Node.js 24 or newer and Podman.
+
+**For regular use, install globally:**
+
 ```bash
-npm install --global @loomdev/cli
+npm install --global loomdev
+loom --version
+loom --help
 ```
 
-You can also run Loom without a global install:
+This installs the `loom` command for use from any project directory. Update it
+when you want a newer release:
 
 ```bash
-npx @loomdev/cli --help
+npm install --global loomdev@latest
 ```
+
+**To try Loom without a global install, use npx:**
+
+```bash
+npx loomdev@latest --help
+```
+
+`npx` downloads the package if needed and stores it in npm's cache. It may ask
+before downloading. Use `npx loomdev@latest` in place of `loom` in the examples
+throughout this documentation. The `@latest` suffix explicitly requests npm's
+latest published release; use a specific version, such as `loomdev@0.3.7`, when
+you need repeatable runs. See the [npm npx documentation](https://docs.npmjs.com/cli/v11/commands/npx/)
+for package selection and caching details.
+
+Internet access is needed to download or update the CLI. Project startup may
+also need internet access to pull container images and install application
+dependencies, regardless of how you run Loom.
+
+**Migrating from the previous package name:**
+
+If you installed `@loomdev/cli` globally, replace it with `loomdev`:
+
+```bash
+npm uninstall --global @loomdev/cli
+npm install --global loomdev
+```
+
+Your project files stay in place, and the command remains `loom`.
 
 ### From a GitHub Release
 
@@ -77,6 +113,15 @@ loom start
 loom status
 ```
 
+If you chose `npx`, use this equivalent workflow instead:
+
+```bash
+npx loomdev@latest init node --dir my-app
+cd my-app
+npx loomdev@latest start
+npx loomdev@latest status
+```
+
 If Loom asks whether to add a database, choose one or continue without one. When
 startup finishes, Loom prints the addresses it prepared. The Node starter normally
 uses `https://node.loom.local:8443`.
@@ -90,6 +135,8 @@ When you are done:
 ```bash
 loom stop
 ```
+
+With `npx`, stop the project with `npx loomdev@latest stop`.
 
 The first start can take a few minutes because Podman may need to download images
 and the project may need to install dependencies. Later starts are usually faster.

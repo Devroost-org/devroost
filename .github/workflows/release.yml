@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -28,7 +28,6 @@ jobs:
           node-version: 24
           cache: pnpm
           registry-url: https://registry.npmjs.org
-          scope: "@loomdev"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -89,8 +88,9 @@ jobs:
         run: |
           set -euo pipefail
 
-          package_tarball="$(ls -1 dist/release/loomdev-cli-*.tgz | tail -n1)"
-          if [ -z "$package_tarball" ]; then
+          package_version="$(node -p "require('./apps/cli/package.json').version")"
+          package_tarball="dist/release/loomdev-${package_version}.tgz"
+          if [ ! -f "$package_tarball" ]; then
             echo "No packed npm CLI tarball found in dist/release" >&2
             exit 1
           fi

@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   matrix:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     outputs:
       custom: ${{ steps.matrix.outputs.custom }}
     steps:
@@ -28,7 +28,7 @@ jobs:
 
   custom-images:
     needs: matrix
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.matrix.outputs.custom) }}
@@ -63,5 +63,13 @@ jobs:
           severity: CRITICAL
           ignore-unfixed: true
           exit-code: 0
+      - name: Upload vulnerability report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: image-scan-${{ matrix.name }}-${{ strategy.job-index }}
+          path: trivy-report.json
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Enforce vulnerability policy
         run: node scripts/images/security-policy.mjs images/security-exceptions.json trivy-report.json

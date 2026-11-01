@@ -71,8 +71,9 @@ test("Bun contract requires the patched Debian GnuTLS package", async () => {
     path.join(repositoryRoot, "images/bun/1/contract.sh"),
     "utf8"
   );
-  assert.match(source, /3\.7\.9-2\+deb12u7/);
+  assert.match(source, /3\.8\.9-3\+deb13u4/);
   assert.match(source, /dpkg --compare-versions/);
+  assert.match(source, /--showformat=.*libgnutls30t64/);
 });
 
 
@@ -111,4 +112,16 @@ test("exact runtime contract probes accept catalog versions and reject other ver
   } finally {
     await rm(directory, { recursive: true, force: true });
   }
+});
+
+test("MySQL is built and contracts its patched certificate bundle and startup", async () => {
+  const catalog = JSON.parse(await readFile(path.join(repositoryRoot, "images/catalog.json"), "utf8"));
+  const mysql = catalog.images.find(({ name }) => name === "mysql-8.4");
+  assert.equal(mysql.kind, "custom");
+  assert.equal(mysql.version, "8.4.13-loom.1");
+  const contract = await readFile(path.join(repositoryRoot, mysql.context, "contract.sh"), "utf8");
+  assert.match(contract, /version\("certifi"\) == "2026\.10\.19"/);
+  assert.match(contract, /test-mirror\.mjs/);
+  const containerfile = await readFile(path.join(repositoryRoot, mysql.context, "Containerfile"), "utf8");
+  assert.doesNotMatch(containerfile, /^\s*(?:ENTRYPOINT|CMD|USER)\s/m);
 });

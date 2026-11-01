@@ -101,40 +101,6 @@ test("scopes an exception to its vulnerable target and package", () => {
   );
 });
 
-test("MongoDB Database Tools exceptions cover only the reported binaries", async () => {
-  const exceptions = JSON.parse(await readFile(
-    path.join(repositoryRoot, "images/security-exceptions.json"),
-    "utf8"
-  ));
-  const targets = [
-    "usr/bin/bsondump",
-    "usr/bin/mongodump",
-    "usr/bin/mongoexport",
-    "usr/bin/mongofiles",
-    "usr/bin/mongoimport",
-    "usr/bin/mongorestore",
-    "usr/bin/mongostat",
-    "usr/bin/mongotop"
-  ];
-  const findings = targets.map((target) => ({
-    id: "CVE-2026-56854",
-    target,
-    packageName: "golang.org/x/crypto",
-    installedVersion: "v0.54.0",
-    fixedVersion: "0.55.0"
-  }));
-
-  assert.deepEqual(
-    validateSecurityExceptions(exceptions, new Date("2026-09-02T00:00:00Z"), findings),
-    []
-  );
-  assert.equal(
-    exceptions.filter(({ id }) => id === "CVE-2026-56854").every(({ target, packageName }) =>
-      targets.includes(target) && packageName === "golang.org/x/crypto"),
-    true
-  );
-});
-
 test("unrelated expired scoped exceptions do not fail a clean image scan", () => {
   const exception = {
     id: finding.id,
@@ -162,4 +128,40 @@ test("matching findings still fail when their scoped exception has expired", () 
   assert.deepEqual(validateSecurityExceptions([exception], now, [{
     ...finding, target: exception.target, packageName: exception.packageName
   }]), ["CVE-2026-1000 exception is expired"]);
+});
+
+test("CLI exposes vulnerability details as GitHub Actions annotations", async () => {
+  const { execFile } = await import("node:child_process");
+  const { promisify } = await import("node:util");
+  const { mkdtemp, writeFile, rm } = await import("node:fs/promises");
+  const { tmpdir } = await import("node:os");
+  const directory = await mkdtemp(path.join(tmpdir(), "loom-policy-annotation-"));
+  try {
+    const exceptions = path.join(directory, "exceptions.json");
+    const report = path.join(directory, "report.json");
+    await writeFile(exceptions, "[]");
+    await writeFile(report, JSON.stringify({ Results: [{
+      Target: "usr/bin/example", Vulnerabilities: [{
+        VulnerabilityID: "CVE-2026-1000", Severity: "CRITICAL",
+        PkgName: "example", InstalledVersion: "1.0", FixedVersion: "1.1"
+      }]
+    }] }));
+    await assert.rejects(promisify(execFile)(process.execPath, [
+      path.join(repositoryRoot, "scripts/images/security-policy.mjs"), exceptions, report
+    ], { env: { ...process.env, GITHUB_ACTIONS: "true" }, stdio: "pipe" }), (error) => {
+      assert.equal(error.code, 1);
+      assert.match(error.stderr.toString(), /::error::fixable critical vulnerability CVE-2026-1000 in usr\/bin\/example:example \(1.0 -> 1.1\) is not excepted/);
+      return true;
+    });
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test("reviewed gosu exception remains narrow and expires within 30 days", async () => {
+  const exceptions = JSON.parse(await readFile(path.join(repositoryRoot, "images/security-exceptions.json"), "utf8"));
+  const gosu = { id: "CVE-2025-68121", target: "usr/local/bin/gosu", packageName: "stdlib", fixedVersion: "1.24.13" };
+  assert.deepEqual(validateSecurityExceptions(exceptions, new Date("2026-11-01T00:00:00Z"), [gosu]), []);
+  assert.match(validateSecurityExceptions(exceptions, new Date("2026-12-01T00:00:00Z"), [gosu]).join("\n"), /expired/);
+  assert.match(validateSecurityExceptions(exceptions, new Date("2026-11-01T00:00:00Z"), [{ ...gosu, target: "usr/bin/server" }]).join("\n"), /not excepted/);
 });

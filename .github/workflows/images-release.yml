@@ -22,7 +22,7 @@ concurrency:
 
 jobs:
   matrix:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     outputs:
       builds: ${{ steps.matrix.outputs.builds }}
       manifests: ${{ steps.matrix.outputs.manifests }}
@@ -41,7 +41,7 @@ jobs:
 
   publish-architectures:
     needs: matrix
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.matrix.outputs.builds) }}
@@ -78,7 +78,7 @@ jobs:
 
   publish-manifests:
     needs: [matrix, publish-architectures]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.matrix.outputs.manifests) }}
@@ -122,6 +122,14 @@ jobs:
           severity: CRITICAL
           ignore-unfixed: true
           exit-code: 0
+      - name: Upload vulnerability report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: image-scan-${{ matrix.name }}-${{ strategy.job-index }}
+          path: trivy-report.json
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Enforce vulnerability policy
         run: node scripts/images/security-policy.mjs images/security-exceptions.json trivy-report.json
       - name: Install Cosign
@@ -155,7 +163,7 @@ jobs:
 
   publish-mirrors:
     needs: matrix
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.matrix.outputs.mirrors) }}
@@ -194,6 +202,14 @@ jobs:
           severity: CRITICAL
           ignore-unfixed: true
           exit-code: 0
+      - name: Upload vulnerability report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: image-scan-${{ matrix.name }}-${{ strategy.job-index }}
+          path: trivy-report.json
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Enforce vulnerability policy
         run: node scripts/images/security-policy.mjs images/security-exceptions.json trivy-report.json
       - name: Install Cosign
@@ -227,7 +243,7 @@ jobs:
 
   update-digest-catalog:
     needs: [publish-manifests, publish-mirrors]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     permissions:
       actions: read
       contents: write
