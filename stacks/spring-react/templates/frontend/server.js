@@ -28,20 +28,30 @@ function contentType(filePath) {
   return "text/html; charset=utf-8";
 }
 
-function sendFile(response, filePath) {
-  fs.readFile(filePath, (error, data) => {
-    if (error) {
-      response.writeHead(404, { "content-type": "text/plain; charset=utf-8" });
-      response.end("Not found");
-      return;
+async function sendFile(response, requestPath) {
+  try {
+    const urlPath = decodeURIComponent(requestPath.split("?")[0]);
+    const root = await fs.promises.realpath(distDir);
+    const candidate = path.resolve(root, `.${urlPath === "/" ? "/index.html" : urlPath}`);
+    const relative = path.relative(root, candidate);
+    if (relative === ".." || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) {
+      throw new Error("Path outside public directory");
     }
-
+    const filePath = await fs.promises.realpath(candidate);
+    const realRelative = path.relative(root, filePath);
+    if (realRelative === ".." || realRelative.startsWith(`..${path.sep}`) || path.isAbsolute(realRelative)) {
+      throw new Error("Symlink outside public directory");
+    }
+    const data = await fs.promises.readFile(filePath);
     response.writeHead(200, {
       "content-type": contentType(filePath),
       "cache-control": "no-store"
     });
     response.end(data);
-  });
+  } catch {
+    response.writeHead(404, { "content-type": "text/plain; charset=utf-8" });
+    response.end("Not found");
+  }
 }
 
 function proxyRequest(request, response) {
@@ -73,9 +83,7 @@ http
       return;
     }
 
-    const urlPath = request.url === "/" ? "/index.html" : request.url;
-    const filePath = path.join(distDir, urlPath.replace(/^\//, ""));
-    sendFile(response, filePath);
+    void sendFile(response, request.url);
   })
   .listen(5175, "0.0.0.0", () => {
     process.stdout.write("Spring React frontend listening on 5175\n");

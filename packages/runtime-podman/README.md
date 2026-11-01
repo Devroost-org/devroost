@@ -21,3 +21,19 @@ Podman runtime adapter for Loom.
 ## Design intent
 
 The package keeps a stable public surface through `src/index.ts`, while the internal split keeps Podman command execution, container inspection, lifecycle decisions, and backup/readiness behavior independently testable.
+
+New service containers carry a `loom.project` label. Project listings and bulk
+recreation select that exact label, avoiding overlapping project-name prefixes.
+Older unlabeled containers are excluded from bulk deletion; remove those
+containers explicitly by their exact names and run `loom start` to recreate them
+with ownership labels. Bind-mounted database data is preserved by container removal.
+
+Redis restore requires a stopped primary container. A temporary container uses the
+same data volume to validate and load the RDB snapshot, then rebuild its append-only
+log before the primary restarts. PostgreSQL restores stop and report failure at
+the first SQL error.
+
+Run `pnpm typecheck` followed by `node scripts/runtime-regression.mjs` from the
+repository root for live ownership, Redis, PostgreSQL, and Caddy checks. These
+checks require Podman, OpenSSL, and the referenced container images. They publish
+no host ports and remove their own temporary containers and volumes afterward.

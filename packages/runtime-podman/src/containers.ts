@@ -145,12 +145,15 @@ export async function inspectContainer(name: string): Promise<ContainerSummary |
   };
 }
 
-export async function listProjectContainers(projectName: string): Promise<ContainerSummary[]> {
-  const list = await runPodman([
+export async function listProjectContainers(
+  projectName: string,
+  dependencies: { runPodmanCommand?: typeof runPodman; inspectContainerByName?: typeof inspectContainer } = {}
+): Promise<ContainerSummary[]> {
+  const list = await (dependencies.runPodmanCommand ?? runPodman)([
     "ps",
     "-a",
     "--filter",
-    `name=^${projectName}-`,
+    `label=loom.project=${projectName}`,
     "--format",
     "{{.Names}}"
   ]);
@@ -164,7 +167,7 @@ export async function listProjectContainers(projectName: string): Promise<Contai
     .map((line) => line.trim())
     .filter(Boolean);
 
-  const inspected = await Promise.all(names.map((name) => inspectContainer(name)));
+  const inspected = await Promise.all(names.map((name) => (dependencies.inspectContainerByName ?? inspectContainer)(name)));
   return inspected.filter((entry): entry is ContainerSummary => entry !== null);
 }
 
@@ -331,6 +334,7 @@ export async function buildPodmanRunArgs(
   }
 
   appendHealthcheckArgs(args, service);
+  args.push("--label", `loom.project=${containerNameValue.slice(0, -(serviceName.length + 1))}`);
   args.push("--label", `loom.service-hash=${expectedServiceHash}`);
   args.push(expectedImage);
 

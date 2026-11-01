@@ -1,6 +1,7 @@
 import type { LoomConfig } from "@loom/config";
-import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { chmod, copyFile, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
+import { homedir } from "node:os";
 import type { CertificatePaths } from "@loom/https";
 import { ensurePodmanNetwork, runPodman } from "@loom/runtime-podman";
 
@@ -145,15 +146,11 @@ export async function ensureServiceNetwork(config: LoomConfig): Promise<string> 
 const SHARED_PROXY = "loom-proxy";
 const PROXY_SITES_DIR = "/etc/caddy/sites";
 
-function proxyContainerName(): string {
-  return SHARED_PROXY;
-}
-
-function buildProjectCaddyfile(bindings: RouteBinding[], certPath: string, keyPath: string): string {
+function buildProjectCaddyfile(projectName: string, bindings: RouteBinding[], certPath: string, keyPath: string): string {
   return bindings.map((binding) => {
     const scheme = binding.https ? "https" : "http";
     const tlsConfig = binding.https ? `\n  tls ${certPath} ${keyPath}` : "";
-    return `${scheme}://${binding.host} {\n  reverse_proxy ${binding.service}:${binding.targetPort}${tlsConfig}\n}`;
+    return `${scheme}://${binding.host} {\n  reverse_proxy ${projectName}-${binding.service}:${binding.targetPort}${tlsConfig}\n}`;
   }).join("\n\n");
 }
 
@@ -161,7 +158,7 @@ function buildMainCaddyfile(): string {
   return `{
   auto_https off
 }
-import ${PROXY_SITES_DIR}/*
+import ${PROXY_SITES_DIR}/*.Caddyfile
 `;
 }
 
@@ -178,12 +175,29 @@ async function writeSharedProxyConfig(
   const mainFile = resolve(networkDir, "Caddyfile");
 
   if (bindings.length > 0) {
-    await writeFile(projectFile, buildProjectCaddyfile(bindings, certPath, keyPath), "utf-8");
+    await writeFile(projectFile, buildProjectCaddyfile(projectName, bindings, certPath, keyPath), "utf-8");
   } else {
     try { await rm(projectFile, { force: true }); } catch { /* ignore */ }
   }
 
   await writeFile(mainFile, buildMainCaddyfile(), "utf-8");
+}
+
+export interface ProxyDependencies {
+  stateDir?: string;
+  runPodmanCommand?: typeof runPodman;
+}
+
+function proxyStateDir(dependencies: ProxyDependencies): string {
+  return dependencies.stateDir ?? resolve(homedir(), ".loom", "network");
+}
+
+async function reloadProxy(run: typeof runPodman): Promise<void> {
+  const reload = await run([
+    "exec", SHARED_PROXY, "caddy", "reload", "--config",
+    "/etc/caddy/sites/Caddyfile", "--adapter", "caddyfile"
+  ]);
+  if (!reload.ok) throw new Error(`Failed to reload route proxy: ${reload.stderr || "unknown error"}`);
 }
 
 export async function ensureRouteProxy(
@@ -192,54 +206,61 @@ export async function ensureRouteProxy(
   certPaths: CertificatePaths,
   networkName: string,
   hostHttpPort = 8080,
-  hostHttpsPort = 8443
+  hostHttpsPort = 8443,
+  dependencies: ProxyDependencies = {}
 ): Promise<ProxyRuntime> {
-  const runDir = resolve(process.cwd(), ".loom", "network");
-  const mountedCertPath = "/certs/tls.crt";
-  const mountedKeyPath = "/certs/tls.key";
-  const container = proxyContainerName();
+  const run = dependencies.runPodmanCommand ?? runPodman;
+  const runDir = proxyStateDir(dependencies);
+  const certDir = resolve(runDir, "certs");
+  await mkdir(certDir, { recursive: true, mode: 0o700 });
+  const certPath = resolve(certDir, `${config.name}.crt`);
+  const keyPath = resolve(certDir, `${config.name}.key`);
+  await copyFile(certPaths.certPath, certPath);
+  await copyFile(certPaths.keyPath, keyPath);
+  await chmod(keyPath, 0o600);
+  await writeSharedProxyConfig(config.name, bindings, `/certs/${config.name}.crt`, `/certs/${config.name}.key`, runDir);
 
-  await writeSharedProxyConfig(config.name, bindings, mountedCertPath, mountedKeyPath, runDir);
-
-  const exists = await runPodman(["container", "exists", container]);
-
-  if (!exists.ok) {
-    const start = await runPodman([
-      "run",
-      "-d",
-      "--name",
-      container,
-      "--network",
-      networkName,
-      "-p",
-      `${hostHttpPort}:80`,
-      "-p",
-      `${hostHttpsPort}:443`,
-      "-v",
-      `${runDir}:/etc/caddy/sites:ro`,
-      "-v",
-      `${certPaths.certPath}:${mountedCertPath}:ro`,
-      "-v",
-      `${certPaths.keyPath}:${mountedKeyPath}:ro`,
-      "docker.io/library/caddy:2-alpine",
-      "caddy",
-      "run",
-      "--config",
-      "/etc/caddy/sites/Caddyfile",
-      "--adapter",
-      "caddyfile"
-    ]);
-
-    if (!start.ok) {
-      throw new Error(`Failed to start route proxy container '${container}': ${start.stderr || "unknown error"}`);
+  let exists = (await run(["container", "exists", SHARED_PROXY])).ok;
+  if (exists) {
+    const version = await run(["inspect", "--format", '{{ index .Config.Labels "loom.proxy-version" }}', SHARED_PROXY]);
+    if (!version.ok) throw new Error(`Failed to inspect route proxy: ${version.stderr}`);
+    // Replace the old project-local mount layout once. Its files cannot serve other projects.
+    if (version.stdout.trim() !== "2") {
+      const remove = await run(["rm", "-f", SHARED_PROXY]);
+      if (!remove.ok) throw new Error(`Failed to migrate route proxy: ${remove.stderr}`);
+      exists = false;
     }
   }
 
-  return {
-    containerName: container,
-    httpPort: hostHttpPort,
-    httpsPort: hostHttpsPort
-  };
+  if (!exists) {
+    const start = await run([
+      "run", "-d", "--name", SHARED_PROXY, "--label", "loom.proxy-version=2",
+      "--network", networkName,
+      "-p", `${hostHttpPort}:80`, "-p", `${hostHttpsPort}:443`,
+      "-v", `${runDir}:/etc/caddy/sites:ro`, "-v", `${certDir}:/certs:ro`,
+      "docker.io/library/caddy:2-alpine", "caddy", "run",
+      "--config", "/etc/caddy/sites/Caddyfile", "--adapter", "caddyfile"
+    ]);
+    if (!start.ok) throw new Error(`Failed to start route proxy container '${SHARED_PROXY}': ${start.stderr || "unknown error"}`);
+  } else {
+    const networks = await run(["inspect", "--format", "{{json .NetworkSettings.Networks}}", SHARED_PROXY]);
+    if (!networks.ok) throw new Error(`Failed to inspect proxy networks: ${networks.stderr}`);
+    const connected = JSON.parse(networks.stdout) as Record<string, unknown>;
+    if (!(networkName in connected)) {
+      const connect = await run(["network", "connect", networkName, SHARED_PROXY]);
+      if (!connect.ok) throw new Error(`Failed to connect route proxy: ${connect.stderr}`);
+    }
+    const running = await run(["inspect", "--format", "{{.State.Running}}", SHARED_PROXY]);
+    if (!running.ok) throw new Error(`Failed to inspect proxy state: ${running.stderr}`);
+    if (running.stdout.trim() !== "true") {
+      const start = await run(["start", SHARED_PROXY]);
+      if (!start.ok) throw new Error(`Failed to restart route proxy: ${start.stderr}`);
+    } else {
+      await reloadProxy(run);
+    }
+  }
+
+  return { containerName: SHARED_PROXY, httpPort: hostHttpPort, httpsPort: hostHttpsPort };
 }
 
 export async function ensureRouteHosts(projectName: string, bindings: RouteBinding[]): Promise<RouteHostManagementResult> {
@@ -260,20 +281,20 @@ export async function ensureRouteHosts(projectName: string, bindings: RouteBindi
   }
 }
 
-export async function stopRouteProxy(projectName: string): Promise<void> {
-  const runDir = resolve(process.cwd(), ".loom", "network");
+export async function stopRouteProxy(projectName: string, dependencies: ProxyDependencies = {}): Promise<void> {
+  const runDir = proxyStateDir(dependencies);
   const projectFile = resolve(runDir, `${projectName}.Caddyfile`);
-
-  try { await rm(projectFile, { force: true }); } catch { /* ignore */ }
-
-  const mainFile = resolve(runDir, "Caddyfile");
   try {
-    await writeFile(mainFile, buildMainCaddyfile(), "utf-8");
+    await rm(projectFile);
   } catch (error) {
-    if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
-      throw error;
-    }
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return;
+    throw error;
   }
+  const run = dependencies.runPodmanCommand ?? runPodman;
+  const running = await run(["inspect", "--format", "{{.State.Running}}", SHARED_PROXY]);
+  if (running.ok && running.stdout.trim() === "true") await reloadProxy(run);
+  await rm(resolve(runDir, "certs", `${projectName}.crt`), { force: true });
+  await rm(resolve(runDir, "certs", `${projectName}.key`), { force: true });
 }
 
 export async function stopRouteHosts(projectName: string): Promise<void> {

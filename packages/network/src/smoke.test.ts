@@ -115,7 +115,7 @@ test("stopRouteProxy succeeds when startup failed before proxy config was create
 
   try {
     process.chdir(projectDir);
-    await assert.doesNotReject(stopRouteProxy("demo"));
+    await assert.doesNotReject(stopRouteProxy("demo", { stateDir: join(projectDir, "state") }));
   } finally {
     process.chdir(previousCwd);
     await rm(projectDir, { recursive: true, force: true });

@@ -8,7 +8,7 @@ import { Writable } from "node:stream";
 import { EventEmitter } from "node:events";
 import { gzipSync } from "node:zlib";
 import type { LoomService } from "@loom/config";
-import { backupServiceToFileWithDependencies, restoreServiceFromFileWithDependencies } from "./backup.js";
+import { backupServiceToFileWithDependencies, restoreServiceFromFileWithDependencies, REDIS_RESTORE_SCRIPT } from "./backup.js";
 
 class FakeBackupProcess extends EventEmitter {
   stdout: { pipe: (target: Writable) => Writable };
@@ -155,7 +155,7 @@ test("restoreServiceFromFile copies the input file and runs the restore command"
 
   assert.deepEqual(commands, [
     ["cp", "/tmp/backup.sql", "demo-db:/tmp/loom-restore.sql"],
-    ["exec", "demo-db", "sh", "-c", 'psql -U "${POSTGRES_USER:-postgres}" -d "${POSTGRES_DB:-postgres}" -f /tmp/loom-restore.sql']
+    ["exec", "demo-db", "sh", "-c", 'psql -v ON_ERROR_STOP=1 -U "${POSTGRES_USER:-postgres}" -d "${POSTGRES_DB:-postgres}" -f /tmp/loom-restore.sql']
   ]);
 });
 
@@ -231,7 +231,7 @@ test("restoreServiceFromFile copies sqlite backups directly into the data path",
   assert.deepEqual(commands, [["cp", "/tmp/loom.db", "demo-db:/data/loom.db"]]);
 });
 
-test("restoreServiceFromFile copies redis backups directly into the data path", async () => {
+test("restoreServiceFromFile rebuilds Redis AOF after staging the snapshot", async () => {
   const commands: string[][] = [];
 
   await restoreServiceFromFileWithDependencies(
@@ -250,7 +250,10 @@ test("restoreServiceFromFile copies redis backups directly into the data path", 
     }
   );
 
-  assert.deepEqual(commands, [["cp", "/tmp/dump.rdb", "demo-db:/data/dump.rdb"]]);
+  assert.deepEqual(commands, [
+    ["cp", "/tmp/dump.rdb", "demo-db:/data/.loom-restore.rdb"],
+    ["run", "--rm", "--network", "none", "--volumes-from", "demo-db", "--entrypoint", "sh", "docker.io/library/redis:7", "-c", REDIS_RESTORE_SCRIPT]
+  ]);
 });
 
 test("restoreServiceFromFile surfaces copy failures", async () => {
@@ -351,5 +354,30 @@ test("restoreServiceFromFile rejects xz-compressed mysql dumps with a helpful er
     );
   } finally {
     await rm(tempRoot, { recursive: true, force: true });
+  }
+});
+
+
+test("PostgreSQL SQL errors propagate as failed restores", async () => {
+  await assert.rejects(restoreServiceFromFileWithDependencies("demo", "db", postgresService, "/tmp/input.sql", {
+    isContainerRunningByName: async () => true,
+    ensureInputReadable: async () => {},
+    prepareRestoreInput: async (_type, path) => ({ path }),
+    runPodmanCommand: async (args) => args[0] === "cp"
+      ? { ok: true, stdout: "", stderr: "", code: 0 }
+      : { ok: false, stdout: "", stderr: "ERROR: invalid SQL", code: 3 }
+  }), /invalid SQL/);
+});
+
+test("Redis restore refuses a running primary and reports helper failures", async () => {
+  for (const running of [true, false]) {
+    await assert.rejects(restoreServiceFromFileWithDependencies("demo", "db", { type: "redis", image: "redis:7" }, "/tmp/dump.rdb", {
+      isContainerRunningByName: async () => running,
+      ensureInputReadable: async () => {},
+      prepareRestoreInput: async (_type, path) => ({ path }),
+      runPodmanCommand: async (args) => args[0] === "cp"
+        ? { ok: true, stdout: "", stderr: "", code: 0 }
+        : { ok: false, stdout: "", stderr: "AOF rewrite failed", code: 1 }
+    }), running ? /must be stopped/ : /AOF rewrite failed/);
   }
 });

@@ -8,7 +8,7 @@ import { pipeline } from "node:stream/promises";
 import type { Writable } from "node:stream";
 import { createGunzip } from "node:zlib";
 import type { LoomService } from "@loom/config";
-import { containerName, isContainerRunning } from "./containers.js";
+import { containerName, isContainerRunning, normalizeImage } from "./containers.js";
 import { runPodman } from "./podman.js";
 
 export interface BackupStrategy {
@@ -27,6 +27,48 @@ interface BackupChildProcess {
   on(event: "close", listener: (code: number | null) => void): unknown;
   kill(): void;
 }
+
+// Load the snapshot without the old AOF, then let Redis regenerate its own AOF.
+// The primary container stays stopped until this helper completes successfully.
+export const REDIS_RESTORE_SCRIPT = `set -eu
+redis-check-rdb /data/.loom-restore.rdb
+mv /data/.loom-restore.rdb /data/dump.rdb
+restore_dir=$(mktemp -d)
+socket="$restore_dir/redis.sock"
+redis_pid=""
+cleanup() {
+  if [ -n "$redis_pid" ]; then
+    redis-cli -s "$socket" shutdown nosave >/dev/null 2>&1 || kill "$redis_pid" 2>/dev/null || true
+    wait "$redis_pid" 2>/dev/null || true
+  fi
+  rm -rf "$restore_dir"
+}
+trap cleanup EXIT
+redis-server --dir /data --dbfilename dump.rdb --appendonly no --save "" --port 0 --unixsocket "$socket" >"$restore_dir/redis.log" 2>&1 &
+redis_pid=$!
+ready=false
+for attempt in $(seq 1 120); do
+  if redis-cli -s "$socket" ping 2>/dev/null | grep -q PONG; then ready=true; break; fi
+  if ! kill -0 "$redis_pid" 2>/dev/null; then cat "$restore_dir/redis.log" >&2; exit 1; fi
+  sleep 1
+done
+if [ "$ready" != true ]; then echo "Redis restore startup timed out" >&2; exit 1; fi
+redis-cli -s "$socket" config set appendonly yes | grep -q '^OK$'
+for attempt in $(seq 1 120); do
+  info=$(redis-cli -s "$socket" info persistence | tr -d '\r')
+  if printf '%s\n' "$info" | grep -q '^aof_rewrite_in_progress:0$' &&
+     printf '%s\n' "$info" | grep -q '^aof_rewrite_scheduled:0$'; then
+    printf '%s\n' "$info" | grep -q '^aof_last_bgrewrite_status:ok$'
+    redis-cli -s "$socket" shutdown nosave
+    wait "$redis_pid"
+    redis_pid=""
+    exit 0
+  fi
+  sleep 1
+done
+echo "Redis append-only rewrite timed out" >&2
+exit 1
+`;
 
 interface BackupDependencies {
   isContainerRunningByName?: (name: string) => Promise<boolean>;
@@ -275,7 +317,7 @@ export function databaseRestoreStrategy(serviceType: string): RestoreStrategy | 
       command: [
         "sh",
         "-c",
-        "psql -U \"${POSTGRES_USER:-postgres}\" -d \"${POSTGRES_DB:-postgres}\" -f /tmp/loom-restore.sql"
+        "psql -v ON_ERROR_STOP=1 -U \"${POSTGRES_USER:-postgres}\" -d \"${POSTGRES_DB:-postgres}\" -f /tmp/loom-restore.sql"
       ]
     };
   }
@@ -293,7 +335,7 @@ export function databaseRestoreStrategy(serviceType: string): RestoreStrategy | 
 
   if (normalized === "redis") {
     return {
-      destinationPath: "/data/dump.rdb"
+      destinationPath: "/data/.loom-restore.rdb"
     };
   }
 
@@ -446,6 +488,9 @@ export async function restoreServiceFromFileWithDependencies(
   const runPodmanCommand = dependencies.runPodmanCommand ?? runPodman;
 
   const running = await isContainerRunningByName(name);
+  if (service.type.toLowerCase() === "redis" && running) {
+    throw new Error(`Service '${serviceName}' must be stopped before restoring Redis.`);
+  }
   if (strategy.command && !running) {
     throw new Error(`Service '${serviceName}' is not running. Start it before restoring a backup.`);
   }
@@ -460,6 +505,17 @@ export async function restoreServiceFromFileWithDependencies(
       throw new Error(
         `Restore failed for service '${serviceName}' while copying '${inputPath}' into the container: ${copyResult.stderr || copyResult.stdout || "unknown error"}`
       );
+    }
+
+    if (service.type.toLowerCase() === "redis") {
+      const result = await runPodmanCommand([
+        "run", "--rm", "--network", "none", "--volumes-from", name,
+        "--entrypoint", "sh", normalizeImage(service.image), "-c", REDIS_RESTORE_SCRIPT
+      ]);
+      if (!result.ok) {
+        throw new Error(`Redis restore failed for '${serviceName}': ${result.stderr || result.stdout || "unknown error"}`);
+      }
+      return;
     }
 
     if (!strategy.command) {

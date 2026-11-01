@@ -23,7 +23,17 @@ function contentType(filePath) {
 
 function proxyRequest(request, response) {
   const upstreamPath = request.url.replace(/^\/api/, "") || "/";
-  const upstream = new URL(upstreamPath, apiOrigin);
+  let upstream;
+  try {
+    upstream = new URL(upstreamPath, apiOrigin);
+    if (upstream.origin !== new URL(apiOrigin).origin) {
+      throw new Error("Invalid proxy destination");
+    }
+  } catch {
+    response.writeHead(400, { "content-type": "text/plain; charset=utf-8" });
+    response.end("Invalid API path");
+    return;
+  }
   const proxy = http.request(
     upstream,
     {

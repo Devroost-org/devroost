@@ -4,6 +4,7 @@ import type { LoomService } from "@loom/config";
 import {
   buildPodmanRunArgs,
   ipv4ForwardingError,
+  listProjectContainers,
   normalizeImage,
   parseHostPorts,
   serviceConfigHash
@@ -110,10 +111,29 @@ test("buildPodmanRunArgs includes labels, env, ports, and shell command", async 
     "-e",
     "NODE_ENV=development",
     "--label",
+    "loom.project=demo",
+    "--label",
     "loom.service-hash=service-hash",
     "docker.io/library/node:20-alpine",
     "sh",
     "-c",
     "node server.js"
   ]);
+});
+
+
+test("project container lookup uses exact ownership instead of overlapping name prefixes", async () => {
+  for (const project of ["shop", "shop-api", "shop.v2"]) {
+    const owned = `${project}-web`;
+    const foreign = `${project}-api-web`;
+    const containers = await listProjectContainers(project, {
+      runPodmanCommand: async (args) => {
+        assert.deepEqual(args, ["ps", "-a", "--filter", `label=loom.project=${project}`, "--format", "{{.Names}}"]);
+        // Model Podman's exact label match; a name-prefix query would include foreign.
+        return { ok: true, stdout: args.includes(`label=loom.project=${project}`) ? owned : `${owned}\n${foreign}`, stderr: "", code: 0 };
+      },
+      inspectContainerByName: async (name) => ({ name, state: "running", running: true, image: "test" })
+    });
+    assert.deepEqual(containers.map(({ name }) => name), [owned]);
+  }
 });
