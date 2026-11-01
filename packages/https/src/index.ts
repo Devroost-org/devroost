@@ -1,6 +1,7 @@
-import { mkdir, writeFile, access } from "node:fs/promises";
+import { mkdir, writeFile, access, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { constants } from "node:fs";
+import { X509Certificate, createPrivateKey } from "node:crypto";
 import { spawn } from "node:child_process";
 
 export interface CertificatePaths {
@@ -42,10 +43,16 @@ export async function ensureLocalCertificates(projectName: string, hosts: string
   try {
     await access(certPath, constants.F_OK);
     await access(keyPath, constants.F_OK);
+    const certificate = new X509Certificate(await readFile(certPath));
+    const now = Date.now();
+    const coversHosts = hosts.every((host) => certificate.checkHost(host, { subject: "never" }));
+    const valid = Date.parse(certificate.validFrom) <= now && Date.parse(certificate.validTo) > now + 86_400_000;
+    const matchesKey = certificate.checkPrivateKey(createPrivateKey(await readFile(keyPath)));
+    if (!coversHosts || !valid || !matchesKey) throw new Error("Certificate needs renewal");
     return { certPath, keyPath };
   } catch {
     const configPath = resolve(certDir, `${projectName}.openssl.cnf`);
-    const uniqueHosts = Array.from(new Set(hosts));
+    const uniqueHosts = Array.from(new Set(hosts.length ? hosts : [`${projectName}.loom.local`]));
     const sanEntries = uniqueHosts.map((host, index) => `DNS.${index + 1} = ${host}`).join("\n");
 
     const opensslConfig = `[req]

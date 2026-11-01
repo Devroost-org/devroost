@@ -18,7 +18,7 @@ test("ensureServiceStarted starts an existing matching container", async () => {
     isContainerRunningByName: async () => false,
     containerExistsByName: async () => true,
     inspectContainerImageByName: async () => "docker.io/library/node:20-alpine",
-    inspectContainerLabelByName: async () => serviceConfigHash(service),
+    inspectContainerLabelByName: async (_name, label) => label === "loom.project" ? "demo" : serviceConfigHash(service),
     startContainerByName: async (name) => {
       started.push(name);
     },
@@ -42,7 +42,7 @@ test("ensureServiceStarted recreates a container when config drift is detected",
     isContainerRunningByName: async () => false,
     containerExistsByName: async () => true,
     inspectContainerImageByName: async () => "docker.io/library/node:18-alpine",
-    inspectContainerLabelByName: async () => "old-hash",
+    inspectContainerLabelByName: async (_name, label) => label === "loom.project" ? "demo" : "old-hash",
     removeContainerByName: async (name) => {
       events.push(`remove:${name}`);
     },
@@ -70,7 +70,7 @@ test("ensureServiceStarted recreates a matching container when its bind mount so
     isContainerRunningByName: async () => false,
     containerExistsByName: async () => true,
     inspectContainerImageByName: async () => "docker.io/library/node:20-alpine",
-    inspectContainerLabelByName: async () => serviceConfigHash(service),
+    inspectContainerLabelByName: async (_name, label) => label === "loom.project" ? "demo" : serviceConfigHash(service),
     startContainerByName: async () => {
       throw new Error(
         "Failed to start existing container 'demo-app': Error: unable to start container 'abc': crun: cannot stat `/tmp/loom-release-smoke/demo/data/mysql`: No such file or directory: OCI runtime attempted to invoke a command that was not found"
@@ -178,4 +178,32 @@ test("ensureComposerAvailable rewrites exec-session errors when the container ex
       }),
     /Container 'demo-app' is not running \(state: exited\), so Composer could not be ensured\. Check 'loom logs app --no-follow'/i
   );
+});
+test("startup refuses a running container owned by another project", async () => {
+  await assert.rejects(ensureServiceStartedWithDependencies("shop", "api-web", service, "shop-net", {
+    containerExistsByName: async () => true,
+    isContainerRunningByName: async () => true,
+    inspectContainerLabelByName: async () => "shop-api",
+    runPodmanCommand: async () => { throw new Error("must not mutate a foreign container"); }
+  }), /Refusing to operate/);
+});
+
+test("startup renames an owned legacy container without deleting its writable layer", async () => {
+  const events: string[] = [];
+  const names = new Set(["shop-api-web"]);
+  const currentName = "shop-api-web--p8";
+  await ensureServiceStartedWithDependencies("shop-api", "web", service, "shop-net", {
+    containerExistsByName: async (name) => names.has(name),
+    isContainerRunningByName: async () => false,
+    inspectContainerLabelByName: async (_name, label) => label === "loom.project" ? "shop-api" : serviceConfigHash(service),
+    inspectContainerImageByName: async () => "docker.io/library/node:20-alpine",
+    runPodmanCommand: async (args) => {
+      events.push(args.join(" "));
+      if (args[0] === "rename") { names.delete(args[1]!); names.add(args[2]!); }
+      return { ok: true, stderr: "" };
+    },
+    startContainerByName: async (name) => { events.push(`start ${name}`); },
+    removeContainerByName: async () => { throw new Error("must not delete legacy data"); }
+  });
+  assert.deepEqual(events, ["stop shop-api-web", `rename shop-api-web ${currentName}`, `start ${currentName}`]);
 });

@@ -14,7 +14,8 @@ function createConfig(): LoomConfig {
   };
 }
 
-test("publishConfiguredRoutes skips proxy setup and output when no routes exist", async () => {
+test("publishConfiguredRoutes removes stale proxy and hosts when no routes remain", async () => {
+  const removed: string[] = [];
   let proxyCalls = 0;
   let certificateCalls = 0;
   const lines: string[] = [];
@@ -24,6 +25,8 @@ test("publishConfiguredRoutes skips proxy setup and output when no routes exist"
     [],
     "demo-net",
     {
+      stopRouteProxy: async (name) => { removed.push(`proxy:${name}`); },
+      stopRouteHosts: async (name) => { removed.push(`hosts:${name}`); },
       ensureLocalCertificates: async () => {
         certificateCalls += 1;
         return { certPath: "/tmp/cert.pem", keyPath: "/tmp/key.pem" };
@@ -44,6 +47,7 @@ test("publishConfiguredRoutes skips proxy setup and output when no routes exist"
     }
   );
 
+  assert.deepEqual(removed, ["proxy:demo", "hosts:demo"]);
   assert.equal(proxyCalls, 0);
   assert.equal(certificateCalls, 0);
   assert.deepEqual(lines, []);
@@ -74,6 +78,8 @@ test("publishConfiguredRoutes configures proxy and writes route and https summar
     ],
     "demo-net",
     {
+      stopRouteProxy: async () => {},
+      stopRouteHosts: async () => {},
       ensureLocalCertificates: async (_projectName, hosts) => {
         certificateHosts.push(hosts);
         return { certPath: "/tmp/cert.pem", keyPath: "/tmp/key.pem" };
@@ -137,6 +143,8 @@ test("publishConfiguredRoutes prints /etc/hosts instructions when hosts could no
     [{ host: "demo.test", service: "app", targetPort: 3000, externalPort: 8080, https: true }],
     "demo-net",
     {
+      stopRouteProxy: async () => {},
+      stopRouteHosts: async () => {},
       ensureLocalCertificates: async () => ({ certPath: "/tmp/cert.pem", keyPath: "/tmp/key.pem" }),
       ensureRouteHosts: async () => ({ managedHosts: [], skippedHosts: [], pendingHosts: ["demo.test"] }),
       ensureRouteProxy: async () => ({ containerName: "loom-proxy", httpPort: 8080, httpsPort: 8443 })

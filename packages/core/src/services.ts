@@ -1,3 +1,4 @@
+import { containerName } from "@loom/runtime-podman";
 import type { LoomConfig } from "@loom/config";
 import { closestServiceName } from "./utils.js";
 
@@ -22,10 +23,9 @@ export async function buildServiceNotFoundError(
 ): Promise<Error> {
   const availableServices = Object.keys(config.services).sort();
   const containers = await listProjectContainersByProject(config.name);
-  const runningServices = containers
-    .filter((container) => container.running)
-    .map((container) => container.name.replace(new RegExp(`^${config.name}-`), ""))
-    .filter((name) => config.services[name])
+  const runningNames = new Set(containers.filter((container) => container.running).map((container) => container.name));
+  const runningServices = Object.keys(config.services)
+    .filter((service) => runningNames.has(containerName(config.name, service)))
     .sort();
 
   const availableMessage = availableServices.length > 0 ? availableServices.join(", ") : "none";

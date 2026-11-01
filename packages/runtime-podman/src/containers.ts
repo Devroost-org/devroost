@@ -22,7 +22,9 @@ export function normalizeImage(image: string): string {
 }
 
 export function containerName(projectName: string, serviceName: string): string {
-  return `${projectName}-${serviceName}`;
+  const name = `${projectName}-${serviceName}`;
+  // The project length disambiguates hyphens belonging to either identifier.
+  return projectName.includes("-") || serviceName.includes("-") ? `${name}--p${projectName.length}` : name;
 }
 
 export function ipv4ForwardingError(platform: NodeJS.Platform, value: string): string | null {
@@ -290,7 +292,8 @@ export async function buildPodmanRunArgs(
   service: LoomService,
   networkName: string,
   expectedImage: string,
-  expectedServiceHash: string
+  expectedServiceHash: string,
+  projectName = containerNameValue.replace(/--p\d+$/, "").slice(0, -(serviceName.length + 1))
 ): Promise<string[]> {
   const args: string[] = [
     "run",
@@ -334,7 +337,7 @@ export async function buildPodmanRunArgs(
   }
 
   appendHealthcheckArgs(args, service);
-  args.push("--label", `loom.project=${containerNameValue.slice(0, -(serviceName.length + 1))}`);
+  args.push("--label", `loom.project=${projectName}`);
   args.push("--label", `loom.service-hash=${expectedServiceHash}`);
   args.push(expectedImage);
 
@@ -343,4 +346,19 @@ export async function buildPodmanRunArgs(
   }
 
   return args;
+}
+
+
+export async function assertContainerOwnership(
+  projectName: string,
+  name: string,
+  inspectLabel: typeof inspectContainerLabel = inspectContainerLabel
+): Promise<void> {
+  const owner = await inspectLabel(name, "loom.project");
+  const missingOwner = !owner || owner === "<no value>";
+  // Preserve compatibility with simple, unambiguous pre-label container names.
+  if (missingOwner && !name.includes("--p")) return;
+  if (owner !== projectName) {
+    throw new Error(`Refusing to operate on container '${name}': expected project '${projectName}', found '${owner || "unlabeled"}'.`);
+  }
 }

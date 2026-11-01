@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -Eeuo pipefail
+
+trap 'status=$?; printf "Bun contract failed at line %s: %s\n" "${LINENO}" "${BASH_COMMAND}" >&2; exit "${status}"' ERR
 
 image_reference="${1:?usage: contract.sh <image-reference>}"
 test_directory="$(mktemp -d)"
@@ -11,7 +13,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-podman run --rm "${image_reference}" bun --version | grep -qx '1\.4\.4'
+podman run --rm "${image_reference}" bun --version | { version=$(cat); printf '%s\n' "$version" >&2; printf '%s\n' "$version"; } | grep -qx '1\.4\.4'
 gnutls_version="$(podman run --rm "${image_reference}" \
   dpkg-query --show --showformat='${Version}' libgnutls30)"
 if ! podman run --rm "${image_reference}" dpkg --compare-versions \

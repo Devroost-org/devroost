@@ -37,3 +37,12 @@ Run `pnpm typecheck` followed by `node scripts/runtime-regression.mjs` from the
 repository root for live ownership, Redis, PostgreSQL, and Caddy checks. These
 checks require Podman, OpenSSL, and the referenced container images. They publish
 no host ports and remove their own temporary containers and volumes afterward.
+
+Container names include a project-length suffix when either identifier contains a
+hyphen, so project `shop` / service `api-web` differs from project `shop-api` /
+service `web`. Lifecycle operations check project ownership. Startup migrates
+owned containers using the older ambiguous names by stopping and renaming them;
+it preserves their writable layers and attached volumes.
+
+SQLite backups use the SQLite online backup command, including committed data
+that is still in the WAL. The live regression script also checks this case.

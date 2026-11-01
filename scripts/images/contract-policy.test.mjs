@@ -95,11 +95,18 @@ test("exact runtime contract probes accept catalog versions and reject other ver
       const probe = contract.replace(/\\\r?\n\s*/g, " ").split("\n")
         .find((line) => line.includes(`${command} --version`));
       assert.ok(probe, `${name} must check its runtime version`);
-      const runProbe = (value) => execute("bash", ["--noprofile", "--norc", "-c", `set -euo pipefail\nimage_reference=contract-test\n${probe}`], {
+      const errorTrap = contract.split("\n").find((line) => line.startsWith("trap ") && line.endsWith(" ERR"));
+      assert.ok(errorTrap, `${name} must report the failing contract command`);
+      const runProbe = (value) => execute("bash", ["--noprofile", "--norc", "-c", `set -Eeuo pipefail\n${errorTrap}\nimage_reference=contract-test\n${probe}`], {
         env: { ...process.env, BASH_ENV: "/dev/null", PATH: `${directory}${path.delimiter}${process.env.PATH}`, LOOM_CONTRACT_VERSION: `${value}${suffix}` }
       });
       await runProbe(version);
-      await assert.rejects(runProbe("0.0.0"), `${name} must reject the wrong version`);
+      await assert.rejects(runProbe("0.0.0"), (error) => {
+        assert.match(error.stderr, /0\.0\.0/);
+        assert.match(error.stderr, /contract failed at line/);
+        assert.match(error.stderr, /grep/);
+        return true;
+      });
     }
   } finally {
     await rm(directory, { recursive: true, force: true });

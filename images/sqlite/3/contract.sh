@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -Eeuo pipefail
+
+trap 'status=$?; printf "SQLite contract failed at line %s: %s\n" "${LINENO}" "${BASH_COMMAND}" >&2; exit "${status}"' ERR
 
 image_reference="${1:?usage: contract.sh <image-reference>}"
 test_directory="$(mktemp -d)"
@@ -10,7 +12,7 @@ cleanup() {
 trap cleanup EXIT
 
 podman run --rm "${image_reference}" sqlite3 --version \
-  | grep -Eq '^3\.54\.1 '
+  | { version=$(cat); printf '%s\n' "$version" >&2; printf '%s\n' "$version"; } | grep -Eq '^3\.54\.1 '
 
 database_path="${test_directory}/loom.sqlite3"
 podman run --rm \

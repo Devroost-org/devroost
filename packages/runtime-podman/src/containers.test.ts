@@ -2,6 +2,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import type { LoomService } from "@loom/config";
 import {
+  assertContainerOwnership,
+  containerName,
   buildPodmanRunArgs,
   ipv4ForwardingError,
   listProjectContainers,
@@ -136,4 +138,15 @@ test("project container lookup uses exact ownership instead of overlapping name 
     });
     assert.deepEqual(containers.map(({ name }) => name), [owned]);
   }
+});
+
+test("container names distinguish hyphens in project and service identifiers", () => {
+  assert.notEqual(containerName("shop", "api-web"), containerName("shop-api", "web"));
+  assert.equal(containerName("demo", "app"), "demo-app");
+});
+
+test("container ownership refuses a foreign project before operations", async () => {
+  await assert.rejects(assertContainerOwnership("shop", "shop-web", async () => "other"), /Refusing to operate/);
+  await assertContainerOwnership("shop", "shop-web", async () => "shop");
+  await assert.rejects(assertContainerOwnership("shop-api", containerName("shop-api", "web"), async () => ""), /unlabeled/);
 });

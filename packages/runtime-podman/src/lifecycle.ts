@@ -1,5 +1,6 @@
 import type { LoomService } from "@loom/config";
 import {
+  assertContainerOwnership,
   buildPodmanRunArgs,
   containerExists,
   containerName,
@@ -27,7 +28,8 @@ interface EnsureServiceStartedDependencies {
     service: LoomService,
     networkName: string,
     expectedImage: string,
-    expectedServiceHash: string
+    expectedServiceHash: string,
+    projectName?: string
   ) => Promise<string[]>;
   runPodmanCommand?: (args: string[]) => Promise<{ ok: boolean; stderr: string }>;
 }
@@ -123,12 +125,25 @@ export async function ensureServiceStartedWithDependencies(
   const expectedImage = normalizeImage(service.image);
   const expectedServiceHash = serviceConfigHash(service);
 
+  const legacyName = `${projectName}-${serviceName}`;
+  if (legacyName !== name && !(await containerExistsByName(name)) && await containerExistsByName(legacyName)) {
+    const owner = await inspectContainerLabelByName(legacyName, "loom.project");
+    if (owner === projectName) {
+      // Rename the owned legacy container instead of dropping its writable layer.
+      const stop = await runPodmanCommand(["stop", legacyName]);
+      if (!stop.ok) throw new Error(`Failed to stop legacy container '${legacyName}': ${stop.stderr}`);
+      const rename = await runPodmanCommand(["rename", legacyName, name]);
+      if (!rename.ok) throw new Error(`Failed to rename legacy container '${legacyName}': ${rename.stderr}`);
+    }
+  }
   const running = await isContainerRunningByName(name);
   if (running) {
+    await assertContainerOwnership(projectName, name, inspectContainerLabelByName);
     return;
   }
 
   if (await containerExistsByName(name)) {
+    await assertContainerOwnership(projectName, name, inspectContainerLabelByName);
     const currentImage = await inspectContainerImageByName(name);
     const currentServiceHash = await inspectContainerLabelByName(name, "loom.service-hash");
 
@@ -159,7 +174,8 @@ export async function ensureServiceStartedWithDependencies(
     service,
     networkName,
     expectedImage,
-    expectedServiceHash
+    expectedServiceHash,
+    projectName
   );
 
   const runResult = await runPodmanCommand(args);
@@ -175,6 +191,7 @@ export async function stopService(projectName: string, serviceName: string): Pro
     return;
   }
 
+  await assertContainerOwnership(projectName, name);
   const stop = await runPodman(["stop", name]);
   if (!stop.ok) {
     throw new Error(`Failed to stop container '${name}': ${stop.stderr || "unknown error"}`);
@@ -183,6 +200,7 @@ export async function stopService(projectName: string, serviceName: string): Pro
 
 export async function tailServiceLogs(projectName: string, serviceName: string, follow: boolean): Promise<void> {
   const name = containerName(projectName, serviceName);
+  await assertContainerOwnership(projectName, name);
   const args = ["logs", ...(follow ? ["-f"] : []), name];
   const code = await runPodmanInherit(args);
   if (code !== 0) {
@@ -198,6 +216,7 @@ export async function execServiceCommand(
   workdir?: string
 ): Promise<void> {
   const name = containerName(projectName, serviceName);
+  await assertContainerOwnership(projectName, name);
   const args = buildExecArgs(name, command, isInteractiveTerminal(), execUser, workdir);
   const code = await runPodmanInherit(args);
   if (code !== 0) {
@@ -222,6 +241,7 @@ function formatStoppedComposerContainerError(
 }
 
 export async function ensureComposerAvailable(projectName: string, serviceName: string): Promise<void> {
+  await assertContainerOwnership(projectName, containerName(projectName, serviceName));
   return ensureComposerAvailableWithDependencies(projectName, serviceName);
 }
 

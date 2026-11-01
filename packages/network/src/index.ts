@@ -3,7 +3,7 @@ import { chmod, copyFile, mkdir, readFile, rm, writeFile } from "node:fs/promise
 import { resolve } from "node:path";
 import { homedir } from "node:os";
 import type { CertificatePaths } from "@loom/https";
-import { ensurePodmanNetwork, runPodman } from "@loom/runtime-podman";
+import { containerName, ensurePodmanNetwork, runPodman } from "@loom/runtime-podman";
 
 export interface RouteBinding {
   host: string;
@@ -150,7 +150,7 @@ function buildProjectCaddyfile(projectName: string, bindings: RouteBinding[], ce
   return bindings.map((binding) => {
     const scheme = binding.https ? "https" : "http";
     const tlsConfig = binding.https ? `\n  tls ${certPath} ${keyPath}` : "";
-    return `${scheme}://${binding.host} {\n  reverse_proxy ${projectName}-${binding.service}:${binding.targetPort}${tlsConfig}\n}`;
+    return `${scheme}://${binding.host} {\n  reverse_proxy ${containerName(projectName, binding.service)}:${binding.targetPort}${tlsConfig}\n}`;
   }).join("\n\n");
 }
 

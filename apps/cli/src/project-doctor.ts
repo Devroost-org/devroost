@@ -3,7 +3,7 @@ import { access, lstat, readdir } from "node:fs/promises";
 import { createServer } from "node:net";
 import { dirname, resolve } from "node:path";
 import type { LoomConfig } from "@loom/config";
-import { detectPodmanCapabilities, listProjectContainers, type PodmanCapabilities } from "@loom/runtime-podman";
+import { containerName, detectPodmanCapabilities, listProjectContainers, type PodmanCapabilities } from "@loom/runtime-podman";
 import { classifyProjectManifestStack, type LoadedProjectManifest } from "./project-manifest.js";
 import { findStackDefinition, type StackDefinition } from "./stacks.js";
 
@@ -226,7 +226,7 @@ async function portsCheck(config: LoomConfig, probes: DoctorProbes, parsed: Retu
   for (const port of ports) {
     if (await probes.portAvailable(port)) continue;
     const belongsToRunningService = [...parsed.mappings].some(([serviceName, mappings]) =>
-      mappings.some(({ hostPort }) => hostPort === port) && runningContainers.has(`${config.name}-${serviceName}`));
+      mappings.some(({ hostPort }) => hostPort === port) && runningContainers.has(containerName(config.name, serviceName)));
     if (!belongsToRunningService) unavailable.push(port);
   }
   return unavailable.length ? result("ports", "failure", "Configured host ports are unavailable", unavailable.join(", ")) : result("ports", "pass", "Configured host ports are available");

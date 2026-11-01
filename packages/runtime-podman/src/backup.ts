@@ -8,7 +8,7 @@ import { pipeline } from "node:stream/promises";
 import type { Writable } from "node:stream";
 import { createGunzip } from "node:zlib";
 import type { LoomService } from "@loom/config";
-import { containerName, isContainerRunning, normalizeImage } from "./containers.js";
+import { assertContainerOwnership, containerName, isContainerRunning, normalizeImage } from "./containers.js";
 import { runPodman } from "./podman.js";
 
 export interface BackupStrategy {
@@ -161,7 +161,7 @@ export function databaseBackupStrategy(serviceType: string): BackupStrategy | nu
   if (normalized === "sqlite") {
     return {
       extension: "db",
-      command: ["sh", "-c", "cat /data/loom.db"]
+      command: ["sh", "-c", `snapshot=$(mktemp /tmp/loom-sqlite-backup.XXXXXX); trap 'rm -f "$snapshot"' EXIT; sqlite3 -cmd '.timeout 5000' /data/loom.db ".backup '$snapshot'" && cat "$snapshot"`]
     };
   }
 
@@ -358,6 +358,7 @@ export async function backupServiceToFile(
   service: LoomService,
   outputPath: string
 ): Promise<void> {
+  await assertContainerOwnership(projectName, containerName(projectName, serviceName));
   return backupServiceToFileWithDependencies(projectName, serviceName, service, outputPath);
 }
 
@@ -464,6 +465,7 @@ export async function restoreServiceFromFile(
   service: LoomService,
   inputPath: string
 ): Promise<void> {
+  await assertContainerOwnership(projectName, containerName(projectName, serviceName));
   return restoreServiceFromFileWithDependencies(projectName, serviceName, service, inputPath);
 }
 

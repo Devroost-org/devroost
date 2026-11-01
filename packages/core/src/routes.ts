@@ -7,7 +7,7 @@ import { formatBrowserUrl, formatHttpsInfo, formatProxyPorts, formatRouteBinding
 
 type RouteStartupDependencies = Pick<
   OrchestratorDependencies,
-  "ensureLocalCertificates" | "ensureRouteHosts" | "ensureRouteProxy"
+  "ensureLocalCertificates" | "ensureRouteHosts" | "ensureRouteProxy" | "stopRouteProxy" | "stopRouteHosts"
 >;
 
 type RouteStartupOutput = Pick<OrchestratorOutput, "writeOut" | "writeErr">;
@@ -19,6 +19,11 @@ export async function publishConfiguredRoutes(
   dependencies: RouteStartupDependencies,
   output: RouteStartupOutput
 ): Promise<void> {
+  if (routeBindings.length === 0) {
+    await dependencies.stopRouteProxy(config.name);
+    await dependencies.stopRouteHosts(config.name);
+    return;
+  }
   const httpsInfo = await resolveHttpsInfo(
     config.name,
     routeBindings,

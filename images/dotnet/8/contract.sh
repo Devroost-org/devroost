@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -Eeuo pipefail
+
+trap 'status=$?; printf ".NET contract failed at line %s: %s\n" "${LINENO}" "${BASH_COMMAND}" >&2; exit "${status}"' ERR
 
 image_reference="${1:?usage: contract.sh <image-reference>}"
 test_directory="$(mktemp -d)"
@@ -11,7 +13,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-podman run --rm "${image_reference}" dotnet --version | grep -qx '8\.0\.427'
+podman run --rm "${image_reference}" dotnet --version | { version=$(cat); printf '%s\n' "$version" >&2; printf '%s\n' "$version"; } | grep -qx '8\.0\.427'
 podman run --rm "${image_reference}" dotnet --list-runtimes \
   | grep -Eq '^Microsoft\.NETCore\.App 8\.0\.'
 podman run --rm "${image_reference}" sh -c \
