@@ -11,7 +11,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-podman run --rm "${image_reference}" bun --version | grep -qx '1\.2\.23'
+podman run --rm "${image_reference}" bun --version | grep -qx '1\.4\.4'
 gnutls_version="$(podman run --rm "${image_reference}" \
   dpkg-query --show --showformat='${Version}' libgnutls30)"
 if ! podman run --rm "${image_reference}" dpkg --compare-versions \

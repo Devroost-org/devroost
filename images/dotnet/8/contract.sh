@@ -11,7 +11,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-podman run --rm "${image_reference}" dotnet --version | grep -qx '8\.0\.424'
+podman run --rm "${image_reference}" dotnet --version | grep -qx '8\.0\.427'
 podman run --rm "${image_reference}" dotnet --list-runtimes \
   | grep -Eq '^Microsoft\.NETCore\.App 8\.0\.'
 podman run --rm "${image_reference}" sh -c \
