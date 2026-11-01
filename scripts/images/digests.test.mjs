@@ -97,5 +97,21 @@ test("committed digest catalog is complete and valid", async () => {
   const committedCatalog = JSON.parse(await readFile(path.join(repositoryRoot, "images/catalog.json"), "utf8"));
   const committedDigests = JSON.parse(await readFile(path.join(repositoryRoot, "images/digests.json"), "utf8"));
 
-  assert.deepEqual(validateDigestDocument(committedDigests, committedCatalog), []);
+  // Catalog updates describe the next release. Published records must retain
+  // the provenance of the image actually released, not the proposed source.
+  assert.deepEqual(validateDigestDocument(committedDigests, committedCatalog, {
+    requireCurrentSources: false
+  }), []);
+});
+
+
+test("published provenance may precede a source update while new releases must match", () => {
+  const document = createDigestDocument(catalog, releases, identity);
+  const nextCatalog = structuredClone(catalog);
+  nextCatalog.images[1].source = `docker.io/library/postgres:16@${hash("e")}`;
+  assert.match(validateDigestDocument(document, nextCatalog).join("\n"), /upstream digest/);
+  assert.deepEqual(validateDigestDocument(document, nextCatalog, { requireCurrentSources: false }), []);
+  assert.equal(createDigestDocument(nextCatalog, releases, identity).images[1].upstreamDigest, hash("e"));
+  document.images[1].upstreamDigest = "not-a-digest";
+  assert.match(validateDigestDocument(document, nextCatalog, { requireCurrentSources: false }).join("\n"), /upstream digest/);
 });

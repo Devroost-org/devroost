@@ -33,6 +33,10 @@ export function validateSecurityExceptions(entries, now, findings = []) {
   }
 
   for (const entry of exceptions) {
+    // A shared exception file covers many images. Expiry applies only to a
+    // scoped exception used by this report; matching expired waivers still fail.
+    const isScoped = entry?.target || entry?.packageName;
+    if (isScoped && !findings.some((finding) => matchesException(entry, finding))) continue;
     const expires = expiryDate(entry?.expires);
     if (!expires) continue;
 

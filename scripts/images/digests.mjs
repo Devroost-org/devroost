@@ -65,7 +65,7 @@ export function createDigestDocument(catalog, releases, signatureIdentity) {
   return document;
 }
 
-export function validateDigestDocument(document, catalog) {
+export function validateDigestDocument(document, catalog, { requireCurrentSources = true } = {}) {
   const records = Array.isArray(document?.images) ? document.images : [];
   const recordsByName = new Map(records.map((record) => [record.name, record]));
   const errors = [];
@@ -99,7 +99,8 @@ export function validateDigestDocument(document, catalog) {
     const image = catalog.images.find((candidate) => candidate.name === record.name);
     if (image?.kind === "mirror") {
       const expected = image.source.slice(image.source.lastIndexOf("@") + 1);
-      if (record.upstreamDigest !== expected) {
+      if (!digestPattern.test(record.upstreamDigest ?? "") ||
+          (requireCurrentSources && record.upstreamDigest !== expected)) {
         errors.push(`${record.name} must record its upstream digest`);
       }
     }

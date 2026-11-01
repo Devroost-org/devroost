@@ -134,3 +134,32 @@ test("MongoDB Database Tools exceptions cover only the reported binaries", async
     true
   );
 });
+
+test("unrelated expired scoped exceptions do not fail a clean image scan", () => {
+  const exception = {
+    id: finding.id,
+    target: "usr/local/bin/gosu",
+    packageName: "stdlib",
+    rationale: "The affected TLS code is unreachable in gosu.",
+    owner: "@loom-security",
+    expires: "2026-08-31"
+  };
+  assert.deepEqual(validateSecurityExceptions([exception], now, []), []);
+  assert.deepEqual(validateSecurityExceptions([exception], now, [{
+    ...finding, target: "usr/local/bin/another-binary", packageName: "stdlib"
+  }]), ["fixable critical vulnerability CVE-2026-1000 in usr/local/bin/another-binary:stdlib (fixed in 1.2.3) is not excepted"]);
+});
+
+test("matching findings still fail when their scoped exception has expired", () => {
+  const exception = {
+    id: finding.id,
+    target: "usr/local/bin/gosu",
+    packageName: "stdlib",
+    rationale: "The affected TLS code is unreachable in gosu.",
+    owner: "@loom-security",
+    expires: "2026-08-31"
+  };
+  assert.deepEqual(validateSecurityExceptions([exception], now, [{
+    ...finding, target: exception.target, packageName: exception.packageName
+  }]), ["CVE-2026-1000 exception is expired"]);
+});

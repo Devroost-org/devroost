@@ -29,7 +29,7 @@ Build and contract-test a custom runtime with:
 
 ```sh
 node scripts/images/build.mjs loom-node-24 --platform linux/amd64
-node scripts/images/test-image.mjs loom-node-24 localhost/loom-node-24:24.20.0-loom.3
+node scripts/images/test-image.mjs loom-node-24 localhost/loom-node-24:24.22.2-loom.1
 ```
 
 Mirror and readiness-test an infrastructure image after authenticating to
@@ -37,7 +37,7 @@ GHCR with Podman/Skopeo:
 
 ```sh
 node scripts/images/mirror.mjs redis-7.4
-node scripts/images/test-mirror.mjs redis-7.4 ghcr.io/loom-development/redis-7.4:7.4.11-alpine3.21
+node scripts/images/test-mirror.mjs redis-7.4 ghcr.io/loom-development/redis-7.4:7.4.12-alpine3.21
 ```
 
 ## Release and update flow
@@ -88,8 +88,8 @@ artifact.
    registry:
 
    ```sh
-   skopeo inspect --format '{{.Digest}}' docker://docker.io/library/redis:7.4.11-alpine3.21
-   skopeo inspect --raw docker://docker.io/library/redis:7.4.11-alpine3.21
+   skopeo inspect --format '{{.Digest}}' docker://docker.io/library/redis:7.4.12-alpine3.21
+   skopeo inspect --raw docker://docker.io/library/redis:7.4.12-alpine3.21
    ```
 
    The first command supplies the `sha256:` value. Inspect the second command's
@@ -123,7 +123,10 @@ appropriate only when the vulnerable code path is demonstrably unreachable
 and no fixed upstream artifact exists. Scope an exception with `target` and
 `packageName`, record a concrete rationale and owner, and set `expires` no more
 than 30 days ahead. Never add a CVE-wide exception for a finding that can also
-occur in another binary.
+occur in another binary. The exception file is shared across images: expiration
+is enforced when the current scan reports a matching target and package. An
+expired scoped exception for an absent finding does not block unrelated images;
+it never authorizes a matching finding after its expiration date.
 
 To roll back a bad image update, revert the catalog commit and rerun the release
 workflow. Previously published immutable GHCR digests remain available, so
