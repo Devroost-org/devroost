@@ -1,7 +1,7 @@
 import { spawn } from "node:child_process";
 import { access, readFile, readdir, rm } from "node:fs/promises";
 import { resolve } from "node:path";
-import { buildRegistryLoginHint, isImageUnavailableError, isRegistryAuthError } from "@loom/runtime-podman";
+import { buildRegistryLoginHint, isImageUnavailableError, isRegistryAuthError } from "@devroost/runtime-podman";
 import { findStackDefinition, type StackDefinition } from "./stacks.js";
 
 interface InitPreparationDependencies {

@@ -1,4 +1,4 @@
-# @loom/tasks
+# @devroost/tasks
 
 Task runner helpers for Devroost.
 

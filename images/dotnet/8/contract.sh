@@ -5,7 +5,7 @@ trap 'status=$?; printf ".NET contract failed at line %s: %s\n" "${LINENO}" "${B
 
 image_reference="${1:?usage: contract.sh <image-reference>}"
 test_directory="$(mktemp -d)"
-container_name="loom-dotnet-contract-$$"
+container_name="devroost-dotnet-contract-$$"
 
 cleanup() {
   podman rm --force "${container_name}" >/dev/null 2>&1 || true
@@ -35,7 +35,7 @@ printf '%s\n' \
   '    <ImplicitUsings>enable</ImplicitUsings>' \
   '  </PropertyGroup>' \
   '</Project>' \
-  >"${test_directory}/LoomContract.csproj"
+  >"${test_directory}/DevroostContract.csproj"
 printf '%s\n' \
   'using System.Net;' \
   'if (args is ["server"])' \
@@ -46,13 +46,13 @@ printf '%s\n' \
   '    while (true)' \
   '    {' \
   '        var context = await listener.GetContextAsync();' \
-  '        var body = "loom-dotnet-ready"u8.ToArray();' \
+  '        var body = "devroost-dotnet-ready"u8.ToArray();' \
   '        context.Response.ContentLength64 = body.Length;' \
   '        await context.Response.OutputStream.WriteAsync(body);' \
   '        context.Response.Close();' \
   '    }' \
   '}' \
-  'Console.Write("loom-dotnet-ready");' \
+  'Console.Write("devroost-dotnet-ready");' \
   >"${test_directory}/Program.cs"
 
 podman run --rm \
@@ -66,7 +66,7 @@ podman run --rm \
 if [[ "$(podman run --rm \
   --volume "${test_directory}:/contract:Z" \
   --workdir /contract \
-  "${image_reference}" dotnet run --no-build)" != "loom-dotnet-ready" ]]; then
+  "${image_reference}" dotnet run --no-build)" != "devroost-dotnet-ready" ]]; then
   printf 'Built .NET application did not produce expected output\n' >&2
   exit 1
 fi
@@ -79,7 +79,7 @@ podman run --detach --name "${container_name}" \
 ready=0
 for _attempt in 1 2 3 4 5 6 7 8 9 10; do
   if [[ "$(podman exec "${container_name}" curl --fail --silent \
-    http://127.0.0.1:8080/ 2>/dev/null)" == "loom-dotnet-ready" ]]; then
+    http://127.0.0.1:8080/ 2>/dev/null)" == "devroost-dotnet-ready" ]]; then
     ready=1
     break
   fi

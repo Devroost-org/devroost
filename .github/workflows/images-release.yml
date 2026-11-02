@@ -46,7 +46,7 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJSON(needs.matrix.outputs.builds) }}
     env:
-      IMAGE: ghcr.io/loom-development/${{ matrix.name }}
+      IMAGE: ghcr.io/devroost-org/${{ matrix.name }}
       REGISTRY_AUTH_FILE: /home/runner/.docker/config.json
     steps:
       - uses: actions/checkout@v6
@@ -83,7 +83,7 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJSON(needs.matrix.outputs.manifests) }}
     env:
-      IMAGE: ghcr.io/loom-development/${{ matrix.name }}
+      IMAGE: ghcr.io/devroost-org/${{ matrix.name }}
       VERSION: ${{ matrix.version }}
       REGISTRY_AUTH_FILE: /home/runner/.docker/config.json
     steps:
@@ -168,7 +168,7 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJSON(needs.matrix.outputs.mirrors) }}
     env:
-      IMAGE: ghcr.io/loom-development/${{ matrix.name }}
+      IMAGE: ghcr.io/devroost-org/${{ matrix.name }}
       VERSION: ${{ matrix.version }}
       REGISTRY_AUTH_FILE: /home/runner/.docker/config.json
     steps:

@@ -31,9 +31,9 @@ test("stack definitions expose assets, scaffold versions, and initial Devroost o
   assert.deepEqual(node?.legacyScaffoldVersions, ["1", "2"]);
   assert.equal(node?.assetPath, "node/templates");
   assert.deepEqual(node?.runtimeImages, [
-    { env: "NODE_IMAGE", reference: publishedImage("loom-node-24") }
+    { env: "NODE_IMAGE", reference: publishedImage("devroost-node-24") }
   ]);
-  assert.match(node!.runtimeImages[0]!.reference, /^ghcr\.io\/loom-development\/loom-node-24@sha256:[a-f0-9]{64}$/);
+  assert.match(node!.runtimeImages[0]!.reference, /^ghcr\.io\/devroost-org\/devroost-node-24@sha256:[a-f0-9]{64}$/);
 });
 
 test("every stack has explicit, deterministic maintenance metadata", () => {

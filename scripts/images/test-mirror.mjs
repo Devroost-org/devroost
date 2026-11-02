@@ -5,15 +5,15 @@ import { run } from "./process.mjs";
 
 const probes = {
   "postgres-16": {
-    environment: ["POSTGRES_PASSWORD=loom-test"],
+    environment: ["POSTGRES_PASSWORD=devroost-test"],
     command: ["pg_isready", "-U", "postgres"]
   },
   "mysql-8.4": {
-    environment: ["MYSQL_ROOT_PASSWORD=loom-test"],
-    command: ["mysql", "-h", "127.0.0.1", "-uroot", "-ploom-test", "--execute", "SELECT 1"]
+    environment: ["MYSQL_ROOT_PASSWORD=devroost-test"],
+    command: ["mysql", "-h", "127.0.0.1", "-uroot", "-pdevroost-test", "--execute", "SELECT 1"]
   },
   "mariadb-11.8": {
-    environment: ["MARIADB_ROOT_PASSWORD=loom-test"],
+    environment: ["MARIADB_ROOT_PASSWORD=devroost-test"],
     command: ["healthcheck.sh", "--connect", "--innodb_initialized"]
   },
   "redis-7.4": {
@@ -22,16 +22,16 @@ const probes = {
   },
   "mongo-7.0": {
     environment: [
-      "MONGO_INITDB_ROOT_USERNAME=loom",
-      "MONGO_INITDB_ROOT_PASSWORD=loom-test"
+      "MONGO_INITDB_ROOT_USERNAME=devroost",
+      "MONGO_INITDB_ROOT_PASSWORD=devroost-test"
     ],
     command: [
       "mongosh",
       "--quiet",
       "--username",
-      "loom",
+      "devroost",
       "--password",
-      "loom-test",
+      "devroost-test",
       "--authenticationDatabase",
       "admin",
       "--eval",
@@ -48,7 +48,7 @@ const probes = {
     ]
   },
   "mssql-2022": {
-    environment: ["ACCEPT_EULA=Y", "MSSQL_SA_PASSWORD=Loom_test_2026!"],
+    environment: ["ACCEPT_EULA=Y", "MSSQL_SA_PASSWORD=Devroost_test_2026!"],
     command: [
       "/opt/mssql-tools18/bin/sqlcmd",
       "-S",
@@ -56,7 +56,7 @@ const probes = {
       "-U",
       "sa",
       "-P",
-      "Loom_test_2026!",
+      "Devroost_test_2026!",
       "-C",
       "-Q",
       "SELECT 1"
@@ -84,7 +84,7 @@ export async function testMirror(name, reference, options = {}) {
   const attempts = options.attempts ?? 30;
   const interval = options.interval ?? 2_000;
   const reportCleanupError = options.reportCleanupError ?? console.warn;
-  const containerName = `loom-mirror-${name.replaceAll(/[^a-z0-9_.-]/g, "-")}-${process.pid}`;
+  const containerName = `devroost-mirror-${name.replaceAll(/[^a-z0-9_.-]/g, "-")}-${process.pid}`;
   const environmentArgs = probe.environment.flatMap((value) => ["--env", value]);
 
   await execute("podman", [

@@ -35,7 +35,7 @@ function App() {
           </li>
         ))}
       </ul>
-      <p>Frontend: http://django-react.loom.local</p>
+      <p>Frontend: http://django-react.devroost.local</p>
       <p>Backend health: /api/health</p>
     </main>
   );

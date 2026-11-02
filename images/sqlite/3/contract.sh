@@ -14,23 +14,23 @@ trap cleanup EXIT
 podman run --rm "${image_reference}" sqlite3 --version \
   | { version=$(cat); printf '%s\n' "$version" >&2; printf '%s\n' "$version"; } | grep -Eq '^3\.54\.1 '
 
-database_path="${test_directory}/loom.sqlite3"
+database_path="${test_directory}/devroost.sqlite3"
 podman run --rm \
   --volume "${test_directory}:/contract:Z" \
-  "${image_reference}" sqlite3 /contract/loom.sqlite3 \
-  "CREATE TABLE status (value TEXT NOT NULL); INSERT INTO status VALUES ('loom-sqlite-ready');"
+  "${image_reference}" sqlite3 /contract/devroost.sqlite3 \
+  "CREATE TABLE status (value TEXT NOT NULL); INSERT INTO status VALUES ('devroost-sqlite-ready');"
 
 if [[ "$(podman run --rm \
   --volume "${test_directory}:/contract:Z" \
-  "${image_reference}" sqlite3 /contract/loom.sqlite3 \
-  'SELECT value FROM status;')" != "loom-sqlite-ready" ]]; then
+  "${image_reference}" sqlite3 /contract/devroost.sqlite3 \
+  'SELECT value FROM status;')" != "devroost-sqlite-ready" ]]; then
   printf 'Persisted SQLite database did not return expected value\n' >&2
   exit 1
 fi
 
 if [[ "$(podman run --rm \
   --volume "${test_directory}:/contract:Z" \
-  "${image_reference}" sqlite3 /contract/loom.sqlite3 \
+  "${image_reference}" sqlite3 /contract/devroost.sqlite3 \
   'PRAGMA journal_mode=WAL;')" != "wal" ]]; then
   printf 'SQLite database did not enable WAL journal mode\n' >&2
   exit 1
@@ -41,7 +41,7 @@ host_gid="$(id -g)"
 rm "${database_path}"
 podman run --rm --user "${host_uid}:${host_gid}" --userns keep-id \
   --volume "${test_directory}:/contract:Z" \
-  "${image_reference}" sqlite3 /contract/loom.sqlite3 \
+  "${image_reference}" sqlite3 /contract/devroost.sqlite3 \
   'CREATE TABLE ownership (value TEXT NOT NULL);'
 
 actual_owner="$(stat -c '%u:%g' "${database_path}")"

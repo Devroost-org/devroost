@@ -16,7 +16,7 @@ test("accepts a documented active exception for a reported finding", () => {
       {
         id: finding.id,
         rationale: "Upstream rebuild is pending and exposure is not reachable.",
-        owner: "@loom-security",
+        owner: "@devroost-security",
         expires: "2026-09-15"
       }
     ], now, [finding]),
@@ -30,7 +30,7 @@ test("accepts an exception expiring exactly 30 days from now", () => {
       {
         id: finding.id,
         rationale: "Upstream rebuild is pending.",
-        owner: "@loom-security",
+        owner: "@devroost-security",
         expires: "2026-10-01"
       }
     ], now, [finding]),
@@ -79,7 +79,7 @@ test("scopes an exception to its vulnerable target and package", () => {
     target: "usr/local/bin/gosu",
     packageName: "stdlib",
     rationale: "The affected TLS code is unreachable in gosu.",
-    owner: "@loom-security",
+    owner: "@devroost-security",
     expires: "2026-09-15"
   };
   const gosuFinding = {
@@ -107,7 +107,7 @@ test("unrelated expired scoped exceptions do not fail a clean image scan", () =>
     target: "usr/local/bin/gosu",
     packageName: "stdlib",
     rationale: "The affected TLS code is unreachable in gosu.",
-    owner: "@loom-security",
+    owner: "@devroost-security",
     expires: "2026-08-31"
   };
   assert.deepEqual(validateSecurityExceptions([exception], now, []), []);
@@ -122,7 +122,7 @@ test("matching findings still fail when their scoped exception has expired", () 
     target: "usr/local/bin/gosu",
     packageName: "stdlib",
     rationale: "The affected TLS code is unreachable in gosu.",
-    owner: "@loom-security",
+    owner: "@devroost-security",
     expires: "2026-08-31"
   };
   assert.deepEqual(validateSecurityExceptions([exception], now, [{
@@ -135,7 +135,7 @@ test("CLI exposes vulnerability details as GitHub Actions annotations", async ()
   const { promisify } = await import("node:util");
   const { mkdtemp, writeFile, rm } = await import("node:fs/promises");
   const { tmpdir } = await import("node:os");
-  const directory = await mkdtemp(path.join(tmpdir(), "loom-policy-annotation-"));
+  const directory = await mkdtemp(path.join(tmpdir(), "devroost-policy-annotation-"));
   try {
     const exceptions = path.join(directory, "exceptions.json");
     const report = path.join(directory, "report.json");

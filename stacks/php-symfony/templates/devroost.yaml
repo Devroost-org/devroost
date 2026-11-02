@@ -8,7 +8,7 @@ runtime:
 services:
   app:
     type: php
-    image: ${PHP_IMAGE:-ghcr.io/loom-development/loom-php@sha256:d9f67c2ee13bdc0f17cb836c435acb5787062311ac1843aa3ee4cb7ff11c799d}
+    image: ${PHP_IMAGE:-ghcr.io/devroost-org/devroost-php@sha256:d9f67c2ee13bdc0f17cb836c435acb5787062311ac1843aa3ee4cb7ff11c799d}
     user: root
     userns: keep-id
     execUser: ${HOST_UID:-1000}:${HOST_GID:-1000}
@@ -30,7 +30,7 @@ services:
       if [ "$current_uid" != "$target_uid" ]; then
         if getent passwd "$target_uid" >/dev/null 2>&1; then
           existing_user="$(getent passwd "$target_uid" | cut -d: -f1)"
-          usermod -l loom-www-data -m -d /var/www -s /usr/sbin/nologin "$existing_user" >/dev/null 2>&1 || true
+          usermod -l devroost-www-data -m -d /var/www -s /usr/sbin/nologin "$existing_user" >/dev/null 2>&1 || true
         fi
         usermod -o -u "$target_uid" www-data
       fi

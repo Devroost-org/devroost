@@ -11,12 +11,12 @@ import {
   replaceYamlDefault
 } from "./sync-stack-image-pins.mjs";
 
-const reference = `ghcr.io/loom-development/loom-node-24@sha256:${"a".repeat(64)}`;
+const reference = `ghcr.io/devroost-org/devroost-node-24@sha256:${"a".repeat(64)}`;
 const document = {
   schemaVersion: 1,
-  registry: "ghcr.io/loom-development",
+  registry: "ghcr.io/devroost-org",
   images: [
-    { name: "loom-node-24", image: "ghcr.io/loom-development/loom-node-24", digest: `sha256:${"a".repeat(64)}` }
+    { name: "devroost-node-24", image: "ghcr.io/devroost-org/devroost-node-24", digest: `sha256:${"a".repeat(64)}` }
   ]
 };
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -25,7 +25,7 @@ test("renders stable generated TypeScript from a digest document", () => {
   const rendered = renderPublishedImageData(document);
 
   assert.match(rendered, /Generated from images\/digests\.json\. Do not edit by hand\./);
-  assert.match(rendered, /"loom-node-24"/);
+  assert.match(rendered, /"devroost-node-24"/);
   assert.equal(renderPublishedImageData(document), rendered);
 });
 

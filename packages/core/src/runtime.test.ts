@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import type { LoomConfig } from "@loom/config";
+import type { DevroostConfig } from "@devroost/config";
 import { ensureRuntimeReady } from "./runtime.js";
 
-function createConfig(): LoomConfig {
+function createConfig(): DevroostConfig {
   return {
     version: 1,
     name: "demo",

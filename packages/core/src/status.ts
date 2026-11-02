@@ -1,7 +1,7 @@
-import type { LoomConfig } from "@loom/config";
+import type { DevroostConfig } from "@devroost/config";
 import type { OrchestratorDependencies } from "./dependencies.js";
 
-export interface LoomStatus {
+export interface DevroostStatus {
   project: string;
   podman: {
     available: boolean;
@@ -32,8 +32,8 @@ export interface LoomStatus {
   };
 }
 
-export async function buildLoomStatus(
-  config: LoomConfig,
+export async function buildDevroostStatus(
+  config: DevroostConfig,
   dependencies: Pick<
     OrchestratorDependencies,
     | "containerName"
@@ -43,7 +43,7 @@ export async function buildLoomStatus(
     | "isContainerRunning"
     | "resolveRouteBindings"
   >
-): Promise<LoomStatus> {
+): Promise<DevroostStatus> {
   const capabilities = await dependencies.detectPodmanCapabilities();
   const routes = dependencies.resolveRouteBindings(config);
   const httpsHosts = routes.filter((route) => route.https).map((route) => route.host);

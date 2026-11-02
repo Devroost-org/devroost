@@ -37,7 +37,7 @@ jobs:
       - name: Upload coverage report artifact
         uses: actions/upload-artifact@v6
         with:
-          name: loom-coverage-${{ github.sha }}
+          name: devroost-coverage-${{ github.sha }}
           path: |
             coverage/lcov.info
             coverage/coverage-summary.json
@@ -55,7 +55,7 @@ jobs:
       - name: Upload release assets artifact
         uses: actions/upload-artifact@v6
         with:
-          name: loom-release-assets-${{ github.sha }}
+          name: devroost-release-assets-${{ github.sha }}
           path: |
             dist/release/devroost-linux-x64.tar.gz
             dist/release/devroost-linux-arm64.tar.gz

@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "registry": "ghcr.io/loom-development",
+  "registry": "ghcr.io/devroost-org",
   "images": [
     {
-      "name": "loom-php",
+      "name": "devroost-php",
       "kind": "custom",
       "source": "docker.io/library/php:8.4.27-apache@sha256:4af38a0245996e700e20ec211b9f1c44fb789ad8cc7d24c7ea81ff382b641052",
-      "version": "8.4.27-loom.1",
+      "version": "8.4.27-devroost.1",
       "platforms": [
         "linux/amd64",
         "linux/arm64"
@@ -14,11 +14,11 @@
       "context": "images/php"
     },
     {
-      "name": "loom-wordpress",
+      "name": "devroost-wordpress",
       "kind": "custom",
       "source": "docker.io/library/wordpress:6.8.3-php8.4-apache@sha256:da2a1ff20daa435abf260853ebfd829b1f5f9b8400938940c7393f786a63bf94",
-      "runtime": "loom-php",
-      "version": "6.8.3-php8.4-loom.2",
+      "runtime": "devroost-php",
+      "version": "6.8.3-php8.4-devroost.2",
       "platforms": [
         "linux/amd64",
         "linux/arm64"
@@ -26,10 +26,10 @@
       "context": "images/wordpress"
     },
     {
-      "name": "loom-node-22",
+      "name": "devroost-node-22",
       "kind": "custom",
       "source": "docker.io/library/node:22.23.4-alpine@sha256:fe4f6d74e20370acb04ad889077d14d0f64a9c8ea6a42bc60cddf1e844699914",
-      "version": "22.23.4-loom.1",
+      "version": "22.23.4-devroost.1",
       "platforms": [
         "linux/amd64",
         "linux/arm64"
@@ -37,10 +37,10 @@
       "context": "images/node"
     },
     {
-      "name": "loom-node-24",
+      "name": "devroost-node-24",
       "kind": "custom",
       "source": "docker.io/library/node:24.22.2-alpine@sha256:8a32c8cf649a49915a66e81e7a609223c708d0adabf288ee3f4077d765542f85",
-      "version": "24.22.2-loom.1",
+      "version": "24.22.2-devroost.1",
       "platforms": [
         "linux/amd64",
         "linux/arm64"
@@ -48,10 +48,10 @@
       "context": "images/node"
     },
     {
-      "name": "loom-python-3.12",
+      "name": "devroost-python-3.12",
       "kind": "custom",
       "source": "docker.io/library/python:3.12.16-slim@sha256:8523d6abeb48ceae0b7240d30c5808fc26cb79c1a635bacdf19cf3baecfbec07",
-      "version": "3.12.16-loom.1",
+      "version": "3.12.16-devroost.1",
       "platforms": [
         "linux/amd64",
         "linux/arm64"
@@ -59,10 +59,10 @@
       "context": "images/python/3.12"
     },
     {
-      "name": "loom-ruby-3.3",
+      "name": "devroost-ruby-3.3",
       "kind": "custom",
       "source": "docker.io/library/ruby:3.3.13@sha256:93b2a7cba3da102ff8f4f0ed030ccde44a2bda11dfc6a130c7ad9821f4002abc",
-      "version": "3.3.13-loom.1",
+      "version": "3.3.13-devroost.1",
       "platforms": [
         "linux/amd64",
         "linux/arm64"
@@ -70,10 +70,10 @@
       "context": "images/ruby/3.3"
     },
     {
-      "name": "loom-bun-1",
+      "name": "devroost-bun-1",
       "kind": "custom",
       "source": "docker.io/oven/bun:1.4.4@sha256:1d22548f177f4ff38e0c15baa3c2c46c6c2060ba2d1bc573bb4720b407548f1d",
-      "version": "1.4.4-loom.1",
+      "version": "1.4.4-devroost.1",
       "platforms": [
         "linux/amd64",
         "linux/arm64"
@@ -81,10 +81,10 @@
       "context": "images/bun/1"
     },
     {
-      "name": "loom-java-21",
+      "name": "devroost-java-21",
       "kind": "custom",
       "source": "docker.io/library/maven:3.9.16-eclipse-temurin-21@sha256:99e61abcff91a9b1333463bd8451fb18495d6eba9250ac66a338b518f8278320",
-      "version": "21-maven3.9.16-loom.1",
+      "version": "21-maven3.9.16-devroost.1",
       "platforms": [
         "linux/amd64",
         "linux/arm64"
@@ -92,10 +92,10 @@
       "context": "images/java/21"
     },
     {
-      "name": "loom-dotnet-8",
+      "name": "devroost-dotnet-8",
       "kind": "custom",
       "source": "mcr.microsoft.com/dotnet/sdk:8.0.427@sha256:6ba9644da07bb5b560a402acec9ca38711a0762969f1b61da261df5c9f6f85da",
-      "version": "8.0.427-loom.1",
+      "version": "8.0.427-devroost.1",
       "platforms": [
         "linux/amd64",
         "linux/arm64"
@@ -103,10 +103,10 @@
       "context": "images/dotnet/8"
     },
     {
-      "name": "loom-sqlite-3",
+      "name": "devroost-sqlite-3",
       "kind": "custom",
       "source": "docker.io/keinos/sqlite3:3.54.1@sha256:b577e65892c6468d94b390097eda4488e05253470c161bdea68a05abb961fa17",
-      "version": "3.54.1-loom.1",
+      "version": "3.54.1-devroost.1",
       "platforms": [
         "linux/amd64",
         "linux/arm64"
@@ -127,7 +127,7 @@
       "name": "mysql-8.4",
       "kind": "custom",
       "source": "docker.io/library/mysql:8.4.13@sha256:a0225d1ea6631c8bc2385dc4c2faba17bbf1834ecf369e1659a9a382bd8d5dd7",
-      "version": "8.4.13-loom.1",
+      "version": "8.4.13-devroost.1",
       "platforms": [
         "linux/amd64",
         "linux/arm64"

@@ -1,6 +1,6 @@
-ARG LOOM_BASE_IMAGE
+ARG DEVROOST_BASE_IMAGE
 FROM docker.io/library/composer@sha256:20462d70afcfa999ad75dbd9333194067f4d869078bdb37430339e8d97e541d6 AS composer
-FROM ${LOOM_BASE_IMAGE}
+FROM ${DEVROOST_BASE_IMAGE}
 
 RUN set -eux; \
     apt-get update; \
@@ -54,12 +54,12 @@ RUN set -eux; \
     { \
         echo 'xdebug.mode=off'; \
         echo 'xdebug.start_with_request=no'; \
-    } > /usr/local/etc/php/conf.d/zz-loom-xdebug.ini
+    } > /usr/local/etc/php/conf.d/zz-devroost-xdebug.ini
 
-COPY docker-entrypoint-loom /usr/local/bin/docker-entrypoint-loom
+COPY docker-entrypoint-devroost /usr/local/bin/docker-entrypoint-devroost
 
-ENV LOOM_DOCUMENT_ROOT=/var/www/html
+ENV DEVROOST_DOCUMENT_ROOT=/var/www/html
 WORKDIR /workspace
 
-ENTRYPOINT ["docker-entrypoint-loom"]
+ENTRYPOINT ["docker-entrypoint-devroost"]
 CMD ["apache2-foreground"]

@@ -1,5 +1,5 @@
 version: 1
-name: loom-rails7-hotwire
+name: devroost-rails7-hotwire
 runtime:
   engine: podman
   rootless: true
@@ -8,11 +8,11 @@ runtime:
 services:
   app:
     type: ruby
-    image: ${RUBY_IMAGE:-ghcr.io/loom-development/loom-ruby-3.3@sha256:fa3ff65b942751619cecc93a2fbecd23aee0c03400d99390c0be4242938e99e1}
+    image: ${RUBY_IMAGE:-ghcr.io/devroost-org/devroost-ruby-3.3@sha256:fa3ff65b942751619cecc93a2fbecd23aee0c03400d99390c0be4242938e99e1}
     user: ${HOST_UID:-1000}:${HOST_GID:-1000}
     userns: keep-id
     workdir: /workspace
-    command: sh -c 'mkdir -p /tmp/loom-home/gems /tmp/loom-home/bundle /tmp/loom-home/bundle-config && export HOME=/tmp/loom-home GEM_HOME=/tmp/loom-home/gems GEM_PATH=/tmp/loom-home/gems PATH=/tmp/loom-home/gems/bin:$PATH BUNDLE_PATH=/tmp/loom-home/bundle BUNDLE_APP_CONFIG=/tmp/loom-home/bundle-config && gem install bundler -v 2.6.9 --no-document && bundle install && exec bin/rails server -b 0.0.0.0 -p 3008'
+    command: sh -c 'mkdir -p /tmp/devroost-home/gems /tmp/devroost-home/bundle /tmp/devroost-home/bundle-config && export HOME=/tmp/devroost-home GEM_HOME=/tmp/devroost-home/gems GEM_PATH=/tmp/devroost-home/gems PATH=/tmp/devroost-home/gems/bin:$PATH BUNDLE_PATH=/tmp/devroost-home/bundle BUNDLE_APP_CONFIG=/tmp/devroost-home/bundle-config && gem install bundler -v 2.6.9 --no-document && bundle install && exec bin/rails server -b 0.0.0.0 -p 3008'
     ports:
       - "3008:3008"
     volumes:

@@ -1,10 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import type { LoomConfig } from "@loom/config";
-import { buildLoomStatus } from "./status.js";
+import type { DevroostConfig } from "@devroost/config";
+import { buildDevroostStatus } from "./status.js";
 
-test("buildLoomStatus assembles routes, https info, and service inspection", async () => {
-  const config: LoomConfig = {
+test("buildDevroostStatus assembles routes, https info, and service inspection", async () => {
+  const config: DevroostConfig = {
     version: 1,
     name: "demo",
     runtime: { engine: "podman", rootless: true },
@@ -13,7 +13,7 @@ test("buildLoomStatus assembles routes, https info, and service inspection", asy
     }
   };
 
-  const status = await buildLoomStatus(config, {
+  const status = await buildDevroostStatus(config, {
     containerName: (projectName, serviceName) => `${projectName}-${serviceName}`,
     detectPodmanCapabilities: async () => ({
       available: true,
@@ -69,8 +69,8 @@ test("buildLoomStatus assembles routes, https info, and service inspection", asy
   assert.deepEqual(status.proxy, { httpPort: 8080, httpsPort: 8443 });
 });
 
-test("buildLoomStatus omits https and proxy when no routes exist", async () => {
-  const config: LoomConfig = {
+test("buildDevroostStatus omits https and proxy when no routes exist", async () => {
+  const config: DevroostConfig = {
     version: 1,
     name: "demo",
     runtime: { engine: "podman", rootless: true },
@@ -79,7 +79,7 @@ test("buildLoomStatus omits https and proxy when no routes exist", async () => {
     }
   };
 
-  const status = await buildLoomStatus(config, {
+  const status = await buildDevroostStatus(config, {
     containerName: (projectName, serviceName) => `${projectName}-${serviceName}`,
     detectPodmanCapabilities: async () => ({
       available: true,

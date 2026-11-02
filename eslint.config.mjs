@@ -9,7 +9,7 @@ export default [
       "**/node_modules/**",
       "**/dist/**",
       "**/coverage/**",
-      "**/.loom/**"
+      "**/.devroost/**"
     ]
   },
   js.configs.recommended,

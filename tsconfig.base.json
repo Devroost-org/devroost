@@ -4,13 +4,13 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "paths": {
-      "@loom/stacks": ["./stacks/index.ts"],
-      "@loom/config": ["./packages/config/src/index.ts"],
-      "@loom/runtime-podman": ["./packages/runtime-podman/src/index.ts"],
-      "@loom/core": ["./packages/core/src/index.ts"],
-      "@loom/tasks": ["./packages/tasks/src/index.ts"],
-      "@loom/network": ["./packages/network/src/index.ts"],
-      "@loom/https": ["./packages/https/src/index.ts"]
+      "@devroost/stacks": ["./stacks/index.ts"],
+      "@devroost/config": ["./packages/config/src/index.ts"],
+      "@devroost/runtime-podman": ["./packages/runtime-podman/src/index.ts"],
+      "@devroost/core": ["./packages/core/src/index.ts"],
+      "@devroost/tasks": ["./packages/tasks/src/index.ts"],
+      "@devroost/network": ["./packages/network/src/index.ts"],
+      "@devroost/https": ["./packages/https/src/index.ts"]
     },
     "lib": ["ES2022"],
     "strict": true,

@@ -6,7 +6,7 @@ import {
 } from "node:fs/promises";
 import { isAbsolute, relative, resolve } from "node:path";
 import type { Dirent, Stats } from "node:fs";
-import type { LoomProjectManifestV2 } from "./project-manifest.js";
+import type { DevroostProjectManifestV2 } from "./project-manifest.js";
 import type { GeneratedPathCategory, StackDefinition } from "./stacks.js";
 
 export interface ProjectCleanItem {
@@ -27,7 +27,7 @@ export interface ProjectCleanPlan {
 export interface PlanProjectCleanOptions {
   projectRoot: string;
   stack: StackDefinition;
-  manifest: LoomProjectManifestV2;
+  manifest: DevroostProjectManifestV2;
   dependencies?: Partial<ProjectCleanDependencies>;
 }
 
@@ -167,7 +167,7 @@ async function discoverProjectManifests(
 async function getProtectedPaths(
   projectRoot: string,
   stack: StackDefinition,
-  manifest: LoomProjectManifestV2,
+  manifest: DevroostProjectManifestV2,
   fs: ProjectCleanDependencies
 ): Promise<string[]> {
   const discovered = await discoverProjectManifests(projectRoot, stack.generatedPaths.map(({ path }) => path), fs);

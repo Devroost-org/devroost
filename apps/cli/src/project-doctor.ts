@@ -2,8 +2,8 @@ import { constants } from "node:fs";
 import { access, lstat, readdir } from "node:fs/promises";
 import { createServer } from "node:net";
 import { dirname, resolve } from "node:path";
-import type { LoomConfig } from "@loom/config";
-import { containerName, detectPodmanCapabilities, listProjectContainers, type PodmanCapabilities } from "@loom/runtime-podman";
+import type { DevroostConfig } from "@devroost/config";
+import { containerName, detectPodmanCapabilities, listProjectContainers, type PodmanCapabilities } from "@devroost/runtime-podman";
 import { classifyProjectManifestStack, type LoadedProjectManifest } from "./project-manifest.js";
 import { findStackDefinition, type StackDefinition } from "./stacks.js";
 
@@ -20,7 +20,7 @@ export interface DoctorProbes {
 
 export interface RunProjectDoctorOptions {
   projectRoot: string;
-  config: LoomConfig;
+  config: DevroostConfig;
   manifest: LoadedProjectManifest;
   stack?: StackDefinition;
   probes?: DoctorProbes;
@@ -142,7 +142,7 @@ function imagesCheck(options: RunProjectDoctorOptions): DoctorResult {
     : result("images", "pass", "Runtime images match selected stack definitions");
 }
 
-async function podmanCheck(config: LoomConfig, probes: DoctorProbes): Promise<DoctorResult> {
+async function podmanCheck(config: DevroostConfig, probes: DoctorProbes): Promise<DoctorResult> {
   if (!config.runtime.rootless) return result("podman", "failure", "Project configuration does not enable rootless Podman");
   const capabilities = await probes.podman();
   if (!capabilities.available) return result("podman", "failure", "Podman is unavailable");
@@ -190,7 +190,7 @@ async function dependenciesCheck(projectRoot: string, stack: StackDefinition | u
     : result("dependencies", "pass", "Dependency paths are writable");
 }
 
-function parsedServicePorts(config: LoomConfig): { mappings: Map<string, PortMapping[]>; errors: string[] } {
+function parsedServicePorts(config: DevroostConfig): { mappings: Map<string, PortMapping[]>; errors: string[] } {
   const mappings = new Map<string, PortMapping[]>();
   const errors: string[] = [];
   for (const [serviceName, service] of Object.entries(config.services).sort(([a], [b]) => a.localeCompare(b))) {
@@ -204,7 +204,7 @@ function parsedServicePorts(config: LoomConfig): { mappings: Map<string, PortMap
   return { mappings, errors };
 }
 
-async function portsCheck(config: LoomConfig, probes: DoctorProbes, parsed: ReturnType<typeof parsedServicePorts>): Promise<DoctorResult> {
+async function portsCheck(config: DevroostConfig, probes: DoctorProbes, parsed: ReturnType<typeof parsedServicePorts>): Promise<DoctorResult> {
   if (parsed.errors.length) return result("ports", "failure", "Service port mappings are invalid", parsed.errors.join("; "));
   const claims = new Map<number, string[]>();
   for (const [serviceName, mappings] of parsed.mappings) {
@@ -232,7 +232,7 @@ async function portsCheck(config: LoomConfig, probes: DoctorProbes, parsed: Retu
   return unavailable.length ? result("ports", "failure", "Configured host ports are unavailable", unavailable.join(", ")) : result("ports", "pass", "Configured host ports are available");
 }
 
-function routesCheck(config: LoomConfig, parsed: ReturnType<typeof parsedServicePorts>): DoctorResult {
+function routesCheck(config: DevroostConfig, parsed: ReturnType<typeof parsedServicePorts>): DoctorResult {
   const failures: string[] = [];
   for (const route of config.routes ?? []) {
     const servicePorts = parsed.mappings.get(route.service);
@@ -242,7 +242,7 @@ function routesCheck(config: LoomConfig, parsed: ReturnType<typeof parsedService
   return failures.length ? result("routes", "failure", "Routes have invalid targets", failures.join("; ")) : result("routes", "pass", "Routes target exposed service ports");
 }
 
-async function hostsCheck(config: LoomConfig, probes: DoctorProbes): Promise<DoctorResult> {
+async function hostsCheck(config: DevroostConfig, probes: DoctorProbes): Promise<DoctorResult> {
   if (!(config.routes?.length)) return result("hosts", "pass", "No route host integration is required");
   return await probes.hostsWritable()
     ? result("hosts", "pass", "Route host integration is writable")

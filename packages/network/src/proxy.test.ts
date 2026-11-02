@@ -4,10 +4,10 @@ import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { ensureRouteProxy, stopRouteProxy, type ProxyDependencies } from "./index.js";
-import type { LoomConfig } from "@loom/config";
+import type { DevroostConfig } from "@devroost/config";
 
 async function fixture() {
-  const root = await mkdtemp(join(tmpdir(), "loom-proxy-test-"));
+  const root = await mkdtemp(join(tmpdir(), "devroost-proxy-test-"));
   const stateDir = join(root, "shared");
   const certPath = join(root, "cert");
   const keyPath = join(root, "key");
@@ -38,9 +38,9 @@ async function fixture() {
     }
   };
   const start = (name: string) => ensureRouteProxy(
-    { name } as LoomConfig,
+    { name } as DevroostConfig,
     [{ host: `${name}.test`, service: "web", targetPort: 3000, externalPort: 3000, https: true }],
-    { certPath, keyPath }, `loom-${name}`, 8080, 8443, dependencies
+    { certPath, keyPath }, `devroost-${name}`, 8080, 8443, dependencies
   );
   return { root, stateDir, commands, dependencies, start, setVersion(value: string) { exists = true; version = value; }, setStopped() { running = false; } };
 }
@@ -60,7 +60,7 @@ test("shared proxy imports only snippets and serves two projects on their own ne
       assert.equal(await readFile(join(f.stateDir, "certs", `${name}.key`), "utf8"), "key");
     }
     assert.equal(f.commands.filter((args) => args[0] === "run").length, 1);
-    assert.ok(f.commands.some((args) => args.join(" ") === "network connect loom-two loom-proxy"));
+    assert.ok(f.commands.some((args) => args.join(" ") === "network connect devroost-two devroost-proxy"));
     assert.ok(f.commands.some((args) => args[0] === "exec" && args.includes("reload")));
     await stopRouteProxy("one", f.dependencies);
     await assert.rejects(readFile(join(f.stateDir, "one.Caddyfile")), { code: "ENOENT" });
@@ -74,12 +74,12 @@ test("proxy migrates the legacy mount layout and restarts a stopped container", 
   try {
     f.setVersion("");
     await f.start("one");
-    assert.ok(f.commands.some((args) => args.join(" ") === "rm -f loom-proxy"));
+    assert.ok(f.commands.some((args) => args.join(" ") === "rm -f devroost-proxy"));
     assert.ok(f.commands.some((args) => args.includes(`${f.stateDir}:/etc/caddy/sites:ro`)));
     f.setVersion("2");
     f.setStopped();
     await f.start("one");
-    assert.ok(f.commands.some((args) => args.join(" ") === "start loom-proxy"));
+    assert.ok(f.commands.some((args) => args.join(" ") === "start devroost-proxy"));
   } finally { await rm(f.root, { recursive: true, force: true }); }
 });
 

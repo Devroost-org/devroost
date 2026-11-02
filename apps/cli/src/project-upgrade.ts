@@ -4,7 +4,7 @@ import { dirname, isAbsolute, relative, resolve } from "node:path";
 import packageJson from "../package.json" with { type: "json" };
 import { buildDatabaseServiceBlock } from "./database-service.js";
 import type { DbType } from "./init-prompt.js";
-import { classifyProjectManifestStack, type LoomProjectManifestV2 } from "./project-manifest.js";
+import { classifyProjectManifestStack, type DevroostProjectManifestV2 } from "./project-manifest.js";
 import type { StackDefinition } from "./stacks.js";
 
 export type ProjectUpgradeFileState = "unchanged" | "modified" | "missing";
@@ -21,7 +21,7 @@ export interface ProjectUpgradeFilePlan {
 export interface ProjectUpgradePlan {
   projectRoot: string;
   candidateRoot: string;
-  manifest: LoomProjectManifestV2;
+  manifest: DevroostProjectManifestV2;
   stack: StackDefinition;
   files: ProjectUpgradeFilePlan[];
 }
@@ -29,7 +29,7 @@ export interface ProjectUpgradePlan {
 export interface PlanProjectUpgradeOptions {
   projectRoot: string;
   stacksRoot: string;
-  manifest: LoomProjectManifestV2;
+  manifest: DevroostProjectManifestV2;
   stack: StackDefinition;
 }
 
@@ -98,7 +98,7 @@ function buildPhpBaseCommand(containerDocroot: string): string {
   return [
     "command: |", "      set -eu", '      target_uid="${HOST_UID:-1000}"', '      target_gid="${HOST_GID:-1000}"',
     '      current_gid="$(getent group www-data | cut -d: -f3)"', '      if [ "$current_gid" != "$target_gid" ]; then', '        if getent group "$target_gid" >/dev/null 2>&1; then', '          existing_group="$(getent group "$target_gid" | cut -d: -f1)"', '          usermod -g "$existing_group" www-data', '        else', '          groupmod -o -g "$target_gid" www-data', '        fi', '      fi',
-    '      current_uid="$(id -u www-data)"', '      if [ "$current_uid" != "$target_uid" ]; then', '        if getent passwd "$target_uid" >/dev/null 2>&1; then', '          existing_user="$(getent passwd "$target_uid" | cut -d: -f1)"', '          usermod -l loom-www-data -m -d /var/www -s /usr/sbin/nologin "$existing_user" >/dev/null 2>&1 || true', '        fi', '        usermod -o -u "$target_uid" www-data', '      fi',
+    '      current_uid="$(id -u www-data)"', '      if [ "$current_uid" != "$target_uid" ]; then', '        if getent passwd "$target_uid" >/dev/null 2>&1; then', '          existing_user="$(getent passwd "$target_uid" | cut -d: -f1)"', '          usermod -l devroost-www-data -m -d /var/www -s /usr/sbin/nologin "$existing_user" >/dev/null 2>&1 || true', '        fi', '        usermod -o -u "$target_uid" www-data', '      fi',
     "      cat > /etc/apache2/sites-available/000-default.conf << 'APACHE_CONF'", '      <VirtualHost *:80>', `          DocumentRoot ${containerDocroot}`, `          <Directory ${containerDocroot}>`, '              Options FollowSymLinks', '              AllowOverride All', '              Require all granted', '              FallbackResource /index.php', '          </Directory>', '          ErrorLog /dev/stderr', '          CustomLog /dev/stdout combined', '      </VirtualHost>', '      APACHE_CONF', '      a2enmod rewrite >/dev/null', `      if [ ! -f ${containerDocroot}/index.php ]; then`, `        printf '%s\\n' '<?php echo "Devroost PHP example is running.";' > ${containerDocroot}/index.php`, '      fi', '      exec apache2-foreground', "    volumes:"
   ].join("\n");
 }
@@ -198,7 +198,7 @@ export async function applyProjectUpgrade(
       await assertNoSymlinkPath(plan.projectRoot, file.path, "owned file path");
     }
 
-    const nextManifest: LoomProjectManifestV2 = {
+    const nextManifest: DevroostProjectManifestV2 = {
       ...plan.manifest,
       devroostVersion: packageJson.version,
       stack: {

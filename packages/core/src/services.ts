@@ -1,8 +1,8 @@
-import { containerName } from "@loom/runtime-podman";
-import type { LoomConfig } from "@loom/config";
+import { containerName } from "@devroost/runtime-podman";
+import type { DevroostConfig } from "@devroost/config";
 import { closestServiceName } from "./utils.js";
 
-type ConfiguredService = LoomConfig["services"][string];
+type ConfiguredService = DevroostConfig["services"][string];
 
 interface ContainerLike {
   name: string;
@@ -10,14 +10,14 @@ interface ContainerLike {
 }
 
 export function getConfiguredService(
-  config: LoomConfig,
+  config: DevroostConfig,
   serviceName: string
 ): ConfiguredService | undefined {
   return config.services[serviceName];
 }
 
 export async function buildServiceNotFoundError(
-  config: LoomConfig,
+  config: DevroostConfig,
   serviceName: string,
   listProjectContainersByProject: (projectName: string) => Promise<ContainerLike[]>
 ): Promise<Error> {
@@ -39,7 +39,7 @@ export async function buildServiceNotFoundError(
 }
 
 export async function requireConfiguredService(
-  config: LoomConfig,
+  config: DevroostConfig,
   serviceName: string,
   listProjectContainersByProject: (projectName: string) => Promise<ContainerLike[]>
 ): Promise<ConfiguredService> {

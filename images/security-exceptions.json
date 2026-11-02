@@ -4,7 +4,7 @@
     "target": "usr/local/bin/gosu",
     "packageName": "stdlib",
     "rationale": "Reviewed 2026-11-01 against the pinned vendor images: gosu only reads local user/group files, changes process credentials, and execs the requested command; it does not establish TLS connections or use certificate validation/session resumption. CVE-2025-68121 crypto/tls paths are unreachable. Current pinned vendor images still bundle Go v1.24.6 gosu; retain this binary-and-package-scoped exception pending a vendor rebuild.",
-    "owner": "@Loom-development",
+    "owner": "@Devroost-development",
     "expires": "2026-11-30",
     "reviewed": "2026-11-01",
     "references": [

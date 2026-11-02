@@ -21,8 +21,8 @@ export function validateCatalog(value) {
     errors.push("schemaVersion must be 1");
   }
 
-  if (value.registry !== "ghcr.io/loom-development") {
-    errors.push('registry must be "ghcr.io/loom-development"');
+  if (value.registry !== "ghcr.io/devroost-org") {
+    errors.push('registry must be "ghcr.io/devroost-org"');
   }
 
   if (!Array.isArray(value.images)) {

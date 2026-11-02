@@ -12,7 +12,7 @@ const repositoryRoot = path.resolve(
 
 test("runs a custom image contract through its public shell boundary", async () => {
   const calls = [];
-  await testImage("loom-php", "localhost/loom-php:dev", {
+  await testImage("devroost-php", "localhost/devroost-php:dev", {
     catalogPath: path.join(repositoryRoot, "images/catalog.json"),
     checkFile: async () => {},
     execute: async (command, args, options) => {
@@ -25,7 +25,7 @@ test("runs a custom image contract through its public shell boundary", async () 
       command: "bash",
       args: [
         path.join(repositoryRoot, "images/php/contract.sh"),
-        "localhost/loom-php:dev"
+        "localhost/devroost-php:dev"
       ],
       options: { cwd: repositoryRoot }
     }
@@ -42,7 +42,7 @@ test("rejects mirrors and missing custom contracts", async () => {
     /is a mirror and has no custom contract/
   );
   await assert.rejects(
-    testImage("loom-php", "localhost/loom-php:dev", {
+    testImage("devroost-php", "localhost/devroost-php:dev", {
       catalogPath,
       checkFile: async () => {
         throw new Error("missing");

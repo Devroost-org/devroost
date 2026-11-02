@@ -1,9 +1,9 @@
 {
-  "name": "@loom/network",
+  "name": "@devroost/network",
   "version": "0.1.1",
   "description": "Route and proxy networking helpers for Devroost projects.",
   "keywords": [
-    "loom",
+    "devroost",
     "network",
     "proxy"
   ],
@@ -39,8 +39,8 @@
     "lint": "echo 'No lint rules configured'"
   },
   "dependencies": {
-    "@loom/config": "workspace:*",
-    "@loom/https": "workspace:*",
-    "@loom/runtime-podman": "workspace:*"
+    "@devroost/config": "workspace:*",
+    "@devroost/https": "workspace:*",
+    "@devroost/runtime-podman": "workspace:*"
   }
 }

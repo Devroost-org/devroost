@@ -1,9 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import type { LoomConfig } from "@loom/config";
+import type { DevroostConfig } from "@devroost/config";
 import { getConfiguredTask, requireConfiguredTask } from "./tasks.js";
 
-const config: LoomConfig = {
+const config: DevroostConfig = {
   version: 1,
   name: "demo",
   runtime: { engine: "podman", rootless: true },

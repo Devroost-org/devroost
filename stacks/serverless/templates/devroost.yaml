@@ -1,5 +1,5 @@
 version: 1
-name: loom-serverless
+name: devroost-serverless
 runtime:
   engine: podman
   rootless: true
@@ -8,7 +8,7 @@ runtime:
 services:
   api:
     type: node
-    image: ${NODE_IMAGE:-ghcr.io/loom-development/loom-node-22@sha256:25823da1bec192be0882fa20a0838f576e2b6cc7e7aefbb1183ebc3cf1c924e6}
+    image: ${NODE_IMAGE:-ghcr.io/devroost-org/devroost-node-22@sha256:25823da1bec192be0882fa20a0838f576e2b6cc7e7aefbb1183ebc3cf1c924e6}
     userns: keep-id
     workdir: /workspace
     command: npm run dev:api
@@ -24,7 +24,7 @@ services:
       startPeriodSeconds: 6
   web:
     type: node
-    image: ${NODE_IMAGE:-ghcr.io/loom-development/loom-node-22@sha256:25823da1bec192be0882fa20a0838f576e2b6cc7e7aefbb1183ebc3cf1c924e6}
+    image: ${NODE_IMAGE:-ghcr.io/devroost-org/devroost-node-22@sha256:25823da1bec192be0882fa20a0838f576e2b6cc7e7aefbb1183ebc3cf1c924e6}
     userns: keep-id
     workdir: /workspace
     command: npm run dev:web

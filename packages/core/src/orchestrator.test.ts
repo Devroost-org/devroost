@@ -1,8 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import type { LoomConfig } from "@loom/config";
+import type { DevroostConfig } from "@devroost/config";
 import { defaultOrchestratorDependencies, type OrchestratorDependencies } from "./dependencies.js";
-import { LoomOrchestrator } from "./index.js";
+import { DevroostOrchestrator } from "./index.js";
 import type { OrchestratorOutput } from "./output.js";
 
 function createTestDependencies(overrides: Partial<OrchestratorDependencies> = {}): OrchestratorDependencies {
@@ -27,7 +27,7 @@ function createTestDependencies(overrides: Partial<OrchestratorDependencies> = {
     ensureLocalCertificates: async () => ({ certPath: "/tmp/cert.pem", keyPath: "/tmp/key.pem" }),
     ensureMachineRunning: async () => undefined,
     ensureRouteHosts: async () => ({ managedHosts: [], skippedHosts: [] }),
-    ensureRouteProxy: async () => ({ containerName: "loom-proxy", httpPort: 8080, httpsPort: 8443 }),
+    ensureRouteProxy: async () => ({ containerName: "devroost-proxy", httpPort: 8080, httpsPort: 8443 }),
     ensureServiceNetwork: async () => "demo-net",
     ensureServiceStarted: async () => undefined,
     execServiceCommand: async () => undefined,
@@ -65,7 +65,7 @@ function createOutputCapture(): { output: OrchestratorOutput; lines: string[]; e
 test("start uses injected dependencies instead of direct runtime bindings", async () => {
   const events: string[] = [];
   const { output, lines } = createOutputCapture();
-  const config: LoomConfig = {
+  const config: DevroostConfig = {
     version: 1,
     name: "demo",
     runtime: { engine: "podman", rootless: true },
@@ -74,7 +74,7 @@ test("start uses injected dependencies instead of direct runtime bindings", asyn
     }
   };
 
-  const orchestrator = new LoomOrchestrator(
+  const orchestrator = new DevroostOrchestrator(
     config,
     process.cwd(),
     createTestDependencies({
@@ -133,7 +133,7 @@ test("start uses injected dependencies instead of direct runtime bindings", asyn
 });
 
 test("status uses injected dependencies to assemble service state", async () => {
-  const config: LoomConfig = {
+  const config: DevroostConfig = {
     version: 1,
     name: "demo",
     runtime: { engine: "podman", rootless: true },
@@ -142,7 +142,7 @@ test("status uses injected dependencies to assemble service state", async () => 
     }
   };
 
-  const orchestrator = new LoomOrchestrator(
+  const orchestrator = new DevroostOrchestrator(
     config,
     process.cwd(),
     createTestDependencies({
@@ -194,7 +194,7 @@ test("status uses injected dependencies to assemble service state", async () => 
 
 test("start writes formatted route and https summaries through the output adapter", async () => {
   const { output, lines } = createOutputCapture();
-  const config: LoomConfig = {
+  const config: DevroostConfig = {
     version: 1,
     name: "demo",
     runtime: { engine: "podman", rootless: true },
@@ -203,7 +203,7 @@ test("start writes formatted route and https summaries through the output adapte
     }
   };
 
-  const orchestrator = new LoomOrchestrator(
+  const orchestrator = new DevroostOrchestrator(
     config,
     process.cwd(),
     createTestDependencies({
@@ -239,7 +239,7 @@ test("start writes formatted route and https summaries through the output adapte
 
 test("start reports managed Windows hosts entries when route host setup succeeds", async () => {
   const { output, lines } = createOutputCapture();
-  const config: LoomConfig = {
+  const config: DevroostConfig = {
     version: 1,
     name: "demo",
     runtime: { engine: "podman", rootless: true },
@@ -248,7 +248,7 @@ test("start reports managed Windows hosts entries when route host setup succeeds
     }
   };
 
-  const orchestrator = new LoomOrchestrator(
+  const orchestrator = new DevroostOrchestrator(
     config,
     process.cwd(),
     createTestDependencies({
@@ -274,7 +274,7 @@ test("start reports managed Windows hosts entries when route host setup succeeds
 test("stop cleans route hosts through injected dependencies", async () => {
   const events: string[] = [];
   const { output, lines } = createOutputCapture();
-  const config: LoomConfig = {
+  const config: DevroostConfig = {
     version: 1,
     name: "demo",
     runtime: { engine: "podman", rootless: true },
@@ -283,7 +283,7 @@ test("stop cleans route hosts through injected dependencies", async () => {
     }
   };
 
-  const orchestrator = new LoomOrchestrator(
+  const orchestrator = new DevroostOrchestrator(
     config,
     process.cwd(),
     createTestDependencies({
@@ -314,7 +314,7 @@ test("stop cleans route hosts through injected dependencies", async () => {
 test("start with recreate removes existing project containers before starting services", async () => {
   const events: string[] = [];
   const { output, lines } = createOutputCapture();
-  const config: LoomConfig = {
+  const config: DevroostConfig = {
     version: 1,
     name: "demo",
     runtime: { engine: "podman", rootless: true },
@@ -323,7 +323,7 @@ test("start with recreate removes existing project containers before starting se
     }
   };
 
-  const orchestrator = new LoomOrchestrator(
+  const orchestrator = new DevroostOrchestrator(
     config,
     process.cwd(),
     createTestDependencies({
@@ -367,7 +367,7 @@ test("start with recreate removes existing project containers before starting se
 
 test("backup uses extracted backup helpers to resolve the output path", async () => {
   const savedPaths: string[] = [];
-  const config: LoomConfig = {
+  const config: DevroostConfig = {
     version: 1,
     name: "demo",
     runtime: { engine: "podman", rootless: true },
@@ -376,7 +376,7 @@ test("backup uses extracted backup helpers to resolve the output path", async ()
     }
   };
 
-  const orchestrator = new LoomOrchestrator(
+  const orchestrator = new DevroostOrchestrator(
     config,
     "/workspace",
     createTestDependencies({
@@ -395,7 +395,7 @@ test("backup uses extracted backup helpers to resolve the output path", async ()
 
 test("restore uses extracted restore helpers to resolve the input path", async () => {
   const restoredPaths: string[] = [];
-  const config: LoomConfig = {
+  const config: DevroostConfig = {
     version: 1,
     name: "demo",
     runtime: { engine: "podman", rootless: true },
@@ -404,7 +404,7 @@ test("restore uses extracted restore helpers to resolve the input path", async (
     }
   };
 
-  const orchestrator = new LoomOrchestrator(
+  const orchestrator = new DevroostOrchestrator(
     config,
     "/workspace",
     createTestDependencies({
@@ -422,7 +422,7 @@ test("restore uses extracted restore helpers to resolve the input path", async (
 
 test("restore restarts redis through the orchestrator dependencies", async () => {
   const events: string[] = [];
-  const config: LoomConfig = {
+  const config: DevroostConfig = {
     version: 1,
     name: "demo",
     runtime: { engine: "podman", rootless: true },
@@ -431,7 +431,7 @@ test("restore restarts redis through the orchestrator dependencies", async () =>
     }
   };
 
-  const orchestrator = new LoomOrchestrator(
+  const orchestrator = new DevroostOrchestrator(
     config,
     "/workspace",
     createTestDependencies({
@@ -463,7 +463,7 @@ test("restore restarts redis through the orchestrator dependencies", async () =>
 test("runTask reports command execution through the output adapter", async () => {
   const { output, lines } = createOutputCapture();
   const executed: string[][] = [];
-  const config: LoomConfig = {
+  const config: DevroostConfig = {
     version: 1,
     name: "demo",
     runtime: { engine: "podman", rootless: true },
@@ -478,7 +478,7 @@ test("runTask reports command execution through the output adapter", async () =>
     }
   };
 
-  const orchestrator = new LoomOrchestrator(
+  const orchestrator = new DevroostOrchestrator(
     config,
     process.cwd(),
     createTestDependencies({
@@ -497,7 +497,7 @@ test("runTask reports command execution through the output adapter", async () =>
 
 test("runTask and exec pass execUser through to runtime exec", async () => {
   const calls: Array<{ service: string; command: string[]; execUser?: string; workdir?: string }> = [];
-  const config: LoomConfig = {
+  const config: DevroostConfig = {
     version: 1,
     name: "demo",
     runtime: { engine: "podman", rootless: true },
@@ -512,7 +512,7 @@ test("runTask and exec pass execUser through to runtime exec", async () => {
     }
   };
 
-  const orchestrator = new LoomOrchestrator(
+  const orchestrator = new DevroostOrchestrator(
     config,
     process.cwd(),
     createTestDependencies({
@@ -532,7 +532,7 @@ test("runTask and exec pass execUser through to runtime exec", async () => {
 });
 
 test("runTask rejects when the requested task is not defined", async () => {
-  const config: LoomConfig = {
+  const config: DevroostConfig = {
     version: 1,
     name: "demo",
     runtime: { engine: "podman", rootless: true },
@@ -541,14 +541,14 @@ test("runTask rejects when the requested task is not defined", async () => {
     }
   };
 
-  const orchestrator = new LoomOrchestrator(config, process.cwd(), createTestDependencies());
+  const orchestrator = new DevroostOrchestrator(config, process.cwd(), createTestDependencies());
 
   await assert.rejects(() => orchestrator.runTask("seed"), /Task 'seed' is not defined in devroost.yaml/i);
 });
 
 test("stop routes progress and failures through the output adapter", async () => {
   const { output, lines, errors } = createOutputCapture();
-  const config: LoomConfig = {
+  const config: DevroostConfig = {
     version: 1,
     name: "demo",
     runtime: { engine: "podman", rootless: true },
@@ -558,7 +558,7 @@ test("stop routes progress and failures through the output adapter", async () =>
     }
   };
 
-  const orchestrator = new LoomOrchestrator(
+  const orchestrator = new DevroostOrchestrator(
     config,
     process.cwd(),
     createTestDependencies({

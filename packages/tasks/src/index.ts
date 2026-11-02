@@ -1,5 +1,5 @@
-import { LoomOrchestrator } from "@loom/core";
+import { DevroostOrchestrator } from "@devroost/core";
 
-export async function runNamedTask(orchestrator: LoomOrchestrator, taskName: string): Promise<void> {
+export async function runNamedTask(orchestrator: DevroostOrchestrator, taskName: string): Promise<void> {
   await orchestrator.runTask(taskName);
 }

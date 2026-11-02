@@ -1,9 +1,9 @@
 {
-  "name": "@loom/core",
+  "name": "@devroost/core",
   "version": "0.1.1",
   "description": "Core orchestration layer for Devroost lifecycle and service management.",
   "keywords": [
-    "loom",
+    "devroost",
     "orchestration",
     "podman"
   ],
@@ -39,9 +39,9 @@
     "lint": "echo 'No lint rules configured'"
   },
   "dependencies": {
-    "@loom/config": "workspace:*",
-    "@loom/https": "workspace:*",
-    "@loom/network": "workspace:*",
-    "@loom/runtime-podman": "workspace:*"
+    "@devroost/config": "workspace:*",
+    "@devroost/https": "workspace:*",
+    "@devroost/network": "workspace:*",
+    "@devroost/runtime-podman": "workspace:*"
   }
 }

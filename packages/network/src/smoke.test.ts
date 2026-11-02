@@ -3,15 +3,15 @@ import assert from "node:assert/strict";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { LoomConfig } from "@loom/config";
+import type { DevroostConfig } from "@devroost/config";
 import { applyManagedHostsEntries, projectNetworkName, resolveRouteBindings, stopRouteProxy } from "./index.js";
 
 test("network exports are available", () => {
-  assert.equal(projectNetworkName("loom-app"), "loom-loom-app");
+  assert.equal(projectNetworkName("devroost-app"), "devroost-devroost-app");
 });
 
 test("resolveRouteBindings maps published external port and defaults https=true", () => {
-  const config: LoomConfig = {
+  const config: DevroostConfig = {
     version: 1,
     name: "demo",
     runtime: { engine: "podman", rootless: true },
@@ -32,7 +32,7 @@ test("resolveRouteBindings maps published external port and defaults https=true"
 });
 
 test("resolveRouteBindings throws for unknown service", () => {
-  const config: LoomConfig = {
+  const config: DevroostConfig = {
     version: 1,
     name: "demo",
     runtime: { engine: "podman", rootless: true },
@@ -44,7 +44,7 @@ test("resolveRouteBindings throws for unknown service", () => {
 });
 
 test("resolveRouteBindings rejects unsafe route host values", () => {
-  const config: LoomConfig = {
+  const config: DevroostConfig = {
     version: 1,
     name: "demo",
     runtime: { engine: "podman", rootless: true },
@@ -62,7 +62,7 @@ test("resolveRouteBindings rejects unsafe route host values", () => {
 });
 
 test("resolveRouteBindings supports host/ip/protocol port mappings", () => {
-  const config: LoomConfig = {
+  const config: DevroostConfig = {
     version: 1,
     name: "demo",
     runtime: { engine: "podman", rootless: true },
@@ -84,12 +84,12 @@ test("applyManagedHostsEntries appends and replaces project-scoped hosts blocks"
   const initial = "127.0.0.1 localhost\n";
 
   const withManagedHosts = applyManagedHostsEntries(initial, "demo", ["demo.test", "api.demo.test"]);
-  assert.match(withManagedHosts, /# >>> loom:demo/);
+  assert.match(withManagedHosts, /# >>> devroost:demo/);
   assert.match(withManagedHosts, /127\.0\.0\.1 demo\.test/);
   assert.match(withManagedHosts, /127\.0\.0\.1 api\.demo\.test/);
 
   const replacedHosts = applyManagedHostsEntries(withManagedHosts, "demo", ["demo.test"]);
-  assert.equal((replacedHosts.match(/# >>> loom:demo/g) ?? []).length, 1);
+  assert.equal((replacedHosts.match(/# >>> devroost:demo/g) ?? []).length, 1);
   assert.match(replacedHosts, /127\.0\.0\.1 demo\.test/);
   assert.doesNotMatch(replacedHosts, /api\.demo\.test/);
 });
@@ -98,20 +98,20 @@ test("applyManagedHostsEntries removes project block when given no hosts", () =>
   const content = [
     "127.0.0.1 localhost",
     "",
-    "# >>> loom:demo",
+    "# >>> devroost:demo",
     "127.0.0.1 demo.test",
-    "# <<< loom:demo",
+    "# <<< devroost:demo",
     ""
   ].join("\n");
 
   const cleaned = applyManagedHostsEntries(content, "demo", []);
-  assert.doesNotMatch(cleaned, /loom:demo/);
+  assert.doesNotMatch(cleaned, /devroost:demo/);
   assert.equal(cleaned, "127.0.0.1 localhost\n");
 });
 
 test("stopRouteProxy succeeds when startup failed before proxy config was created", async () => {
   const previousCwd = process.cwd();
-  const projectDir = await mkdtemp(join(tmpdir(), "loom-network-stop-"));
+  const projectDir = await mkdtemp(join(tmpdir(), "devroost-network-stop-"));
 
   try {
     process.chdir(projectDir);

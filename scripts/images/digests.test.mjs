@@ -7,17 +7,17 @@ import { fileURLToPath } from "node:url";
 import { createDigestDocument, validateDigestDocument } from "./digests.mjs";
 
 const hash = (character) => `sha256:${character.repeat(64)}`;
-const identity = "https://github.com/Loom-development/Loom/.github/workflows/images-release.yml@refs/heads/main";
+const identity = "https://github.com/Devroost-org/devroost/.github/workflows/images-release.yml@refs/heads/main";
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const catalog = {
   schemaVersion: 1,
-  registry: "ghcr.io/loom-development",
+  registry: "ghcr.io/devroost-org",
   images: [
     {
-      name: "loom-node-24",
+      name: "devroost-node-24",
       kind: "custom",
       source: `docker.io/library/node:24@${hash("a")}`,
-      version: "24.20.0-loom.3",
+      version: "24.20.0-devroost.3",
       platforms: ["linux/amd64", "linux/arm64"],
       context: "images/node"
     },
@@ -37,7 +37,7 @@ const releases = [
     platforms: ["linux/amd64", "linux/arm64"]
   },
   {
-    name: "loom-node-24",
+    name: "devroost-node-24",
     digest: hash("c"),
     platforms: ["linux/amd64", "linux/arm64"]
   }
@@ -51,16 +51,16 @@ test("creates a stable complete GHCR digest document with mirror provenance", ()
     signatureIdentity: identity,
     images: [
       {
-        name: "loom-node-24",
-        version: "24.20.0-loom.3",
-        image: "ghcr.io/loom-development/loom-node-24",
+        name: "devroost-node-24",
+        version: "24.20.0-devroost.3",
+        image: "ghcr.io/devroost-org/devroost-node-24",
         digest: hash("c"),
         platforms: ["linux/amd64", "linux/arm64"]
       },
       {
         name: "postgres-16",
         version: "16.9-alpine",
-        image: "ghcr.io/loom-development/postgres-16",
+        image: "ghcr.io/devroost-org/postgres-16",
         digest: hash("d"),
         platforms: ["linux/amd64", "linux/arm64"],
         upstreamDigest: hash("b")
@@ -86,7 +86,7 @@ test("rejects incomplete, malformed, wrong-namespace, and wrong-platform documen
 test("requires mirror upstream provenance and one release per catalog image", () => {
   assert.throws(
     () => createDigestDocument(catalog, releases.slice(0, 1), identity),
-    /missing release digest for loom-node-24/
+    /missing release digest for devroost-node-24/
   );
   const document = createDigestDocument(catalog, releases, identity);
   delete document.images[1].upstreamDigest;

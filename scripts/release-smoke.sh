@@ -42,12 +42,12 @@ resolve_devroost_bin() {
     return
   fi
 
-  if [ "$DEVROOST_BIN" != "loom" ]; then
+  if [ "$DEVROOST_BIN" != "devroost" ]; then
     echo "Missing required command: $DEVROOST_BIN" >&2
     exit 1
   fi
 
-  echo "Missing required command: loom" >&2
+  echo "Missing required command: devroost" >&2
   echo "Build the local CLI first with: pnpm --dir apps/cli build" >&2
   exit 1
 }
@@ -67,7 +67,7 @@ if [ -n "${DEVROOST_RELEASE_SMOKE_DIR:-}" ]; then
   mkdir -p "$work_root"
   KEEP_WORK_ROOT=1
 else
-  work_root="$(mktemp -d "${TMPDIR:-/tmp}/loom-release-smoke-XXXXXX")"
+  work_root="$(mktemp -d "${TMPDIR:-/tmp}/devroost-release-smoke-XXXXXX")"
 fi
 
 cleanup() {
@@ -100,7 +100,7 @@ stop_project() {
       run_devroost stop >/dev/null 2>&1 || true
     )
     project_name="$(basename "$project_dir" | tr '-' '_')"
-    podman rm -f "loom-${project_name}-proxy" 2>/dev/null || true
+    podman rm -f "devroost-${project_name}-proxy" 2>/dev/null || true
     sleep 2
   fi
 }

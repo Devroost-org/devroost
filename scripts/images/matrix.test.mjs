@@ -4,7 +4,7 @@ import test from "node:test";
 import { createBuildMatrix, createMirrorMatrix } from "./matrix.mjs";
 
 const catalog = {
-  registry: "ghcr.io/loom-development",
+  registry: "ghcr.io/devroost-org",
   images: [
     {
       name: "z-mirror",
@@ -17,7 +17,7 @@ const catalog = {
       name: "b-runtime",
       kind: "custom",
       source: `docker.io/example/b@sha256:${"b".repeat(64)}`,
-      version: "2.0-loom.1",
+      version: "2.0-devroost.1",
       platforms: ["linux/arm64", "linux/amd64"],
       context: "images/b"
     },
@@ -25,7 +25,7 @@ const catalog = {
       name: "a-runtime",
       kind: "custom",
       source: `docker.io/example/a@sha256:${"c".repeat(64)}`,
-      version: "1.0-loom.1",
+      version: "1.0-devroost.1",
       platforms: ["linux/amd64", "linux/arm64"],
       context: "images/a"
     }
@@ -38,25 +38,25 @@ test("creates stable per-platform matrices separated by image kind", () => {
       name: "a-runtime",
       platform: "linux/amd64",
       context: "images/a",
-      version: "1.0-loom.1"
+      version: "1.0-devroost.1"
     },
     {
       name: "a-runtime",
       platform: "linux/arm64",
       context: "images/a",
-      version: "1.0-loom.1"
+      version: "1.0-devroost.1"
     },
     {
       name: "b-runtime",
       platform: "linux/amd64",
       context: "images/b",
-      version: "2.0-loom.1"
+      version: "2.0-devroost.1"
     },
     {
       name: "b-runtime",
       platform: "linux/arm64",
       context: "images/b",
-      version: "2.0-loom.1"
+      version: "2.0-devroost.1"
     }
   ]);
 

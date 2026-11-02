@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import type { LoomConfig } from "@loom/config";
+import type { DevroostConfig } from "@devroost/config";
 import { defaultOrchestratorDependencies } from "./dependencies.js";
 import {
   requireRestoreSupport,
@@ -27,7 +27,7 @@ test("requireRestoreSupport rejects unsupported service types", () => {
 
 test("restoreConfiguredService validates the service and resolves the input path", async () => {
   const restoredPaths: string[] = [];
-  const config: LoomConfig = {
+  const config: DevroostConfig = {
     version: 1,
     name: "demo",
     runtime: { engine: "podman", rootless: true },
@@ -54,7 +54,7 @@ test("restoreConfiguredService validates the service and resolves the input path
 
 test("restoreConfiguredService restarts redis after copying the backup file", async () => {
   const events: string[] = [];
-  const config: LoomConfig = {
+  const config: DevroostConfig = {
     version: 1,
     name: "demo",
     runtime: { engine: "podman", rootless: true },

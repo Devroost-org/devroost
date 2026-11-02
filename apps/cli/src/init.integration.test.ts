@@ -639,7 +639,7 @@ test("init --db injects the exact standalone database definition pin", async () 
   }
 });
 
-test("init in non-empty directory without --blank-template only writes loom config files", async () => {
+test("init in non-empty directory without --blank-template only writes devroost config files", async () => {
   const tempRoot = await mkdtemp(join(tmpdir(), "devroost-cli-init-"));
   const targetDir = join(tempRoot, "non-empty");
   await mkdir(targetDir, { recursive: true });
@@ -798,7 +798,7 @@ test("init without template suggests a detected template from the target root", 
   }
 });
 
-test("init php-drupal bootstraps a Drupal project with Podman Composer before copying loom config", async () => {
+test("init php-drupal bootstraps a Drupal project with Podman Composer before copying devroost config", async () => {
   const tempRoot = await mkdtemp(join(tmpdir(), "devroost-cli-init-"));
   const binDir = join(tempRoot, "bin");
   const targetDir = join(tempRoot, "drupal-app");
@@ -910,7 +910,7 @@ test("init php-drupal adopts an existing Drupal project and only adds Devroost f
   assert.ok(generatedEnv.includes(`PHP_IMAGE=${phpFpmApacheImage}`));
 });
 
-test("init php-wordpress bootstraps a local WordPress project before copying loom config", async () => {
+test("init php-wordpress bootstraps a local WordPress project before copying devroost config", async () => {
   const tempRoot = await mkdtemp(join(tmpdir(), "devroost-cli-init-"));
   const binDir = join(tempRoot, "bin");
   const targetDir = join(tempRoot, "wordpress-app");
@@ -1049,7 +1049,7 @@ test("init php-wordpress adopts an existing WordPress project and adds wp-config
   assertEnvironmentImage(generatedEnv, "WORDPRESS_IMAGE", runtimeImage("php-wordpress", "WORDPRESS_IMAGE"));
 });
 
-test("init rails7 bootstraps a local Rails project before copying loom config", async () => {
+test("init rails7 bootstraps a local Rails project before copying devroost config", async () => {
   const tempRoot = await mkdtemp(join(tmpdir(), "devroost-cli-init-"));
   const binDir = join(tempRoot, "bin");
   const targetDir = join(tempRoot, "rails7-app");

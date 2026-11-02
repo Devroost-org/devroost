@@ -8,11 +8,11 @@ runtime:
 services:
   api:
     type: node
-    image: ${NODE_IMAGE:-ghcr.io/loom-development/loom-node-24@sha256:5bdb11d871f1cea2d5c20305e35d63ab199d23d9b8be69135fc615425f38420c}
+    image: ${NODE_IMAGE:-ghcr.io/devroost-org/devroost-node-24@sha256:5bdb11d871f1cea2d5c20305e35d63ab199d23d9b8be69135fc615425f38420c}
     user: ${HOST_UID:-1000}:${HOST_GID:-1000}
     userns: keep-id
     workdir: /workspace
-    command: sh -c 'mkdir -p /tmp/loom-home && HOME=/tmp/loom-home npm install && HOME=/tmp/loom-home exec npm start'
+    command: sh -c 'mkdir -p /tmp/devroost-home && HOME=/tmp/devroost-home npm install && HOME=/tmp/devroost-home exec npm start'
     ports:
       - "3002:3002"
     volumes:
@@ -25,13 +25,13 @@ services:
       startPeriodSeconds: 5
   web:
     type: node
-    image: ${NODE_IMAGE:-ghcr.io/loom-development/loom-node-24@sha256:5bdb11d871f1cea2d5c20305e35d63ab199d23d9b8be69135fc615425f38420c}
+    image: ${NODE_IMAGE:-ghcr.io/devroost-org/devroost-node-24@sha256:5bdb11d871f1cea2d5c20305e35d63ab199d23d9b8be69135fc615425f38420c}
     user: ${HOST_UID:-1000}:${HOST_GID:-1000}
     userns: keep-id
     dependsOn:
       - api
     workdir: /workspace
-    command: sh -c 'mkdir -p /tmp/loom-home && HOME=/tmp/loom-home npm install && HOME=/tmp/loom-home exec npm start'
+    command: sh -c 'mkdir -p /tmp/devroost-home && HOME=/tmp/devroost-home npm install && HOME=/tmp/devroost-home exec npm start'
     ports:
       - "5173:5173"
     volumes:

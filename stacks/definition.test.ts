@@ -78,7 +78,7 @@ test("runtime defaults use immutable images published by Devroost", () => {
     for (const image of definition.runtimeImages) {
       assert.match(
         image.reference,
-        /^ghcr\.io\/loom-development\/[a-z0-9.-]+@sha256:[a-f0-9]{64}$/,
+        /^ghcr\.io\/devroost-org\/[a-z0-9.-]+@sha256:[a-f0-9]{64}$/,
         `${definition.id} ${image.env}`
       );
     }
@@ -254,26 +254,26 @@ test("database stacks publish exact versioned package definitions and lifecycle 
   const expected = {
     "db-mysql": {
       runtimeImages: [{ env: "MYSQL_IMAGE", reference: runtimeImagePins.mysql84 }],
-      start: [], readiness: { kind: "command", value: "mysqladmin ping -h 127.0.0.1 -uroot -ploomroot", timeoutSeconds: 100 },
-      verification: [{ service: "db", command: ["mysql", "-h", "127.0.0.1", "-uloom", "-ploom", "loom", "-e", "SELECT 1"] }],
+      start: [], readiness: { kind: "command", value: "mysqladmin ping -h 127.0.0.1 -uroot -pdevroostroot", timeoutSeconds: 100 },
+      verification: [{ service: "db", command: ["mysql", "-h", "127.0.0.1", "-udevroost", "-pdevroost", "devroost", "-e", "SELECT 1"] }],
       architectures: ["arm64", "x64"]
     },
     "db-sqlserver": {
       runtimeImages: [{ env: "MSSQL_IMAGE", reference: runtimeImagePins.mssql2022 }],
       start: [], readiness: { kind: "port", value: "127.0.0.1:1433", timeoutSeconds: 300 },
-      verification: [{ service: "db", command: ["/opt/mssql-tools18/bin/sqlcmd", "-S", "127.0.0.1", "-U", "sa", "-P", "LoomDev!Passw0rd", "-C", "-Q", "SELECT 1"] }],
+      verification: [{ service: "db", command: ["/opt/mssql-tools18/bin/sqlcmd", "-S", "127.0.0.1", "-U", "sa", "-P", "DevroostDev!Passw0rd", "-C", "-Q", "SELECT 1"] }],
       architectures: ["x64"]
     },
     "db-postgres": {
       runtimeImages: [{ env: "POSTGRES_IMAGE", reference: runtimeImagePins.postgres16Alpine }],
-      start: [], readiness: { kind: "command", value: "pg_isready -U loom", timeoutSeconds: 95 },
-      verification: [{ service: "db", command: ["psql", "-U", "loom", "-d", "loom", "-c", "SELECT 1"] }],
+      start: [], readiness: { kind: "command", value: "pg_isready -U devroost", timeoutSeconds: 95 },
+      verification: [{ service: "db", command: ["psql", "-U", "devroost", "-d", "devroost", "-c", "SELECT 1"] }],
       architectures: ["arm", "arm64", "x64"]
     },
     "db-mongodb": {
       runtimeImages: [{ env: "MONGO_IMAGE", reference: runtimeImagePins.mongo70 }],
       start: [], readiness: { kind: "port", value: "127.0.0.1:27017", timeoutSeconds: 120 },
-      verification: [{ service: "db", command: ["mongosh", "--quiet", "--host", "127.0.0.1", "--username", "loom", "--password", "loom", "--authenticationDatabase", "admin", "--eval", "quit(db.adminCommand({ ping: 1 }).ok ? 0 : 1)"] }],
+      verification: [{ service: "db", command: ["mongosh", "--quiet", "--host", "127.0.0.1", "--username", "devroost", "--password", "devroost", "--authenticationDatabase", "admin", "--eval", "quit(db.adminCommand({ ping: 1 }).ok ? 0 : 1)"] }],
       architectures: ["arm64", "x64"]
     },
     "db-redis": {
@@ -290,15 +290,15 @@ test("database stacks publish exact versioned package definitions and lifecycle 
     },
     "db-sqlite": {
       runtimeImages: [{ env: "SQLITE_IMAGE", reference: runtimeImagePins.sqlite353 }],
-      start: ["sh -c \"sqlite3 /data/loom.db 'select 1;' && tail -f /dev/null\""],
-      readiness: { kind: "command", value: "sqlite3 /data/loom.db 'select 1;'", timeoutSeconds: 60 },
-      verification: [{ service: "db", command: ["sqlite3", "/data/loom.db", "select 1;"] }],
+      start: ["sh -c \"sqlite3 /data/devroost.db 'select 1;' && tail -f /dev/null\""],
+      readiness: { kind: "command", value: "sqlite3 /data/devroost.db 'select 1;'", timeoutSeconds: 60 },
+      verification: [{ service: "db", command: ["sqlite3", "/data/devroost.db", "select 1;"] }],
       architectures: ["arm", "arm64", "x64"]
     },
     "db-mariadb": {
       runtimeImages: [{ env: "MARIADB_IMAGE", reference: runtimeImagePins.mariadb118 }],
-      start: [], readiness: { kind: "command", value: "mariadb-admin ping -h 127.0.0.1 -uroot -ploomroot", timeoutSeconds: 100 },
-      verification: [{ service: "db", command: ["mariadb", "-h", "127.0.0.1", "-uloom", "-ploom", "loom", "-e", "SELECT 1"] }],
+      start: [], readiness: { kind: "command", value: "mariadb-admin ping -h 127.0.0.1 -uroot -pdevroostroot", timeoutSeconds: 100 },
+      verification: [{ service: "db", command: ["mariadb", "-h", "127.0.0.1", "-udevroost", "-pdevroost", "devroost", "-e", "SELECT 1"] }],
       architectures: ["arm64", "x64"]
     },
     "db-all": {
@@ -312,17 +312,17 @@ test("database stacks publish exact versioned package definitions and lifecycle 
         { env: "REDIS_IMAGE", reference: runtimeImagePins.redis74Alpine },
         { env: "SQLITE_IMAGE", reference: runtimeImagePins.sqlite353 }
       ],
-      start: ["redis-server --appendonly yes", "sh -c \"sqlite3 /data/loom.db 'select 1;' && tail -f /dev/null\""],
+      start: ["redis-server --appendonly yes", "sh -c \"sqlite3 /data/devroost.db 'select 1;' && tail -f /dev/null\""],
       readiness: { kind: "http", value: "http://127.0.0.1:9200/_cluster/health", timeoutSeconds: 300 },
       verification: [
-        { service: "mysql", command: ["mysql", "-h", "127.0.0.1", "-uloom", "-ploom", "loom", "-e", "SELECT 1"] },
-        { service: "sqlserver", command: ["/opt/mssql-tools18/bin/sqlcmd", "-S", "127.0.0.1", "-U", "sa", "-P", "LoomDev!Passw0rd", "-C", "-Q", "SELECT 1"] },
-        { service: "postgres", command: ["psql", "-U", "loom", "-d", "loom", "-c", "SELECT 1"] },
-        { service: "mongodb", command: ["mongosh", "--quiet", "--host", "127.0.0.1", "--username", "loom", "--password", "loom", "--authenticationDatabase", "admin", "--eval", "quit(db.adminCommand({ ping: 1 }).ok ? 0 : 1)"] },
+        { service: "mysql", command: ["mysql", "-h", "127.0.0.1", "-udevroost", "-pdevroost", "devroost", "-e", "SELECT 1"] },
+        { service: "sqlserver", command: ["/opt/mssql-tools18/bin/sqlcmd", "-S", "127.0.0.1", "-U", "sa", "-P", "DevroostDev!Passw0rd", "-C", "-Q", "SELECT 1"] },
+        { service: "postgres", command: ["psql", "-U", "devroost", "-d", "devroost", "-c", "SELECT 1"] },
+        { service: "mongodb", command: ["mongosh", "--quiet", "--host", "127.0.0.1", "--username", "devroost", "--password", "devroost", "--authenticationDatabase", "admin", "--eval", "quit(db.adminCommand({ ping: 1 }).ok ? 0 : 1)"] },
         { service: "redis", command: ["redis-cli", "ping"] },
         { service: "elasticsearch", command: ["curl", "--fail", "http://127.0.0.1:9200/_cluster/health"] },
-        { service: "sqlite", command: ["sqlite3", "/data/loom.db", "select 1;"] },
-        { service: "mariadb", command: ["mariadb", "-h", "127.0.0.1", "-uloom", "-ploom", "loom", "-e", "SELECT 1"] }
+        { service: "sqlite", command: ["sqlite3", "/data/devroost.db", "select 1;"] },
+        { service: "mariadb", command: ["mariadb", "-h", "127.0.0.1", "-udevroost", "-pdevroost", "devroost", "-e", "SELECT 1"] }
       ],
       architectures: ["x64"]
     }
@@ -390,5 +390,5 @@ test("Node template inventory and bytes match the approved migration fixture", a
     if (entry === "devroost.yaml") bytes = Buffer.from(bytes.toString("utf8").replace(/\$\{NODE_IMAGE:-[^}\s]+\}/g, "${NODE_IMAGE:-<IMAGE>}"));
     assert.equal(createHash("sha256").update(bytes).digest("hex"), expected[entry], entry);
   }
-  assert.match(await readFile(resolve(root, "templates/devroost.yaml"), "utf8"), /ghcr\.io\/loom-development\/loom-node-24@sha256:[a-f0-9]{64}/);
+  assert.match(await readFile(resolve(root, "templates/devroost.yaml"), "utf8"), /ghcr\.io\/devroost-org\/devroost-node-24@sha256:[a-f0-9]{64}/);
 });

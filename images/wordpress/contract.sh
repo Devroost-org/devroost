@@ -6,7 +6,7 @@ trap 'status=$?; printf "WordPress contract failed at line %s: %s\n" "${LINENO}"
 image_reference="${1:?usage: contract.sh <image-reference>}"
 contract_directory="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 test_directory="$(mktemp -d)"
-container_name="loom-wordpress-contract-$$"
+container_name="devroost-wordpress-contract-$$"
 
 cleanup() {
   podman rm --force "${container_name}" >/dev/null 2>&1 || true
@@ -41,7 +41,7 @@ assert_wordpress_starts() {
   mkdir -p "${project_directory}"
 
   podman run --detach --name "${container_name}" \
-    --env "LOOM_DOCUMENT_ROOT=${document_root}" \
+    --env "DEVROOST_DOCUMENT_ROOT=${document_root}" \
     --volume "${project_directory}:${mount_target}:Z" \
     "${image_reference}" >/dev/null
 

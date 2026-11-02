@@ -1,6 +1,5 @@
-package com.loom.template;
+package com.devroost.template;
 
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.SpringApplication;
@@ -21,7 +20,7 @@ public class Application {
       return Map.of(
         "status", "ok",
         "runtime", "spring-boot-3.3",
-        "language", "java",
+        "language", "java-21",
         "updatedFor", "2026"
       );
     }
@@ -29,13 +28,8 @@ public class Application {
     @GetMapping("/api/hello")
     public Map<String, Object> hello() {
       return Map.of(
-        "title", "Devroost Spring + React template",
-        "subtitle", "A Spring Boot API with a React frontend wired through a local /api proxy.",
-        "features", List.of(
-          "Spring Boot backend on Java 21",
-          "Built React frontend served locally by Node",
-          "Local /api proxy for same-origin frontend calls"
-        )
+        "message", "Hello from Devroost Spring Boot template",
+        "tip", "Start building your API in src/main/java/com/devroost/template/"
       );
     }
   }

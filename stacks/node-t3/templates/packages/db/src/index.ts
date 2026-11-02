@@ -3,7 +3,7 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import { eq } from "drizzle-orm";
 import { todos } from "./schema";
 
-const databaseUrl = process.env.DATABASE_URL ?? "postgres://loom:loom@db:5432/t3";
+const databaseUrl = process.env.DATABASE_URL ?? "postgres://devroost:devroost@db:5432/t3";
 const client = postgres(databaseUrl, { max: 1 });
 const db = drizzle(client);
 

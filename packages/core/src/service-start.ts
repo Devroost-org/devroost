@@ -1,4 +1,4 @@
-import type { LoomConfig } from "@loom/config";
+import type { DevroostConfig } from "@devroost/config";
 import type { OrchestratorDependencies } from "./dependencies.js";
 import type { OrchestratorOutput } from "./output.js";
 import { formatStartedService, formatWaitingService } from "./startup.js";
@@ -11,7 +11,7 @@ type ServiceStartDependencies = Pick<
 type ServiceStartOutput = Pick<OrchestratorOutput, "writeOut">;
 
 export async function startConfiguredService(
-  config: LoomConfig,
+  config: DevroostConfig,
   serviceName: string,
   networkName: string,
   dependencies: ServiceStartDependencies,

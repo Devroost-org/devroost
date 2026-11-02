@@ -1,9 +1,9 @@
 {
-  "name": "@loom/runtime-podman",
+  "name": "@devroost/runtime-podman",
   "version": "0.1.1",
   "description": "Podman runtime adapter for Devroost service lifecycle and backups.",
   "keywords": [
-    "loom",
+    "devroost",
     "podman",
     "runtime"
   ],
@@ -39,6 +39,6 @@
     "lint": "echo 'No lint rules configured'"
   },
   "dependencies": {
-    "@loom/config": "workspace:*"
+    "@devroost/config": "workspace:*"
   }
 }

@@ -3,13 +3,13 @@ import { dirname, isAbsolute, resolve } from "node:path";
 import { constants } from "node:fs";
 import { parse } from "yaml";
 import { z } from "zod";
-import type { LoomConfig } from "./types.js";
+import type { DevroostConfig } from "./types.js";
 
 const SAFE_IDENTIFIER_PATTERN = /^[a-zA-Z0-9][a-zA-Z0-9_.-]*$/;
 const SAFE_HOST_PATTERN = /^(?:\*\.)?(?:[a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]+$/;
 
-export interface LoadedLoomProject {
-  config: LoomConfig;
+export interface LoadedDevroostProject {
+  config: DevroostConfig;
   configPath: string;
   projectRoot: string;
 }
@@ -186,22 +186,22 @@ function interpolateConfigValue(value: unknown, env: Record<string, string>): un
   return value;
 }
 
-export async function loadLoomProject(configPath = "devroost.yaml"): Promise<LoadedLoomProject> {
+export async function loadDevroostProject(configPath = "devroost.yaml"): Promise<LoadedDevroostProject> {
   const absolutePath = await findConfigPath(configPath);
   const raw = await readFile(absolutePath, "utf-8");
   const projectRoot = dirname(absolutePath);
   const env = await loadProjectEnv(projectRoot);
   const parsed = interpolateConfigValue(parse(raw), env);
   return {
-    config: configSchema.parse(parsed) as LoomConfig,
+    config: configSchema.parse(parsed) as DevroostConfig,
     configPath: absolutePath,
     projectRoot
   };
 }
 
-export async function loadLoomConfig(configPath = "devroost.yaml"): Promise<LoomConfig> {
-  const loaded = await loadLoomProject(configPath);
+export async function loadDevroostConfig(configPath = "devroost.yaml"): Promise<DevroostConfig> {
+  const loaded = await loadDevroostProject(configPath);
   return loaded.config;
 }
 
-export type { LoomConfig, LoomRoute, LoomService, LoomTask } from "./types.js";
+export type { DevroostConfig, DevroostRoute, DevroostService, DevroostTask } from "./types.js";

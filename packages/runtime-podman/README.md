@@ -1,4 +1,4 @@
-# @loom/runtime-podman
+# @devroost/runtime-podman
 
 Podman runtime adapter for Devroost.
 

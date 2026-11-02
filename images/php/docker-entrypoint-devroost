@@ -2,16 +2,16 @@
 set -euo pipefail
 
 if [[ "${1:-}" == "apache2-foreground" ]]; then
-  case "${LOOM_DOCUMENT_ROOT:-}" in
+  case "${DEVROOST_DOCUMENT_ROOT:-}" in
     /*) ;;
     *)
-      printf 'LOOM_DOCUMENT_ROOT must be an absolute path, got %q\n' \
-        "${LOOM_DOCUMENT_ROOT:-}" >&2
+      printf 'DEVROOST_DOCUMENT_ROOT must be an absolute path, got %q\n' \
+        "${DEVROOST_DOCUMENT_ROOT:-}" >&2
       exit 64
       ;;
   esac
 
-  escaped_document_root="${LOOM_DOCUMENT_ROOT//&/\\&}"
+  escaped_document_root="${DEVROOST_DOCUMENT_ROOT//&/\\&}"
   escaped_document_root="${escaped_document_root//|/\\|}"
   sed -ri \
     "s|/var/www/html|${escaped_document_root}|g" \
@@ -20,11 +20,11 @@ if [[ "${1:-}" == "apache2-foreground" ]]; then
     /etc/apache2/conf-available/*.conf
 
   {
-    printf '<Directory "%s">\n' "${LOOM_DOCUMENT_ROOT}"
+    printf '<Directory "%s">\n' "${DEVROOST_DOCUMENT_ROOT}"
     printf '    AllowOverride All\n'
     printf '    Require all granted\n'
     printf '</Directory>\n'
-  } >/etc/apache2/conf-enabled/zz-loom-document-root.conf
+  } >/etc/apache2/conf-enabled/zz-devroost-document-root.conf
 fi
 
 exec docker-php-entrypoint "$@"

@@ -1,5 +1,5 @@
 version: 1
-name: loom-dotnet
+name: devroost-dotnet
 runtime:
   engine: podman
   rootless: true
@@ -8,7 +8,7 @@ runtime:
 services:
   app:
     type: dotnet
-    image: ${DOTNET_IMAGE:-ghcr.io/loom-development/loom-dotnet-8@sha256:9dc76e1a67889eb32b9fab8b4665bc40cbb497fe2abe704d83fd7c5cc9ee53ec}
+    image: ${DOTNET_IMAGE:-ghcr.io/devroost-org/devroost-dotnet-8@sha256:9dc76e1a67889eb32b9fab8b4665bc40cbb497fe2abe704d83fd7c5cc9ee53ec}
     userns: keep-id
     execUser: ${HOST_UID:-1000}:${HOST_GID:-1000}
     workdir: /workspace/src

@@ -5,7 +5,7 @@ trap 'status=$?; printf "Bun contract failed at line %s: %s\n" "${LINENO}" "${BA
 
 image_reference="${1:?usage: contract.sh <image-reference>}"
 test_directory="$(mktemp -d)"
-container_name="loom-bun-contract-$$"
+container_name="devroost-bun-contract-$$"
 
 cleanup() {
   podman rm --force "${container_name}" >/dev/null 2>&1 || true
@@ -27,16 +27,16 @@ podman run --rm "${image_reference}" sh -c \
 
 mkdir -p "${test_directory}/dependency" "${test_directory}/app"
 printf '%s\n' \
-  '{"name":"loom-contract-dependency","version":"1.0.0","module":"index.ts","type":"module"}' \
+  '{"name":"devroost-contract-dependency","version":"1.0.0","module":"index.ts","type":"module"}' \
   >"${test_directory}/dependency/package.json"
-printf '%s\n' 'export const ready: string = "loom-bun-ready";' \
+printf '%s\n' 'export const ready: string = "devroost-bun-ready";' \
   >"${test_directory}/dependency/index.ts"
 printf '%s\n' \
-  '{"name":"loom-contract-app","version":"1.0.0","private":true,"type":"module","dependencies":{"loom-contract-dependency":"file:../dependency"}}' \
+  '{"name":"devroost-contract-app","version":"1.0.0","private":true,"type":"module","dependencies":{"devroost-contract-dependency":"file:../dependency"}}' \
   >"${test_directory}/app/package.json"
 printf '%s\n' \
-  'import { ready } from "loom-contract-dependency";' \
-  'if (ready !== "loom-bun-ready") process.exit(1);' \
+  'import { ready } from "devroost-contract-dependency";' \
+  'if (ready !== "devroost-bun-ready") process.exit(1);' \
   >"${test_directory}/app/contract.ts"
 
 podman run --rm \
@@ -52,7 +52,7 @@ printf '%s\n' \
   'Bun.serve({' \
   '  port: 3000,' \
   '  fetch() {' \
-  '    return new Response("loom-bun-ready");' \
+  '    return new Response("devroost-bun-ready");' \
   '  },' \
   '});' \
   >"${test_directory}/server.ts"
@@ -66,7 +66,7 @@ ready=0
 for _attempt in 1 2 3 4 5 6 7 8 9 10; do
   if [[ "$(podman exec "${container_name}" bun --eval \
     'process.stdout.write(await (await fetch("http://127.0.0.1:3000")).text())' \
-    2>/dev/null)" == "loom-bun-ready" ]]; then
+    2>/dev/null)" == "devroost-bun-ready" ]]; then
     ready=1
     break
   fi

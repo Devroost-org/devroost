@@ -1,4 +1,4 @@
-# @loom/network
+# @devroost/network
 
 Route and proxy networking utilities for Devroost.
 
@@ -6,7 +6,7 @@ Route and proxy networking utilities for Devroost.
 - Proxy container orchestration
 - Service network helpers
 
-The shared `loom-proxy` container uses `~/.devroost/network` for route snippets and
+The shared `devroost-proxy` container uses `~/.devroost/network` for route snippets and
 project-specific certificates. Starting a project attaches its Podman network and
 reloads the proxy. Stopping a project removes only its routes. The first start
 after upgrading replaces the old proxy that mounted a single project's files;

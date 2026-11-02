@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import type { LoomService } from "@loom/config";
+import type { DevroostService } from "@devroost/config";
 import {
   assertContainerOwnership,
   containerName,
@@ -29,7 +29,7 @@ test("parseHostPorts returns only valid host ports", () => {
 });
 
 test("serviceConfigHash is stable across env key ordering and changes on config changes", () => {
-  const left: LoomService = {
+  const left: DevroostService = {
     type: "node",
     image: "node:20-alpine",
     env: {
@@ -37,7 +37,7 @@ test("serviceConfigHash is stable across env key ordering and changes on config 
       A: "1"
     }
   };
-  const right: LoomService = {
+  const right: DevroostService = {
     type: "node",
     image: "node:20-alpine",
     env: {
@@ -45,7 +45,7 @@ test("serviceConfigHash is stable across env key ordering and changes on config 
       B: "2"
     }
   };
-  const changed: LoomService = {
+  const changed: DevroostService = {
     type: "node",
     image: "node:22-alpine",
     env: {
@@ -53,7 +53,7 @@ test("serviceConfigHash is stable across env key ordering and changes on config 
       B: "2"
     }
   };
-  const changedUser: LoomService = {
+  const changedUser: DevroostService = {
     type: "node",
     image: "node:20-alpine",
     user: "1000:1000",
@@ -69,7 +69,7 @@ test("serviceConfigHash is stable across env key ordering and changes on config 
 });
 
 test("buildPodmanRunArgs includes labels, env, ports, and shell command", async () => {
-  const service: LoomService = {
+  const service: DevroostService = {
     type: "node",
     image: "node:20-alpine",
     user: "1000:1000",
@@ -115,7 +115,7 @@ test("buildPodmanRunArgs includes labels, env, ports, and shell command", async 
     "--label",
     "devroost.project=demo",
     "--label",
-    "loom.service-hash=service-hash",
+    "devroost.service-hash=service-hash",
     "docker.io/library/node:20-alpine",
     "sh",
     "-c",

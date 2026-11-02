@@ -1,22 +1,22 @@
 import { publishedImage } from "./image-pins.js";
 
 export const runtimeImagePins = {
-  sqlite353: publishedImage("loom-sqlite-3"),
-  bun1: publishedImage("loom-bun-1"),
-  node22Alpine: publishedImage("loom-node-22"),
-  node24Alpine: publishedImage("loom-node-24"),
-  dotnet8Sdk: publishedImage("loom-dotnet-8"),
-  maven39Temurin21: publishedImage("loom-java-21"),
+  sqlite353: publishedImage("devroost-sqlite-3"),
+  bun1: publishedImage("devroost-bun-1"),
+  node22Alpine: publishedImage("devroost-node-22"),
+  node24Alpine: publishedImage("devroost-node-24"),
+  dotnet8Sdk: publishedImage("devroost-dotnet-8"),
+  maven39Temurin21: publishedImage("devroost-java-21"),
   elasticsearch819: publishedImage("elasticsearch-8.19"),
   mariadb118: publishedImage("mariadb-11.8"),
   mongo70: publishedImage("mongo-7.0"),
   mssql2022: publishedImage("mssql-2022"),
   mysql84: publishedImage("mysql-8.4"),
-  php84Apache: publishedImage("loom-php"),
-  ruby3312: publishedImage("loom-ruby-3.3"),
-  wordpress683Php84Apache: publishedImage("loom-wordpress"),
+  php84Apache: publishedImage("devroost-php"),
+  ruby3312: publishedImage("devroost-ruby-3.3"),
+  wordpress683Php84Apache: publishedImage("devroost-wordpress"),
   postgres16Alpine: publishedImage("postgres-16"),
-  python312Slim: publishedImage("loom-python-3.12"),
+  python312Slim: publishedImage("devroost-python-3.12"),
   redis74Alpine: publishedImage("redis-7.4")
 } as const;
 

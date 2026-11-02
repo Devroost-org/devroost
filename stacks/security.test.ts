@@ -40,7 +40,7 @@ function request(handler: Handler, url: string): Promise<{ status: number; body:
 }
 
 test("Spring React serves public assets but refuses traversal and escaping symlinks", async () => {
-  const root = await mkdtemp(path.join(tmpdir(), "loom-static-security-"));
+  const root = await mkdtemp(path.join(tmpdir(), "devroost-static-security-"));
   try {
     await mkdir(path.join(root, "dist"));
     await writeFile(path.join(root, "dist", "index.html"), "public");

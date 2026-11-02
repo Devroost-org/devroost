@@ -6,7 +6,7 @@ import zipfile
 
 import certifi
 
-wheel = Path("/tmp/loom-certifi.whl")
+wheel = Path("/tmp/devroost-certifi.whl")
 expected = "42d35340cc5b9ba78e818ddbff0c5b1c2b779de448a340fd1b989f5fa8670e1b"
 if hashlib.sha256(wheel.read_bytes()).hexdigest() != expected:
     raise RuntimeError("certifi wheel checksum mismatch")

@@ -47,7 +47,7 @@ export const stackDocumentation = {
       { label: "MySQL", value: "localhost:3306" }, { label: "SQL Server", value: "localhost:1433" },
       { label: "PostgreSQL", value: "localhost:5432" }, { label: "MongoDB", value: "localhost:27017" },
       { label: "Redis", value: "localhost:6379" }, { label: "Elasticsearch", value: "http://localhost:9200" },
-      { label: "SQLite file", value: "data/sqlite/loom.db" }, { label: "MariaDB", value: "localhost:3307" }
+      { label: "SQLite file", value: "data/sqlite/devroost.db" }, { label: "MariaDB", value: "localhost:3307" }
     ],
     ["SQL Server makes this combined stack x64-only.", "Start only the databases you need when lower memory use matters."]
   ),
@@ -98,7 +98,7 @@ export const stackDocumentation = {
     "Choose this stack when you want a simple file-backed database and command-line access without a network server.",
     "devroost init db-sqlite --dir sqlite-local",
     [{ name: "db", purpose: "SQLite CLI container keeping the database file available" }],
-    [{ label: "Database file", value: "data/sqlite/loom.db" }],
+    [{ label: "Database file", value: "data/sqlite/devroost.db" }],
     ["SQLite does not expose a TCP port; applications use the database file."]
   ),
   "db-sqlserver": database(

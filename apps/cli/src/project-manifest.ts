@@ -3,7 +3,7 @@ import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { isAbsolute, resolve } from "node:path";
 import type { StackDefinition } from "./stacks.js";
 
-export interface LoomProjectManifestV1 {
+export interface DevroostProjectManifestV1 {
   version: 1;
   devroostVersion: string;
   stack: { id: string; scaffoldVersion: string };
@@ -17,7 +17,7 @@ export interface ProjectRenderInputs {
   adopted: boolean;
 }
 
-export interface LoomProjectManifestV2 {
+export interface DevroostProjectManifestV2 {
   version: 2;
   devroostVersion: string;
   stack: { id: string; scaffoldVersion: string; definitionVersion?: number };
@@ -25,12 +25,12 @@ export interface LoomProjectManifestV2 {
   renderInputs: ProjectRenderInputs;
 }
 
-export type LoomProjectManifest = Omit<LoomProjectManifestV2, "stack"> & {
+export type DevroostProjectManifest = Omit<DevroostProjectManifestV2, "stack"> & {
   stack: { id: string; scaffoldVersion: string; definitionVersion: number };
 };
 export type LoadedProjectManifest =
-  | { kind: "ready"; manifest: LoomProjectManifestV2 }
-  | { kind: "migration-required"; manifest: LoomProjectManifestV1 }
+  | { kind: "ready"; manifest: DevroostProjectManifestV2 }
+  | { kind: "migration-required"; manifest: DevroostProjectManifestV1 }
   | { kind: "missing" };
 export type ProjectManifestStackCompatibility =
   | { kind: "current" }
@@ -54,16 +54,16 @@ function assertCommonManifest(value: Record<string, unknown>): void {
       !isRecord(value.ownedFiles)) throw new Error("Invalid Devroost project manifest");
 }
 
-function parseV1(value: Record<string, unknown>): LoomProjectManifestV1 {
+function parseV1(value: Record<string, unknown>): DevroostProjectManifestV1 {
   assertCommonManifest(value);
   for (const [path, entry] of Object.entries(value.ownedFiles as Record<string, unknown>)) {
     assertSafeRelativePath(path, "owned file path");
     if (!isRecord(entry) || typeof entry.sha256 !== "string") throw new Error("Invalid Devroost project manifest owned file entry");
   }
-  return value as unknown as LoomProjectManifestV1;
+  return value as unknown as DevroostProjectManifestV1;
 }
 
-function parseV2(value: Record<string, unknown>): LoomProjectManifestV2 {
+function parseV2(value: Record<string, unknown>): DevroostProjectManifestV2 {
   assertCommonManifest(value);
   const definitionVersion = (value.stack as Record<string, unknown>).definitionVersion;
   if (definitionVersion !== undefined && (!Number.isInteger(definitionVersion) || (definitionVersion as number) <= 0)) {
@@ -82,11 +82,11 @@ function parseV2(value: Record<string, unknown>): LoomProjectManifestV2 {
       (value.renderInputs.phpDocroot !== undefined && typeof value.renderInputs.phpDocroot !== "string")) {
     throw new Error("Invalid Devroost project manifest render inputs");
   }
-  return value as unknown as LoomProjectManifestV2;
+  return value as unknown as DevroostProjectManifestV2;
 }
 
 export function classifyProjectManifestStack(
-  manifest: LoomProjectManifestV1 | LoomProjectManifestV2,
+  manifest: DevroostProjectManifestV1 | DevroostProjectManifestV2,
   stack: StackDefinition
 ): ProjectManifestStackCompatibility {
   if (manifest.stack.id !== stack.id) {
@@ -132,8 +132,8 @@ export async function buildProjectManifest(
   stack: StackDefinition,
   ownedFilePaths: readonly string[],
   renderInputs: ProjectRenderInputs
-): Promise<LoomProjectManifest> {
-  const ownedFiles: LoomProjectManifestV2["ownedFiles"] = {};
+): Promise<DevroostProjectManifest> {
+  const ownedFiles: DevroostProjectManifestV2["ownedFiles"] = {};
   for (const relativePath of ownedFilePaths) {
     assertSafeRelativePath(relativePath, "owned file path");
     const sha256 = await sha256File(resolve(targetDir, relativePath));

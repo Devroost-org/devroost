@@ -8,14 +8,14 @@ runtime:
 services:
   backend:
     type: python
-    image: ${PYTHON_IMAGE:-ghcr.io/loom-development/loom-python-3.12@sha256:dfc56d79d2e1ec7552b172f58bab8468929cf80dca40a33078654bc5fb8d9a94}
+    image: ${PYTHON_IMAGE:-ghcr.io/devroost-org/devroost-python-3.12@sha256:dfc56d79d2e1ec7552b172f58bab8468929cf80dca40a33078654bc5fb8d9a94}
     user: ${HOST_UID:-1000}:${HOST_GID:-1000}
     userns: keep-id
     execUser: ${HOST_UID:-1000}:${HOST_GID:-1000}
     workdir: /workspace/backend
     command: |
       set -eu
-      home_dir="/tmp/loom-home"
+      home_dir="/tmp/devroost-home"
       mkdir -p "$home_dir/.cache/pip"
       chmod 0777 "$home_dir"
       exec env HOME="$home_dir" PATH="$home_dir/.local/bin:$PATH" PIP_CACHE_DIR="$home_dir/.cache/pip" sh -c 'pip install --disable-pip-version-check --user -r requirements.txt && python manage.py migrate --noinput && python manage.py runserver 0.0.0.0:8001'
@@ -31,7 +31,7 @@ services:
       startPeriodSeconds: 4
   web:
     type: node
-    image: ${NODE_IMAGE:-ghcr.io/loom-development/loom-node-24@sha256:5bdb11d871f1cea2d5c20305e35d63ab199d23d9b8be69135fc615425f38420c}
+    image: ${NODE_IMAGE:-ghcr.io/devroost-org/devroost-node-24@sha256:5bdb11d871f1cea2d5c20305e35d63ab199d23d9b8be69135fc615425f38420c}
     dependsOn:
       - backend
     user: ${HOST_UID:-1000}:${HOST_GID:-1000}
@@ -40,7 +40,7 @@ services:
     workdir: /workspace/frontend
     command: |
       set -eu
-      home_dir="/tmp/loom-home"
+      home_dir="/tmp/devroost-home"
       mkdir -p "$home_dir/.npm"
       chmod 0777 "$home_dir"
       exec env HOME="$home_dir" npm_config_cache="$home_dir/.npm" sh -c 'npm install --no-audit --no-fund && npm run dev -- --host 0.0.0.0 --port 5176'

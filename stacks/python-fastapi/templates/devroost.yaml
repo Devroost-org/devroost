@@ -8,11 +8,11 @@ runtime:
 services:
   app:
     type: python
-    image: ${PYTHON_IMAGE:-ghcr.io/loom-development/loom-python-3.12@sha256:dfc56d79d2e1ec7552b172f58bab8468929cf80dca40a33078654bc5fb8d9a94}
+    image: ${PYTHON_IMAGE:-ghcr.io/devroost-org/devroost-python-3.12@sha256:dfc56d79d2e1ec7552b172f58bab8468929cf80dca40a33078654bc5fb8d9a94}
     user: ${HOST_UID:-1000}:${HOST_GID:-1000}
     userns: keep-id
     workdir: /workspace
-    command: sh -c 'mkdir -p /tmp/loom-home/.local /tmp/loom-home/.cache/pip && export HOME=/tmp/loom-home PATH=/tmp/loom-home/.local/bin:$PATH PIP_CACHE_DIR=/tmp/loom-home/.cache/pip && pip install --disable-pip-version-check --user -r requirements.txt && exec uvicorn app.main:app --host 0.0.0.0 --port 8003'
+    command: sh -c 'mkdir -p /tmp/devroost-home/.local /tmp/devroost-home/.cache/pip && export HOME=/tmp/devroost-home PATH=/tmp/devroost-home/.local/bin:$PATH PIP_CACHE_DIR=/tmp/devroost-home/.cache/pip && pip install --disable-pip-version-check --user -r requirements.txt && exec uvicorn app.main:app --host 0.0.0.0 --port 8003'
     ports:
       - "8003:8003"
     volumes:

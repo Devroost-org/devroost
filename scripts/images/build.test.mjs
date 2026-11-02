@@ -12,14 +12,14 @@ const repositoryRoot = path.resolve(
 );
 
 const catalog = await loadCatalog(path.join(repositoryRoot, "images/catalog.json"));
-const php = catalog.images.find(({ name }) => name === "loom-php");
-const wordpress = catalog.images.find(({ name }) => name === "loom-wordpress");
+const php = catalog.images.find(({ name }) => name === "devroost-php");
+const wordpress = catalog.images.find(({ name }) => name === "devroost-wordpress");
 const phpReference = `localhost/${php.name}:${php.version}`;
 const wordpressReference = `localhost/${wordpress.name}:${wordpress.version}`;
 
 test("builds a custom catalog image with an argument-array invocation", async () => {
   const calls = [];
-  const reference = await buildImage("loom-php", {
+  const reference = await buildImage("devroost-php", {
     catalogPath: path.join(repositoryRoot, "images/catalog.json"),
     platform: "linux/amd64",
     execute: async (command, args, options) => {
@@ -36,7 +36,7 @@ test("builds a custom catalog image with an argument-array invocation", async ()
         "--platform",
         "linux/amd64",
         "--build-arg",
-        `LOOM_BASE_IMAGE=${php.source}`,
+        `DEVROOST_BASE_IMAGE=${php.source}`,
         "--file",
         path.join(repositoryRoot, "images/php/Containerfile"),
         "--tag",
@@ -50,7 +50,7 @@ test("builds a custom catalog image with an argument-array invocation", async ()
 
 test("builds a runtime dependency before its dependent image", async () => {
   const calls = [];
-  const reference = await buildImage("loom-wordpress", {
+  const reference = await buildImage("devroost-wordpress", {
     catalogPath: path.join(repositoryRoot, "images/catalog.json"),
     platform: "linux/amd64",
     execute: async (command, args, options) => {
@@ -62,10 +62,10 @@ test("builds a runtime dependency before its dependent image", async () => {
   assert.equal(calls.length, 2);
   assert.equal(calls[0].args.at(-2), phpReference);
   assert.deepEqual(
-    calls[1].args.filter((argument) => argument.startsWith("LOOM_")),
+    calls[1].args.filter((argument) => argument.startsWith("DEVROOST_")),
     [
-      `LOOM_BASE_IMAGE=${phpReference}`,
-      `LOOM_SOURCE_IMAGE=${wordpress.source}`
+      `DEVROOST_BASE_IMAGE=${phpReference}`,
+      `DEVROOST_SOURCE_IMAGE=${wordpress.source}`
     ]
   );
   assert.equal(
@@ -79,7 +79,7 @@ test("stops when a runtime dependency build fails", async () => {
   const calls = [];
 
   await assert.rejects(
-    buildImage("loom-wordpress", {
+    buildImage("devroost-wordpress", {
       catalogPath: path.join(repositoryRoot, "images/catalog.json"),
       execute: async (command, args) => {
         calls.push({ command, args });
@@ -95,13 +95,13 @@ test("stops when a runtime dependency build fails", async () => {
 
 test("CLI accepts an image name and platform", async () => {
   const calls = [];
-  await main(["loom-node-24", "--platform", "linux/arm64"], {
+  await main(["devroost-node-24", "--platform", "linux/arm64"], {
     build: async (name, options) => calls.push({ name, options })
   });
 
   assert.deepEqual(calls, [
     {
-      name: "loom-node-24",
+      name: "devroost-node-24",
       options: { platform: "linux/arm64" }
     }
   ]);
@@ -118,7 +118,7 @@ test("rejects unknown, mirrored, and unsupported build requests", async () => {
     /is a mirror and cannot be built/
   );
   await assert.rejects(
-    buildImage("loom-php", {
+    buildImage("devroost-php", {
       catalogPath,
       platform: "linux/s390x",
       execute: async () => {}

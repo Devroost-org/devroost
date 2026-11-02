@@ -3,9 +3,9 @@ import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
-import type { LoomConfig } from "@loom/config";
-import type { PodmanCapabilities } from "@loom/runtime-podman";
-import type { LoadedProjectManifest, LoomProjectManifestV2 } from "./project-manifest.js";
+import type { DevroostConfig } from "@devroost/config";
+import type { PodmanCapabilities } from "@devroost/runtime-podman";
+import type { LoadedProjectManifest, DevroostProjectManifestV2 } from "./project-manifest.js";
 import { runProjectDoctor, type DoctorProbes } from "./project-doctor.js";
 import { doctorExitCode } from "./doctor-output.js";
 import { findStackDefinition, type StackDefinition } from "./stacks.js";
@@ -21,12 +21,12 @@ const stack: StackDefinition = {
   generatedPaths: [{ path: "dist", category: "build" }, { path: "node_modules", category: "dependency" }],
   protectedPaths: ["src"], compatibility: { architectures: ["x64"], runtime: "podman-rootless" }
 };
-const manifestValue: LoomProjectManifestV2 = {
+const manifestValue: DevroostProjectManifestV2 = {
   version: 2, devroostVersion: "0.3.4", stack: { id: "node", scaffoldVersion: "1", definitionVersion: 1 },
   ownedFiles: {}, renderInputs: { projectName: "demo", databases: [], adopted: false }
 };
 const ready: LoadedProjectManifest = { kind: "ready", manifest: manifestValue };
-const config: LoomConfig = {
+const config: DevroostConfig = {
   version: 1, name: "demo", runtime: { engine: "podman", rootless: true },
   services: { app: { type: "node", image: nodeImage, ports: ["3000:3000"] } },
   routes: [{ host: "demo.local", service: "app", port: 3000 }]
@@ -44,7 +44,7 @@ function probes(overrides: Partial<DoctorProbes> = {}): DoctorProbes {
   };
 }
 async function fixture(): Promise<string> {
-  const root = await mkdtemp(join(tmpdir(), "loom-doctor-"));
+  const root = await mkdtemp(join(tmpdir(), "devroost-doctor-"));
   await writeFile(join(root, "package.json"), "{}\n");
   await writeFile(join(root, "package-lock.json"), "{}\n");
   return root;
@@ -76,11 +76,11 @@ test("diagnoses manifest lifecycle and scaffold drift", async (t) => {
 
 test("reports deterministic warning-only runtime image overrides including rendered databases", async (t) => {
   const root = await fixture(); t.after(() => rm(root, { recursive: true, force: true }));
-  const withDatabase: LoomProjectManifestV2 = {
+  const withDatabase: DevroostProjectManifestV2 = {
     ...manifestValue,
     renderInputs: { ...manifestValue.renderInputs, databases: ["postgres"] }
   };
-  const exact: LoomConfig = {
+  const exact: DevroostConfig = {
     ...config,
     services: {
       app: { ...config.services.app! },
@@ -94,7 +94,7 @@ test("reports deterministic warning-only runtime image overrides including rende
     summary: "Runtime images match selected stack definitions"
   });
 
-  const overridden: LoomConfig = {
+  const overridden: DevroostConfig = {
     ...exact,
     services: {
       app: { ...exact.services.app!, image: postgresImage },
@@ -124,7 +124,7 @@ test("diagnoses Podman and architecture failures", async (t) => {
 });
 
 test("reports missing and conflicting lockfiles", async (t) => {
-  const root = await mkdtemp(join(tmpdir(), "loom-doctor-locks-")); t.after(() => rm(root, { recursive: true, force: true }));
+  const root = await mkdtemp(join(tmpdir(), "devroost-doctor-locks-")); t.after(() => rm(root, { recursive: true, force: true }));
   await writeFile(join(root, "package.json"), "{}\n");
   let results = await runProjectDoctor({ projectRoot: root, config, manifest: ready, stack, probes: probes() });
   assert.equal(results.find(({ id }) => id === "lockfiles")!.status, "warning");
@@ -142,7 +142,7 @@ test("ignores dependency manifests outside the stack's declared dependency roots
 });
 
 test("evaluates Node lockfiles per workspace directory", async (t) => {
-  const root = await mkdtemp(join(tmpdir(), "loom-doctor-workspace-locks-")); t.after(() => rm(root, { recursive: true, force: true }));
+  const root = await mkdtemp(join(tmpdir(), "devroost-doctor-workspace-locks-")); t.after(() => rm(root, { recursive: true, force: true }));
   await mkdir(join(root, "api")); await mkdir(join(root, "web"));
   await writeFile(join(root, "api", "package.json"), "{}\n"); await writeFile(join(root, "api", "package-lock.json"), "{}\n");
   await writeFile(join(root, "web", "package.json"), "{}\n"); await writeFile(join(root, "web", "pnpm-lock.yaml"), "\n");
@@ -170,7 +170,7 @@ test("reports dependency ownership and writability", async (t) => {
 
 test("parses host, IP, and TCP port mappings and reports unavailable ports", async (t) => {
   const root = await fixture(); t.after(() => rm(root, { recursive: true, force: true }));
-  const mapped: LoomConfig = { ...config, services: { app: { ...config.services.app!, ports: ["3000:3000", "127.0.0.1:4000:4000/tcp", "5000"] } }, routes: [{ host: "demo.local", service: "app", port: 4000 }] };
+  const mapped: DevroostConfig = { ...config, services: { app: { ...config.services.app!, ports: ["3000:3000", "127.0.0.1:4000:4000/tcp", "5000"] } }, routes: [{ host: "demo.local", service: "app", port: 4000 }] };
   const checked: number[] = [];
   const results = await runProjectDoctor({ projectRoot: root, config: mapped, manifest: ready, stack, probes: probes({ portAvailable: async (port) => { checked.push(port); return port !== 4000; } }) });
   assert.deepEqual(checked, [3000, 4000]); assert.equal(results.find(({ id }) => id === "ports")!.status, "failure");
@@ -189,7 +189,7 @@ test("accepts a bound port owned by this running project and rejects unrelated o
 
 test("rejects duplicate host-port claims across services before probing availability", async (t) => {
   const root = await fixture(); t.after(() => rm(root, { recursive: true, force: true }));
-  const duplicate: LoomConfig = { ...config, services: {
+  const duplicate: DevroostConfig = { ...config, services: {
     api: { type: "node", image: "node", ports: ["127.0.0.1:3000:4000/tcp"] },
     web: { type: "node", image: "node", ports: ["3000:3000"] }
   }, routes: [] };
@@ -204,7 +204,7 @@ test("rejects duplicate host-port claims across services before probing availabi
 
 test("rejects malformed mappings and distinguishes route service and port failures", async (t) => {
   const root = await fixture(); t.after(() => rm(root, { recursive: true, force: true }));
-  const invalid: LoomConfig = { ...config, services: { app: { ...config.services.app!, ports: ["127.0.0.1:bad:3000"] } }, routes: [{ host: "a.local", service: "missing", port: 80 }, { host: "b.local", service: "app", port: 9999 }] };
+  const invalid: DevroostConfig = { ...config, services: { app: { ...config.services.app!, ports: ["127.0.0.1:bad:3000"] } }, routes: [{ host: "a.local", service: "missing", port: 80 }, { host: "b.local", service: "app", port: 9999 }] };
   const results = await runProjectDoctor({ projectRoot: root, config: invalid, manifest: ready, stack, probes: probes() });
   assert.equal(results.find(({ id }) => id === "ports")!.status, "failure");
   const route = results.find(({ id }) => id === "routes")!; assert.equal(route.status, "failure");

@@ -58,12 +58,12 @@ test("WordPress contract removes container-owned fixtures inside the Podman user
 
 test("PHP entrypoint authorizes a custom Apache document root", async () => {
   const source = await readFile(
-    path.join(repositoryRoot, "images/php/docker-entrypoint-loom"),
+    path.join(repositoryRoot, "images/php/docker-entrypoint-devroost"),
     "utf8"
   );
   assert.match(source, /<Directory \"%s\">/);
   assert.match(source, /Require all granted/);
-  assert.match(source, /conf-enabled\/zz-loom-document-root\.conf/);
+  assert.match(source, /conf-enabled\/zz-devroost-document-root\.conf/);
 });
 
 test("Bun contract requires the patched Debian GnuTLS package", async () => {
@@ -80,15 +80,15 @@ test("Bun contract requires the patched Debian GnuTLS package", async () => {
 test("exact runtime contract probes accept catalog versions and reject other versions", async () => {
   const catalog = JSON.parse(await readFile(path.join(repositoryRoot, "images/catalog.json"), "utf8"));
   const execute = promisify(execFile);
-  const directory = await mkdtemp(path.join(tmpdir(), "loom-version-contract-"));
+  const directory = await mkdtemp(path.join(tmpdir(), "devroost-version-contract-"));
   try {
     const podman = path.join(directory, "podman");
-    await writeFile(podman, `#!/bin/sh\nprintf '%s\\n' "$LOOM_CONTRACT_VERSION"\n`);
+    await writeFile(podman, `#!/bin/sh\nprintf '%s\\n' "$DEVROOST_CONTRACT_VERSION"\n`);
     await chmod(podman, 0o755);
     for (const [name, command, suffix] of [
-      ["loom-bun-1", "bun", ""],
-      ["loom-dotnet-8", "dotnet", ""],
-      ["loom-sqlite-3", "sqlite3", " test-build"]
+      ["devroost-bun-1", "bun", ""],
+      ["devroost-dotnet-8", "dotnet", ""],
+      ["devroost-sqlite-3", "sqlite3", " test-build"]
     ]) {
       const image = catalog.images.find((candidate) => candidate.name === name);
       const version = image.version.match(/^(\d+\.\d+\.\d+)/)[1];
@@ -99,7 +99,7 @@ test("exact runtime contract probes accept catalog versions and reject other ver
       const errorTrap = contract.split("\n").find((line) => line.startsWith("trap ") && line.endsWith(" ERR"));
       assert.ok(errorTrap, `${name} must report the failing contract command`);
       const runProbe = (value) => execute("bash", ["--noprofile", "--norc", "-c", `set -Eeuo pipefail\n${errorTrap}\nimage_reference=contract-test\n${probe}`], {
-        env: { ...process.env, BASH_ENV: "/dev/null", PATH: `${directory}${path.delimiter}${process.env.PATH}`, LOOM_CONTRACT_VERSION: `${value}${suffix}` }
+        env: { ...process.env, BASH_ENV: "/dev/null", PATH: `${directory}${path.delimiter}${process.env.PATH}`, DEVROOST_CONTRACT_VERSION: `${value}${suffix}` }
       });
       await runProbe(version);
       await assert.rejects(runProbe("0.0.0"), (error) => {
@@ -118,7 +118,7 @@ test("MySQL is built and contracts its patched certificate bundle and startup", 
   const catalog = JSON.parse(await readFile(path.join(repositoryRoot, "images/catalog.json"), "utf8"));
   const mysql = catalog.images.find(({ name }) => name === "mysql-8.4");
   assert.equal(mysql.kind, "custom");
-  assert.equal(mysql.version, "8.4.13-loom.1");
+  assert.equal(mysql.version, "8.4.13-devroost.1");
   const contract = await readFile(path.join(repositoryRoot, mysql.context, "contract.sh"), "utf8");
   assert.match(contract, /version\("certifi"\) == "2026\.10\.19"/);
   assert.match(contract, /test-mirror\.mjs/);

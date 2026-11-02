@@ -1,14 +1,14 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import type { LoomConfig } from "@loom/config";
-import { LoomOrchestrator, stopProjectResources } from "./index.js";
+import type { DevroostConfig } from "@devroost/config";
+import { DevroostOrchestrator, stopProjectResources } from "./index.js";
 
 test("core exports are available", () => {
-  assert.equal(typeof LoomOrchestrator, "function");
+  assert.equal(typeof DevroostOrchestrator, "function");
 });
 
 test("backupAll rejects when project has no backup-supported services", async () => {
-  const config: LoomConfig = {
+  const config: DevroostConfig = {
     version: 1,
     name: "no-db-project",
     runtime: { engine: "podman", rootless: true },
@@ -17,7 +17,7 @@ test("backupAll rejects when project has no backup-supported services", async ()
     }
   };
 
-  const orchestrator = new LoomOrchestrator(config, process.cwd());
+  const orchestrator = new DevroostOrchestrator(config, process.cwd());
   await assert.rejects(() => orchestrator.backupAll(), /No backup-supported services found/i);
 });
 

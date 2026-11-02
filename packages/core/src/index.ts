@@ -1,4 +1,4 @@
-import type { LoomConfig } from "@loom/config";
+import type { DevroostConfig } from "@devroost/config";
 import {
   defaultOrchestratorDependencies,
   type OrchestratorDependencies
@@ -15,7 +15,7 @@ import {
 export { stopProjectResources } from "./lifecycle.js";
 import { stopProjectResources } from "./lifecycle.js";
 import { requireConfiguredService } from "./services.js";
-import { buildLoomStatus, type LoomStatus } from "./status.js";
+import { buildDevroostStatus, type DevroostStatus } from "./status.js";
 import {
   formatStartupNotice,
   formatStartHeader
@@ -27,9 +27,9 @@ import { startConfiguredService } from "./service-start.js";
 import { requireConfiguredTask } from "./tasks.js";
 import { dependencyOrder } from "./utils.js";
 
-export class LoomOrchestrator {
+export class DevroostOrchestrator {
   constructor(
-    private readonly config: LoomConfig,
+    private readonly config: DevroostConfig,
     private readonly projectRoot = process.cwd(),
     private readonly dependencies: OrchestratorDependencies = defaultOrchestratorDependencies,
     private readonly output: OrchestratorOutput = defaultOrchestratorOutput
@@ -86,8 +86,8 @@ export class LoomOrchestrator {
     await this.start(options);
   }
 
-  async status(): Promise<LoomStatus> {
-    return buildLoomStatus(this.config, this.dependencies);
+  async status(): Promise<DevroostStatus> {
+    return buildDevroostStatus(this.config, this.dependencies);
   }
 
   async ps(): Promise<Array<{ name: string; state: string; running: boolean; health?: string; image: string }>> {

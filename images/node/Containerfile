@@ -1,5 +1,5 @@
-ARG LOOM_BASE_IMAGE
-FROM ${LOOM_BASE_IMAGE}
+ARG DEVROOST_BASE_IMAGE
+FROM ${DEVROOST_BASE_IMAGE}
 
 RUN set -eux; \
     apk add --no-cache g++ git make python3; \

@@ -48,9 +48,9 @@ export async function buildImage(name, options = {}) {
 
       const context = path.resolve(repositoryRoot, candidate.context);
       const reference = `localhost/${candidate.name}:${candidate.version}`;
-      const buildArguments = ["--build-arg", `LOOM_BASE_IMAGE=${baseImage}`];
+      const buildArguments = ["--build-arg", `DEVROOST_BASE_IMAGE=${baseImage}`];
       if (candidate.runtime) {
-        buildArguments.push("--build-arg", `LOOM_SOURCE_IMAGE=${candidate.source}`);
+        buildArguments.push("--build-arg", `DEVROOST_SOURCE_IMAGE=${candidate.source}`);
       }
 
       await execute(

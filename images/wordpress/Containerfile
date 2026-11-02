@@ -1,8 +1,8 @@
-ARG LOOM_SOURCE_IMAGE
-ARG LOOM_BASE_IMAGE
-FROM ${LOOM_SOURCE_IMAGE} AS wordpress-source
+ARG DEVROOST_SOURCE_IMAGE
+ARG DEVROOST_BASE_IMAGE
+FROM ${DEVROOST_SOURCE_IMAGE} AS wordpress-source
 
-FROM ${LOOM_BASE_IMAGE}
+FROM ${DEVROOST_BASE_IMAGE}
 
 COPY --from=wordpress-source /usr/src/wordpress /usr/src/wordpress
 COPY docker-entrypoint-wordpress /usr/local/bin/docker-entrypoint-wordpress

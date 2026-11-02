@@ -3,7 +3,7 @@ set -euo pipefail
 
 image_reference="${1:?usage: contract.sh <image-reference>}"
 test_directory="$(mktemp -d)"
-container_name="loom-java-contract-$$"
+container_name="devroost-java-contract-$$"
 
 cleanup() {
   podman rm --force "${container_name}" >/dev/null 2>&1 || true
@@ -20,22 +20,22 @@ podman run --rm "${image_reference}" sh -c \
 
 mkdir -p "${test_directory}/src" "${test_directory}/classes"
 printf '%s\n' \
-  'public final class LoomContract {' \
+  'public final class DevroostContract {' \
   '  public static void main(String[] args) {' \
-  '    System.out.print("loom-java-ready");' \
+  '    System.out.print("devroost-java-ready");' \
   '  }' \
   '}' \
-  >"${test_directory}/src/LoomContract.java"
+  >"${test_directory}/src/DevroostContract.java"
 
 podman run --rm \
   --volume "${test_directory}:/contract:Z" \
   --workdir /contract \
   "${image_reference}" sh -c \
-  'javac -d classes src/LoomContract.java && jar --create --file loom-contract.jar --main-class LoomContract -C classes .'
+  'javac -d classes src/DevroostContract.java && jar --create --file devroost-contract.jar --main-class DevroostContract -C classes .'
 if [[ "$(podman run --rm \
   --volume "${test_directory}:/contract:Z" \
   --workdir /contract \
-  "${image_reference}" java -jar loom-contract.jar)" != "loom-java-ready" ]]; then
+  "${image_reference}" java -jar devroost-contract.jar)" != "devroost-java-ready" ]]; then
   printf 'Packaged Java application did not produce expected output\n' >&2
   exit 1
 fi
@@ -48,7 +48,7 @@ printf '%s\n' \
   '  public static void main(String[] args) throws Exception {' \
   '    var server = HttpServer.create(new InetSocketAddress("0.0.0.0", 8080), 0);' \
   '    server.createContext("/", exchange -> {' \
-  '      var body = "loom-java-ready".getBytes(StandardCharsets.UTF_8);' \
+  '      var body = "devroost-java-ready".getBytes(StandardCharsets.UTF_8);' \
   '      exchange.sendResponseHeaders(200, body.length);' \
   '      exchange.getResponseBody().write(body);' \
   '      exchange.close();' \
@@ -78,7 +78,7 @@ podman run --detach --name "${container_name}" \
 ready=0
 for _attempt in 1 2 3 4 5 6 7 8 9 10; do
   if [[ "$(podman exec "${container_name}" java /contract/Probe.java \
-    2>/dev/null)" == "loom-java-ready" ]]; then
+    2>/dev/null)" == "devroost-java-ready" ]]; then
     ready=1
     break
   fi

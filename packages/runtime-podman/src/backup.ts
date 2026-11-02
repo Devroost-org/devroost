@@ -7,7 +7,7 @@ import { basename, dirname, join } from "node:path";
 import { pipeline } from "node:stream/promises";
 import type { Writable } from "node:stream";
 import { createGunzip } from "node:zlib";
-import type { LoomService } from "@loom/config";
+import type { DevroostService } from "@devroost/config";
 import { assertContainerOwnership, containerName, isContainerRunning, normalizeImage } from "./containers.js";
 import { runPodman } from "./podman.js";
 
@@ -117,7 +117,7 @@ export function databaseBackupStrategy(serviceType: string): BackupStrategy | nu
       command: [
         "sh",
         "-c",
-        "mysqldump -h 127.0.0.1 -uroot -p\"$MYSQL_ROOT_PASSWORD\" \"${MYSQL_DATABASE:-loom}\""
+        "mysqldump -h 127.0.0.1 -uroot -p\"$MYSQL_ROOT_PASSWORD\" \"${MYSQL_DATABASE:-devroost}\""
       ]
     };
   }
@@ -128,7 +128,7 @@ export function databaseBackupStrategy(serviceType: string): BackupStrategy | nu
       command: [
         "sh",
         "-c",
-        "mariadb-dump -h 127.0.0.1 -uroot -p\"$MARIADB_ROOT_PASSWORD\" \"${MARIADB_DATABASE:-loom}\""
+        "mariadb-dump -h 127.0.0.1 -uroot -p\"$MARIADB_ROOT_PASSWORD\" \"${MARIADB_DATABASE:-devroost}\""
       ]
     };
   }
@@ -161,7 +161,7 @@ export function databaseBackupStrategy(serviceType: string): BackupStrategy | nu
   if (normalized === "sqlite") {
     return {
       extension: "db",
-      command: ["sh", "-c", `snapshot=$(mktemp /tmp/loom-sqlite-backup.XXXXXX); trap 'rm -f "$snapshot"' EXIT; sqlite3 -cmd '.timeout 5000' /data/loom.db ".backup '$snapshot'" && cat "$snapshot"`]
+      command: ["sh", "-c", `snapshot=$(mktemp /tmp/devroost-sqlite-backup.XXXXXX); trap 'rm -f "$snapshot"' EXIT; sqlite3 -cmd '.timeout 5000' /data/devroost.db ".backup '$snapshot'" && cat "$snapshot"`]
     };
   }
 
@@ -171,7 +171,7 @@ export function databaseBackupStrategy(serviceType: string): BackupStrategy | nu
       command: [
         "sh",
         "-c",
-        "mkdir -p /var/opt/mssql/backup && /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P \"$MSSQL_SA_PASSWORD\" -Q \"BACKUP DATABASE [master] TO DISK='/var/opt/mssql/backup/loom.bak' WITH INIT\" >/dev/null && cat /var/opt/mssql/backup/loom.bak"
+        "mkdir -p /var/opt/mssql/backup && /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P \"$MSSQL_SA_PASSWORD\" -Q \"BACKUP DATABASE [master] TO DISK='/var/opt/mssql/backup/devroost.bak' WITH INIT\" >/dev/null && cat /var/opt/mssql/backup/devroost.bak"
       ]
     };
   }
@@ -239,8 +239,8 @@ function detectRestoreInputFormat(prefix: Buffer): "gzip" | "xz" | "zip" | "bina
 }
 
 async function gunzipRestoreInput(inputPath: string): Promise<PreparedRestoreInput> {
-  const tempDir = await mkdtemp(join(tmpdir(), "loom-restore-"));
-  const outputName = basename(inputPath).replace(/\.gz$/i, "") || "loom-restore.sql";
+  const tempDir = await mkdtemp(join(tmpdir(), "devroost-restore-"));
+  const outputName = basename(inputPath).replace(/\.gz$/i, "") || "devroost-restore.sql";
   const outputPath = join(tempDir, outputName);
 
   await pipeline(createReadStream(inputPath), createGunzip(), createWriteStream(outputPath));
@@ -291,44 +291,44 @@ export function databaseRestoreStrategy(serviceType: string): RestoreStrategy | 
 
   if (normalized === "mysql") {
     return {
-      destinationPath: "/tmp/loom-restore.sql",
+      destinationPath: "/tmp/devroost-restore.sql",
       command: [
         "sh",
         "-c",
-        "MYSQL_PWD=\"$MYSQL_ROOT_PASSWORD\" mysql --binary-mode=1 -h 127.0.0.1 -uroot \"${MYSQL_DATABASE:-loom}\" < /tmp/loom-restore.sql"
+        "MYSQL_PWD=\"$MYSQL_ROOT_PASSWORD\" mysql --binary-mode=1 -h 127.0.0.1 -uroot \"${MYSQL_DATABASE:-devroost}\" < /tmp/devroost-restore.sql"
       ]
     };
   }
 
   if (normalized === "mariadb") {
     return {
-      destinationPath: "/tmp/loom-restore.sql",
+      destinationPath: "/tmp/devroost-restore.sql",
       command: [
         "sh",
         "-c",
-        "MYSQL_PWD=\"$MARIADB_ROOT_PASSWORD\" mariadb --binary-mode=1 -h 127.0.0.1 -uroot \"${MARIADB_DATABASE:-loom}\" < /tmp/loom-restore.sql"
+        "MYSQL_PWD=\"$MARIADB_ROOT_PASSWORD\" mariadb --binary-mode=1 -h 127.0.0.1 -uroot \"${MARIADB_DATABASE:-devroost}\" < /tmp/devroost-restore.sql"
       ]
     };
   }
 
   if (normalized === "postgres") {
     return {
-      destinationPath: "/tmp/loom-restore.sql",
+      destinationPath: "/tmp/devroost-restore.sql",
       command: [
         "sh",
         "-c",
-        "psql -v ON_ERROR_STOP=1 -U \"${POSTGRES_USER:-postgres}\" -d \"${POSTGRES_DB:-postgres}\" -f /tmp/loom-restore.sql"
+        "psql -v ON_ERROR_STOP=1 -U \"${POSTGRES_USER:-postgres}\" -d \"${POSTGRES_DB:-postgres}\" -f /tmp/devroost-restore.sql"
       ]
     };
   }
 
   if (normalized === "mongodb") {
     return {
-      destinationPath: "/tmp/loom-restore.archive.gz",
+      destinationPath: "/tmp/devroost-restore.archive.gz",
       command: [
         "sh",
         "-c",
-        "mongorestore --drop --archive=/tmp/loom-restore.archive.gz --gzip --authenticationDatabase admin --username \"${MONGO_INITDB_ROOT_USERNAME:-root}\" --password \"${MONGO_INITDB_ROOT_PASSWORD:-example}\" --db \"${MONGO_INITDB_DATABASE:-admin}\""
+        "mongorestore --drop --archive=/tmp/devroost-restore.archive.gz --gzip --authenticationDatabase admin --username \"${MONGO_INITDB_ROOT_USERNAME:-root}\" --password \"${MONGO_INITDB_ROOT_PASSWORD:-example}\" --db \"${MONGO_INITDB_DATABASE:-admin}\""
       ]
     };
   }
@@ -341,7 +341,7 @@ export function databaseRestoreStrategy(serviceType: string): RestoreStrategy | 
 
   if (normalized === "sqlite") {
     return {
-      destinationPath: "/data/loom.db"
+      destinationPath: "/data/devroost.db"
     };
   }
 
@@ -355,7 +355,7 @@ export function restoreSupportedForServiceType(serviceType: string): boolean {
 export async function backupServiceToFile(
   projectName: string,
   serviceName: string,
-  service: LoomService,
+  service: DevroostService,
   outputPath: string
 ): Promise<void> {
   await assertContainerOwnership(projectName, containerName(projectName, serviceName));
@@ -365,7 +365,7 @@ export async function backupServiceToFile(
 export async function backupServiceToFileWithDependencies(
   projectName: string,
   serviceName: string,
-  service: LoomService,
+  service: DevroostService,
   outputPath: string,
   dependencies: BackupDependencies = {}
 ): Promise<void> {
@@ -462,7 +462,7 @@ export async function backupServiceToFileWithDependencies(
 export async function restoreServiceFromFile(
   projectName: string,
   serviceName: string,
-  service: LoomService,
+  service: DevroostService,
   inputPath: string
 ): Promise<void> {
   await assertContainerOwnership(projectName, containerName(projectName, serviceName));
@@ -472,7 +472,7 @@ export async function restoreServiceFromFile(
 export async function restoreServiceFromFileWithDependencies(
   projectName: string,
   serviceName: string,
-  service: LoomService,
+  service: DevroostService,
   inputPath: string,
   dependencies: RestoreDependencies = {}
 ): Promise<void> {

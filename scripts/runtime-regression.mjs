@@ -11,10 +11,10 @@ import {containerName,listProjectContainers} from '../packages/runtime-podman/di
 // Run after pnpm typecheck. Uses only disposable containers, no published ports.
 const exec=promisify(execFile);
 const podman=async(...args)=>(await exec('podman',args,{timeout:180000})).stdout.trim();
-const prefix=`loom-review-${process.pid}`;
+const prefix=`devroost-review-${process.pid}`;
 const redis=containerName(prefix,"redis"), pg=containerName(prefix,"pg"), foreign=containerName(`${prefix}-extra`,"web"), volume=`${prefix}-data`;
 const sqlite=containerName(prefix,"sqlite"), writer=containerName(prefix,"writer"), sqliteVolume=`${prefix}-sqlite`;
-const root=await mkdtemp(join(tmpdir(),'loom-review-live-'));
+const root=await mkdtemp(join(tmpdir(),'devroost-review-live-'));
 try {
  await podman('volume','create',volume);
  await podman('run','-d','--name',redis,'--label',`devroost.project=${prefix}`,'--network','none','-v',`${volume}:/data`,'docker.io/library/redis:7','redis-server','--appendonly','yes');
@@ -40,7 +40,7 @@ try {
  console.log('PASS PostgreSQL: invalid SQL causes restore rejection');
  await podman('volume','create',sqliteVolume);
  await podman('run','-d','--name',sqlite,'--label',`devroost.project=${prefix}`,'--network','none','-v',`${sqliteVolume}:/data`,'--entrypoint','sh','docker.io/keinos/sqlite3:3.46.1','-c','tail -f /dev/null');
- const python = 'import sqlite3,time; db=sqlite3.connect("/data/loom.db"); db.execute("PRAGMA journal_mode=WAL"); db.execute("CREATE TABLE important(value TEXT)"); db.execute("INSERT INTO important VALUES (42)"); db.commit(); open("/data/writer-ready","w").close(); time.sleep(120)';
+ const python = 'import sqlite3,time; db=sqlite3.connect("/data/devroost.db"); db.execute("PRAGMA journal_mode=WAL"); db.execute("CREATE TABLE important(value TEXT)"); db.execute("INSERT INTO important VALUES (42)"); db.commit(); open("/data/writer-ready","w").close(); time.sleep(120)';
  await podman('run','-d','--name',writer,'--network','none','--volumes-from',sqlite,'docker.io/library/python:3.13-slim-trixie','python','-c',python);
  let writerReady=false;
  for(let i=0;i<50;i++){try{await podman('exec',sqlite,'test','-f','/data/writer-ready');writerReady=true;break;}catch{await new Promise(r=>setTimeout(r,100));}}

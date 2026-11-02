@@ -631,7 +631,7 @@ test("all bootstrap definitions resolve exact packages and gem installs", async 
     const invocation = calls[0]!.args.join(" ");
     assert.ok(calls[0]!.args.includes(definition.generator.image), `${id} image`);
     if (definition.generator.package === "wordpress") {
-      assert.match(definition.generator.image, /^ghcr\.io\/loom-development\/loom-wordpress@sha256:[a-f0-9]{64}$/, `${id} published image`);
+      assert.match(definition.generator.image, /^ghcr\.io\/devroost-org\/devroost-wordpress@sha256:[a-f0-9]{64}$/, `${id} published image`);
     } else if (definition.generator.package.includes("/")) {
       assert.match(invocation, new RegExp(`${definition.generator.package.replace("/", "\\/")}:${definition.generator.version.replaceAll(".", "\\.")}(?:\\s|$)`), id);
     } else {

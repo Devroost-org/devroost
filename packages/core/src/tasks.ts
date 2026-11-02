@@ -1,16 +1,16 @@
-import type { LoomConfig, LoomTask } from "@loom/config";
+import type { DevroostConfig, DevroostTask } from "@devroost/config";
 
 export function getConfiguredTask(
-  config: LoomConfig,
+  config: DevroostConfig,
   taskName: string
-): LoomTask | undefined {
+): DevroostTask | undefined {
   return config.tasks?.[taskName];
 }
 
 export function requireConfiguredTask(
-  config: LoomConfig,
+  config: DevroostConfig,
   taskName: string
-): LoomTask {
+): DevroostTask {
   const task = getConfiguredTask(config, taskName);
   if (!task) {
     throw new Error(`Task '${taskName}' is not defined in devroost.yaml.`);

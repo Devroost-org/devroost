@@ -6,11 +6,11 @@ import { createPublishedImageResolver } from "./image-pins.js";
 const digest = (character: string): string => `sha256:${character.repeat(64)}`;
 const validDocument = {
   schemaVersion: 1,
-  registry: "ghcr.io/loom-development",
+  registry: "ghcr.io/devroost-org",
   images: [
     {
-      name: "loom-node-24",
-      image: "ghcr.io/loom-development/loom-node-24",
+      name: "devroost-node-24",
+      image: "ghcr.io/devroost-org/devroost-node-24",
       digest: digest("a")
     }
   ]
@@ -20,8 +20,8 @@ test("resolves a published image to its immutable GHCR manifest", () => {
   const resolveImage = createPublishedImageResolver(validDocument);
 
   assert.equal(
-    resolveImage("loom-node-24"),
-    `ghcr.io/loom-development/loom-node-24@${digest("a")}`
+    resolveImage("devroost-node-24"),
+    `ghcr.io/devroost-org/devroost-node-24@${digest("a")}`
   );
 });
 
@@ -31,8 +31,8 @@ test("rejects an unsupported schema and registry", () => {
     /schemaVersion.*1/i
   );
   assert.throws(
-    () => createPublishedImageResolver({ ...validDocument, registry: "docker.io/loom-development" }),
-    /registry.*ghcr\.io\/loom-development/i
+    () => createPublishedImageResolver({ ...validDocument, registry: "docker.io/devroost-org" }),
+    /registry.*ghcr\.io\/devroost-org/i
   );
 });
 
@@ -42,14 +42,14 @@ test("rejects duplicate, malformed, and mismatched image records", () => {
       ...validDocument,
       images: [...validDocument.images, validDocument.images[0]]
     }),
-    /duplicate.*loom-node-24/i
+    /duplicate.*devroost-node-24/i
   );
   assert.throws(
     () => createPublishedImageResolver({
       ...validDocument,
-      images: [{ ...validDocument.images[0], image: "ghcr.io/loom-development/wrong" }]
+      images: [{ ...validDocument.images[0], image: "ghcr.io/devroost-org/wrong" }]
     }),
-    /loom-node-24.*repository/i
+    /devroost-node-24.*repository/i
   );
   for (const invalidDigest of [`sha256:${"A".repeat(64)}`, "sha256:short"]) {
     assert.throws(
@@ -57,7 +57,7 @@ test("rejects duplicate, malformed, and mismatched image records", () => {
         ...validDocument,
         images: [{ ...validDocument.images[0], digest: invalidDigest }]
       }),
-      /loom-node-24.*digest/i
+      /devroost-node-24.*digest/i
     );
   }
 });
@@ -65,5 +65,5 @@ test("rejects duplicate, malformed, and mismatched image records", () => {
 test("rejects an unknown requested image", () => {
   const resolveImage = createPublishedImageResolver(validDocument);
 
-  assert.throws(() => resolveImage("loom-node-22"), /unknown.*loom-node-22/i);
+  assert.throws(() => resolveImage("devroost-node-22"), /unknown.*devroost-node-22/i);
 });

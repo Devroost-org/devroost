@@ -1,4 +1,4 @@
-# @loom/config
+# @devroost/config
 
 Configuration loading and validation for Devroost projects.
 

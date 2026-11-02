@@ -1,10 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import type { LoomService } from "@loom/config";
+import type { DevroostService } from "@devroost/config";
 import { serviceConfigHash } from "./containers.js";
 import { ensureComposerAvailableWithDependencies, ensureServiceStartedWithDependencies } from "./lifecycle.js";
 
-const service: LoomService = {
+const service: DevroostService = {
   type: "node",
   image: "node:20-alpine",
   command: "node server.js",
@@ -73,7 +73,7 @@ test("ensureServiceStarted recreates a matching container when its bind mount so
     inspectContainerLabelByName: async (_name, label) => label === "devroost.project" ? "demo" : serviceConfigHash(service),
     startContainerByName: async () => {
       throw new Error(
-        "Failed to start existing container 'demo-app': Error: unable to start container 'abc': crun: cannot stat `/tmp/loom-release-smoke/demo/data/mysql`: No such file or directory: OCI runtime attempted to invoke a command that was not found"
+        "Failed to start existing container 'demo-app': Error: unable to start container 'abc': crun: cannot stat `/tmp/devroost-release-smoke/demo/data/mysql`: No such file or directory: OCI runtime attempted to invoke a command that was not found"
       );
     },
     removeContainerByName: async (name) => {

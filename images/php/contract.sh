@@ -6,7 +6,7 @@ trap 'status=$?; printf "PHP contract failed at line %s: %s\n" "${LINENO}" "${BA
 image_reference="${1:?usage: contract.sh <image-reference>}"
 contract_directory="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 test_directory="$(mktemp -d)"
-container_name="loom-php-contract-$$"
+container_name="devroost-php-contract-$$"
 
 cleanup() {
   podman rm --force "${container_name}" >/dev/null 2>&1 || true
@@ -32,18 +32,18 @@ apache_modules="$(podman run --rm "${image_reference}" apache2ctl -M 2>/dev/null
 grep -q 'rewrite_module' <<<"${apache_modules}"
 
 mkdir -p "${test_directory}/project/public"
-printf '%s\n' '<?php echo "loom-php-ready";' \
+printf '%s\n' '<?php echo "devroost-php-ready";' \
   >"${test_directory}/project/public/index.php"
 
 podman run --detach --name "${container_name}" \
-  --env LOOM_DOCUMENT_ROOT=/workspace/public \
+  --env DEVROOST_DOCUMENT_ROOT=/workspace/public \
   --volume "${test_directory}/project:/workspace:Z" \
   "${image_reference}" >/dev/null
 
 ready=0
 for _attempt in 1 2 3 4 5 6 7 8 9 10; do
   if [[ "$(podman exec "${container_name}" php -r \
-    'echo @file_get_contents("http://127.0.0.1/");' 2>/dev/null)" == "loom-php-ready" ]]; then
+    'echo @file_get_contents("http://127.0.0.1/");' 2>/dev/null)" == "devroost-php-ready" ]]; then
     ready=1
     break
   fi

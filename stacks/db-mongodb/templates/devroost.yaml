@@ -1,5 +1,5 @@
 version: 1
-name: loom-db-mongodb
+name: devroost-db-mongodb
 runtime:
   engine: podman
   rootless: true
@@ -8,11 +8,11 @@ runtime:
 services:
   db:
     type: mongodb
-    image: ${MONGO_IMAGE:-ghcr.io/loom-development/mongo-7.0@sha256:406a4fdca9fc763443268f000218d3849ef8996f66ed9e92ba0b501b446ab822}
+    image: ${MONGO_IMAGE:-ghcr.io/devroost-org/mongo-7.0@sha256:406a4fdca9fc763443268f000218d3849ef8996f66ed9e92ba0b501b446ab822}
     env:
-      MONGO_INITDB_ROOT_USERNAME: loom
-      MONGO_INITDB_ROOT_PASSWORD: loom
-      MONGO_INITDB_DATABASE: loom
+      MONGO_INITDB_ROOT_USERNAME: devroost
+      MONGO_INITDB_ROOT_PASSWORD: devroost
+      MONGO_INITDB_DATABASE: devroost
     ports:
       - "27017:27017"
     volumes:

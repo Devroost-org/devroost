@@ -8,7 +8,7 @@ runtime:
 services:
   app:
     type: java
-    image: ${JAVA_IMAGE:-ghcr.io/loom-development/loom-java-21@sha256:dd2c87a716b9f86d94cacc5db4b7b44ec3ba864f33ca3d6823461f84522dbe7e}
+    image: ${JAVA_IMAGE:-ghcr.io/devroost-org/devroost-java-21@sha256:dd2c87a716b9f86d94cacc5db4b7b44ec3ba864f33ca3d6823461f84522dbe7e}
     userns: keep-id
     execUser: ${HOST_UID:-1000}:${HOST_GID:-1000}
     workdir: /workspace

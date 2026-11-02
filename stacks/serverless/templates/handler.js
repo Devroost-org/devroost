@@ -34,11 +34,11 @@ function json(statusCode, payload) {
 
 module.exports.health = async () =>
   json(200, {
-    stack: process.env.LOOM_STACK ?? "serverless",
+    stack: process.env.DEVROOST_STACK ?? "serverless",
     status: "ok",
     runtime: "nodejs22.x",
     local: true,
-    updatedFor: process.env.LOOM_UPDATED_FOR ?? "2026"
+    updatedFor: process.env.DEVROOST_UPDATED_FOR ?? "2026"
   });
 
 module.exports.feed = async () =>
@@ -47,7 +47,7 @@ module.exports.feed = async () =>
     subtitle: "A 2026 local workflow for function endpoints, webhook ingestion, and static frontend delivery.",
     endpoints: ["GET /api/health", "GET /api/feed", "POST /api/webhooks/content"],
     features,
-    updatedFor: process.env.LOOM_UPDATED_FOR ?? "2026"
+    updatedFor: process.env.DEVROOST_UPDATED_FOR ?? "2026"
   });
 
 module.exports.ingest = async (event) => {

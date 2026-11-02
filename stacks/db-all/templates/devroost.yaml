@@ -1,5 +1,5 @@
 version: 1
-name: loom-db-all
+name: devroost-db-all
 runtime:
   engine: podman
   rootless: true
@@ -8,18 +8,18 @@ runtime:
 services:
   mysql:
     type: mysql
-    image: ${MYSQL_IMAGE:-ghcr.io/loom-development/mysql-8.4@sha256:b3b90af2a6552ae30c266fdb7d5dd55f3afb72404bb78d37fe8a23eb857fd3fb}
+    image: ${MYSQL_IMAGE:-ghcr.io/devroost-org/mysql-8.4@sha256:b3b90af2a6552ae30c266fdb7d5dd55f3afb72404bb78d37fe8a23eb857fd3fb}
     env:
-      MYSQL_ROOT_PASSWORD: loomroot
-      MYSQL_DATABASE: loom
-      MYSQL_USER: loom
-      MYSQL_PASSWORD: loom
+      MYSQL_ROOT_PASSWORD: devroostroot
+      MYSQL_DATABASE: devroost
+      MYSQL_USER: devroost
+      MYSQL_PASSWORD: devroost
     ports:
       - "3306:3306"
     volumes:
       - ./data/mysql:/var/lib/mysql
     healthcheck:
-      command: mysqladmin ping -h 127.0.0.1 -uroot -ploomroot
+      command: mysqladmin ping -h 127.0.0.1 -uroot -pdevroostroot
       intervalSeconds: 3
       timeoutSeconds: 3
       retries: 30
@@ -27,10 +27,10 @@ services:
 
   sqlserver:
     type: sqlserver
-    image: ${MSSQL_IMAGE:-ghcr.io/loom-development/mssql-2022@sha256:ba4c8329f48fb8f02e1416be6a930ebfd71268caee78aa985f3af4315e457c89}
+    image: ${MSSQL_IMAGE:-ghcr.io/devroost-org/mssql-2022@sha256:ba4c8329f48fb8f02e1416be6a930ebfd71268caee78aa985f3af4315e457c89}
     env:
       ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: "LoomDev!Passw0rd"
+      MSSQL_SA_PASSWORD: "DevroostDev!Passw0rd"
       MSSQL_PID: Developer
     ports:
       - "1433:1433"
@@ -39,17 +39,17 @@ services:
 
   postgres:
     type: postgres
-    image: ${POSTGRES_IMAGE:-ghcr.io/loom-development/postgres-16@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685}
+    image: ${POSTGRES_IMAGE:-ghcr.io/devroost-org/postgres-16@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685}
     env:
-      POSTGRES_USER: loom
-      POSTGRES_PASSWORD: loom
-      POSTGRES_DB: loom
+      POSTGRES_USER: devroost
+      POSTGRES_PASSWORD: devroost
+      POSTGRES_DB: devroost
     ports:
       - "5432:5432"
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
     healthcheck:
-      command: pg_isready -U loom
+      command: pg_isready -U devroost
       intervalSeconds: 3
       timeoutSeconds: 3
       retries: 30
@@ -57,11 +57,11 @@ services:
 
   mongodb:
     type: mongodb
-    image: ${MONGO_IMAGE:-ghcr.io/loom-development/mongo-7.0@sha256:406a4fdca9fc763443268f000218d3849ef8996f66ed9e92ba0b501b446ab822}
+    image: ${MONGO_IMAGE:-ghcr.io/devroost-org/mongo-7.0@sha256:406a4fdca9fc763443268f000218d3849ef8996f66ed9e92ba0b501b446ab822}
     env:
-      MONGO_INITDB_ROOT_USERNAME: loom
-      MONGO_INITDB_ROOT_PASSWORD: loom
-      MONGO_INITDB_DATABASE: loom
+      MONGO_INITDB_ROOT_USERNAME: devroost
+      MONGO_INITDB_ROOT_PASSWORD: devroost
+      MONGO_INITDB_DATABASE: devroost
     ports:
       - "27017:27017"
     volumes:
@@ -69,7 +69,7 @@ services:
 
   redis:
     type: redis
-    image: ${REDIS_IMAGE:-ghcr.io/loom-development/redis-7.4@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf}
+    image: ${REDIS_IMAGE:-ghcr.io/devroost-org/redis-7.4@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf}
     command: redis-server --appendonly yes
     ports:
       - "6379:6379"
@@ -84,7 +84,7 @@ services:
 
   elasticsearch:
     type: elasticsearch
-    image: ${ELASTICSEARCH_IMAGE:-ghcr.io/loom-development/elasticsearch-8.19@sha256:e4797708584bd0df7c746b33a6640d243018a0ae8c8b088391c6f4675a3bef52}
+    image: ${ELASTICSEARCH_IMAGE:-ghcr.io/devroost-org/elasticsearch-8.19@sha256:e4797708584bd0df7c746b33a6640d243018a0ae8c8b088391c6f4675a3bef52}
     env:
       discovery.type: single-node
       xpack.security.enabled: "false"
@@ -97,29 +97,29 @@ services:
 
   sqlite:
     type: sqlite
-    image: ${SQLITE_IMAGE:-ghcr.io/loom-development/loom-sqlite-3@sha256:fb5d256f745a6e26fc5a416e2491f33e02eaba00abd4d786f51a5c8e74667f07}
+    image: ${SQLITE_IMAGE:-ghcr.io/devroost-org/devroost-sqlite-3@sha256:fb5d256f745a6e26fc5a416e2491f33e02eaba00abd4d786f51a5c8e74667f07}
     user: ${HOST_UID:-1000}:${HOST_GID:-1000}
     userns: keep-id
     entrypoint: ""
-    command: sh -c "sqlite3 /data/loom.db 'select 1;' && tail -f /dev/null"
+    command: sh -c "sqlite3 /data/devroost.db 'select 1;' && tail -f /dev/null"
     workdir: /data
     volumes:
       - ./data/sqlite:/data
 
   mariadb:
     type: mariadb
-    image: ${MARIADB_IMAGE:-ghcr.io/loom-development/mariadb-11.8@sha256:2439dcd7d14010ecd1ff7a4e1c5abe8e208c34fe35290744deeeaac3569043c3}
+    image: ${MARIADB_IMAGE:-ghcr.io/devroost-org/mariadb-11.8@sha256:2439dcd7d14010ecd1ff7a4e1c5abe8e208c34fe35290744deeeaac3569043c3}
     env:
-      MARIADB_ROOT_PASSWORD: loomroot
-      MARIADB_DATABASE: loom
-      MARIADB_USER: loom
-      MARIADB_PASSWORD: loom
+      MARIADB_ROOT_PASSWORD: devroostroot
+      MARIADB_DATABASE: devroost
+      MARIADB_USER: devroost
+      MARIADB_PASSWORD: devroost
     ports:
       - "3307:3306"
     volumes:
       - ./data/mariadb:/var/lib/mysql
     healthcheck:
-      command: mariadb-admin ping -h 127.0.0.1 -uroot -ploomroot
+      command: mariadb-admin ping -h 127.0.0.1 -uroot -pdevroostroot
       intervalSeconds: 3
       timeoutSeconds: 3
       retries: 30

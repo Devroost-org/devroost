@@ -6,9 +6,9 @@ import { randomBytes } from "node:crypto";
 import { basename, dirname, isAbsolute, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import packageJson from "../package.json" with { type: "json" };
-import { loadLoomProject } from "@loom/config";
-import { formatStartupNotice, LoomOrchestrator } from "@loom/core";
-import { runNamedTask } from "@loom/tasks";
+import { loadDevroostProject } from "@devroost/config";
+import { formatStartupNotice, DevroostOrchestrator } from "@devroost/core";
+import { runNamedTask } from "@devroost/tasks";
 import { detectInitTemplateSuggestion } from "./init-detect.js";
 import { confirmProjectClean } from "./clean-prompt.js";
 import { buildDatabaseServiceBlock } from "./database-service.js";
@@ -99,10 +99,10 @@ function withErrorHandling<TArgs extends unknown[]>(fn: (...args: TArgs) => Prom
   };
 }
 
-async function bootstrapProject(configPath?: string): Promise<LoomOrchestrator> {
-  const project = await loadLoomProject(configPath);
+async function bootstrapProject(configPath?: string): Promise<DevroostOrchestrator> {
+  const project = await loadDevroostProject(configPath);
   process.chdir(project.projectRoot);
-  return new LoomOrchestrator(project.config, project.projectRoot);
+  return new DevroostOrchestrator(project.config, project.projectRoot);
 }
 
 async function ensureEnvFileFromExample(targetDir: string): Promise<void> {
@@ -233,10 +233,10 @@ async function applyProjectName(targetDir: string): Promise<void> {
   const devroostPath = resolve(targetDir, "devroost.yaml");
   const projectName = deriveProjectName(targetDir);
   const devroostYaml = await readFile(devroostPath, "utf8");
-  const updatedLoomYaml = renderProjectName(devroostYaml, projectName);
+  const updatedDevroostYaml = renderProjectName(devroostYaml, projectName);
 
-  if (updatedLoomYaml !== devroostYaml) {
-    await writeFile(devroostPath, updatedLoomYaml, "utf8");
+  if (updatedDevroostYaml !== devroostYaml) {
+    await writeFile(devroostPath, updatedDevroostYaml, "utf8");
   }
 }
 
@@ -359,8 +359,8 @@ async function customizeDbTemplateCredentials(targetDir: string): Promise<void> 
   const token = normalizeProjectToken(targetName);
   const suffix = randomBytes(3).toString("hex");
 
-  const appUser = `loom_${token}_${suffix}`.slice(0, 30);
-  const appDb = `loom_${token}`.slice(0, 30);
+  const appUser = `devroost_${token}_${suffix}`.slice(0, 30);
+  const appDb = `devroost_${token}`.slice(0, 30);
   const appPassword = `Devroost!${suffix}9aA`;
   const rootPassword = `Root!${suffix}9aA`;
   const mssqlPassword = `Devroost${suffix}!9aA`;
@@ -734,7 +734,7 @@ cli
   .action(
     withErrorHandling(async (options: { config?: string; json?: boolean }) => {
       const configPath = resolve(process.cwd(), options.config ?? "devroost.yaml");
-      const project = await loadLoomProject(configPath);
+      const project = await loadDevroostProject(configPath);
       const manifest = await loadProjectManifest(project.projectRoot);
       const stack = manifest.kind === "missing" ? undefined : findStackDefinition(manifest.manifest.stack.id);
       const results = await runProjectDoctor({
@@ -758,7 +758,7 @@ cli
   .action(
     withErrorHandling(async (options: { config?: string; force?: boolean; dryRun?: boolean }) => {
       const configPath = resolve(process.cwd(), options.config ?? "devroost.yaml");
-      const project = await loadLoomProject(configPath);
+      const project = await loadDevroostProject(configPath);
       const loaded = await loadProjectManifest(project.projectRoot);
       if (loaded.kind === "missing") {
         throw new Error(`No Devroost project manifest found in '${project.projectRoot}'. Run 'devroost init' or 'devroost adopt' first.`);

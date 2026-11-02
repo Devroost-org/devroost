@@ -1,7 +1,7 @@
-# Loom image catalog
+# Devroost image catalog
 
-Loom publishes application runtimes and verified infrastructure mirrors below
-`ghcr.io/loom-development`. New stack templates consume immutable manifest
+Devroost publishes application runtimes and verified infrastructure mirrors below
+`ghcr.io/devroost-org`. New stack templates consume immutable manifest
 digests from `images/digests.json`; they do not consume the human-readable tags.
 Existing projects keep the image references already written to their local
 configuration.
@@ -32,8 +32,8 @@ pnpm test:images
 Build and contract-test a custom runtime with:
 
 ```sh
-node scripts/images/build.mjs loom-node-24 --platform linux/amd64
-node scripts/images/test-image.mjs loom-node-24 localhost/loom-node-24:24.22.2-loom.1
+node scripts/images/build.mjs devroost-node-24 --platform linux/amd64
+node scripts/images/test-image.mjs devroost-node-24 localhost/devroost-node-24:24.22.2-devroost.1
 ```
 
 Mirror and readiness-test an infrastructure image after authenticating to
@@ -41,7 +41,7 @@ GHCR with Podman/Skopeo:
 
 ```sh
 node scripts/images/mirror.mjs redis-7.4
-node scripts/images/test-mirror.mjs redis-7.4 ghcr.io/loom-development/redis-7.4:7.4.12-alpine3.21
+node scripts/images/test-mirror.mjs redis-7.4 ghcr.io/devroost-org/redis-7.4:7.4.12-alpine3.21
 ```
 
 ## Release and update flow
@@ -61,14 +61,14 @@ release images -> merge automation/image-digests -> pnpm images:sync-stacks -> p
 ```
 
 The synchronization command regenerates `stacks/published-image-data.ts` and
-updates each stack's `loom.yaml`, `.env.example`, and README from its compiled
+updates each stack's `devroost.yaml`, `.env.example`, and README from its compiled
 definition. Running it twice must produce no additional changes.
 
 Every Monday at 09:17 UTC, `images-update.yml` checks whether the registry
 digest behind each explicitly pinned upstream tag changed. It reuses
 `automation/image-updates` and makes no commit when generated catalog bytes are
 unchanged. Version-tag upgrades are intentionally explicit: update the source
-tag and Loom version together, then let normal image CI verify the change.
+tag and Devroost version together, then let normal image CI verify the change.
 
 A registry lookup failure stops the update before `catalog.json` is written.
 Rerun the workflow after the registry recovers; the last known-good release and

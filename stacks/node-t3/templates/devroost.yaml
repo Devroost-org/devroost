@@ -8,11 +8,11 @@ runtime:
 services:
   app:
     type: node
-    image: ${NODE_IMAGE:-ghcr.io/loom-development/loom-node-24@sha256:5bdb11d871f1cea2d5c20305e35d63ab199d23d9b8be69135fc615425f38420c}
+    image: ${NODE_IMAGE:-ghcr.io/devroost-org/devroost-node-24@sha256:5bdb11d871f1cea2d5c20305e35d63ab199d23d9b8be69135fc615425f38420c}
     user: ${HOST_UID:-1000}:${HOST_GID:-1000}
     userns: keep-id
     workdir: /workspace
-    command: sh -c 'mkdir -p /tmp/loom-home && HOME=/tmp/loom-home corepack pnpm install && HOME=/tmp/loom-home exec corepack pnpm dev'
+    command: sh -c 'mkdir -p /tmp/devroost-home && HOME=/tmp/devroost-home corepack pnpm install && HOME=/tmp/devroost-home exec corepack pnpm dev'
     ports:
       - "3003:3003"
     volumes:

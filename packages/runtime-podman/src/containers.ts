@@ -4,7 +4,7 @@ import { resolve, join } from "node:path";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { tmpdir, userInfo } from "node:os";
-import type { LoomService } from "@loom/config";
+import type { DevroostService } from "@devroost/config";
 import { runPodman } from "./podman.js";
 
 const execFileAsync = promisify(execFile);
@@ -233,7 +233,7 @@ export async function inspectContainerLabel(name: string, label: string): Promis
   return labelInspect.ok ? labelInspect.stdout.trim() : "";
 }
 
-export function serviceConfigHash(service: LoomService): string {
+export function serviceConfigHash(service: DevroostService): string {
   const signature = {
     type: service.type,
     image: normalizeImage(service.image),
@@ -274,7 +274,7 @@ export async function startContainer(name: string): Promise<void> {
   }
 }
 
-function appendHealthcheckArgs(args: string[], service: LoomService): void {
+function appendHealthcheckArgs(args: string[], service: DevroostService): void {
   if (!service.healthcheck?.command) {
     return;
   }
@@ -289,7 +289,7 @@ function appendHealthcheckArgs(args: string[], service: LoomService): void {
 export async function buildPodmanRunArgs(
   serviceName: string,
   containerNameValue: string,
-  service: LoomService,
+  service: DevroostService,
   networkName: string,
   expectedImage: string,
   expectedServiceHash: string,
@@ -338,7 +338,7 @@ export async function buildPodmanRunArgs(
 
   appendHealthcheckArgs(args, service);
   args.push("--label", `devroost.project=${projectName}`);
-  args.push("--label", `loom.service-hash=${expectedServiceHash}`);
+  args.push("--label", `devroost.service-hash=${expectedServiceHash}`);
   args.push(expectedImage);
 
   if (service.command) {

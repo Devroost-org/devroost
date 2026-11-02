@@ -5,7 +5,7 @@ trap 'status=$?; printf "Node contract failed at line %s: %s\n" "${LINENO}" "${B
 
 image_reference="${1:?usage: contract.sh <image-reference>}"
 test_directory="$(mktemp -d)"
-container_name="loom-node-contract-$$"
+container_name="devroost-node-contract-$$"
 
 cleanup() {
   podman rm --force "${container_name}" >/dev/null 2>&1 || true
@@ -53,16 +53,16 @@ fi
 
 mkdir -p "${test_directory}/dependency"
 printf '%s\n' \
-  '{"name":"loom-contract-dependency","version":"1.0.0","main":"index.js"}' \
+  '{"name":"devroost-contract-dependency","version":"1.0.0","main":"index.js"}' \
   >"${test_directory}/dependency/package.json"
-printf '%s\n' 'module.exports = "loom-node-ready";' \
+printf '%s\n' 'module.exports = "devroost-node-ready";' \
   >"${test_directory}/dependency/index.js"
 
 for package_manager in npm pnpm yarn; do
   project_directory="${test_directory}/${package_manager}"
   mkdir -p "${project_directory}"
   printf '%s\n' \
-    '{"name":"loom-contract-app","version":"1.0.0","private":true,"dependencies":{"loom-contract-dependency":"file:../dependency"}}' \
+    '{"name":"devroost-contract-app","version":"1.0.0","private":true,"dependencies":{"devroost-contract-dependency":"file:../dependency"}}' \
     >"${project_directory}/package.json"
 
   install_arguments=(install --ignore-scripts)
@@ -88,11 +88,11 @@ for package_manager in npm pnpm yarn; do
     --volume "${test_directory}:/contract:Z" \
     --workdir "/contract/${package_manager}" \
     "${image_reference}" "${runtime_command[@]}" --eval \
-    'if (require("loom-contract-dependency") !== "loom-node-ready") process.exit(1);'
+    'if (require("devroost-contract-dependency") !== "devroost-node-ready") process.exit(1);'
 done
 
 printf '%s\n' \
-  'require("http").createServer((_request, response) => response.end("loom-node-ready")).listen(3000);' \
+  'require("http").createServer((_request, response) => response.end("devroost-node-ready")).listen(3000);' \
   >"${test_directory}/server.js"
 podman run --detach --name "${container_name}" \
   --volume "${test_directory}:/contract:Z" \
@@ -103,7 +103,7 @@ ready=0
 for _attempt in 1 2 3 4 5 6 7 8 9 10; do
   if [[ "$(podman exec "${container_name}" node --input-type=module --eval \
     'process.stdout.write(await (await fetch("http://127.0.0.1:3000")).text())' \
-    2>/dev/null)" == "loom-node-ready" ]]; then
+    2>/dev/null)" == "devroost-node-ready" ]]; then
     ready=1
     break
   fi

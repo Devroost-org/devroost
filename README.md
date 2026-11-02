@@ -4,6 +4,13 @@
 
 # Devroost — local development CLI
 
+**Install globally:**
+
+```bash
+npm i -g devroost
+```
+
+
 Devroost (`devroost` on npm) creates and runs full-stack dev environments with Podman.
 Choose a development stack, start it, and work with the source files in your
 normal editor. Devroost handles application runtimes, databases, startup order,
@@ -59,7 +66,7 @@ below run the same CLI and require Node.js 24 or newer and Podman.
 **For regular use, install globally:**
 
 ```bash
-npm install --global devroost
+npm i -g devroost
 devroost --version
 devroost --help
 ```
@@ -68,7 +75,7 @@ This installs the `devroost` command for use from any project directory. Update 
 when you want a newer release:
 
 ```bash
-npm install --global devroost@latest
+npm i -g devroost@latest
 ```
 
 **To try Devroost without a global install, use npx:**
@@ -80,24 +87,13 @@ npx devroost@latest --help
 `npx` downloads the package if needed and stores it in npm's cache. It may ask
 before downloading. Use `npx devroost@latest` in place of `devroost` in the examples
 throughout this documentation. The `@latest` suffix explicitly requests npm's
-latest published release; use a specific version, such as `devroost@0.3.9`, when
+latest published release; use a specific version, such as `devroost@0.3.10`, when
 you need repeatable runs. See the [npm npx documentation](https://docs.npmjs.com/cli/v11/commands/npx/)
 for package selection and caching details.
 
 Internet access is needed to download or update the CLI. Project startup may
 also need internet access to pull container images and install application
 dependencies, regardless of how you run Devroost.
-
-**Migrating from the previous package name:**
-
-If you installed `@loomdev/cli` globally, replace it with `devroost`:
-
-```bash
-npm uninstall --global @loomdev/cli
-npm install --global devroost
-```
-
-Your project files stay in place, and the command remains `devroost`.
 
 ### From a GitHub Release
 
@@ -158,7 +154,7 @@ The first start can take a few minutes because Podman may need to download image
 and the project may need to install dependencies. Later starts are usually faster.
 
 New projects default to immutable Devroost runtime and database images published at
-`ghcr.io/loom-development`. The exact digest is written into `devroost.yaml`, so the
+`ghcr.io/devroost-org`. The exact digest is written into `devroost.yaml`, so the
 same project uses the same image on every machine. Existing projects are not
 rewritten automatically. To choose another compatible image, set the matching
 `*_IMAGE` value in the project's `.env` file.

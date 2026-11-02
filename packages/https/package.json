@@ -1,9 +1,9 @@
 {
-  "name": "@loom/https",
+  "name": "@devroost/https",
   "version": "0.1.1",
   "description": "Local HTTPS certificate utilities for Devroost routes.",
   "keywords": [
-    "loom",
+    "devroost",
     "https",
     "certificates"
   ],

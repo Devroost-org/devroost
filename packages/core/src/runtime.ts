@@ -1,5 +1,5 @@
 import { existsSync } from "node:fs";
-import type { LoomConfig } from "@loom/config";
+import type { DevroostConfig } from "@devroost/config";
 import type { OrchestratorDependencies } from "./dependencies.js";
 
 type RuntimeDependencies = Pick<
@@ -17,7 +17,7 @@ function rootlessRuntimePath(uid: number, runtimeDir?: string): string {
 }
 
 function assertLinuxRootlessRuntimeReady(
-  config: LoomConfig,
+  config: DevroostConfig,
   dependencies: RuntimeDependencies
 ): void {
   const platform = dependencies.platform ?? process.platform;
@@ -44,7 +44,7 @@ function assertLinuxRootlessRuntimeReady(
 }
 
 export async function ensureRuntimeReady(
-  config: LoomConfig,
+  config: DevroostConfig,
   dependencies: RuntimeDependencies
 ): Promise<void> {
   assertLinuxRootlessRuntimeReady(config, dependencies);

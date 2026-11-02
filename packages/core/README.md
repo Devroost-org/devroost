@@ -1,11 +1,11 @@
-# @loom/core
+# @devroost/core
 
 Core orchestration layer for Devroost.
 
 - Start/stop/restart orchestration
 - Service/task/backup coordination
 - Runtime and route integration
-- Public API remains centered on `LoomOrchestrator`; internal orchestration logic is split into focused helper modules.
+- Public API remains centered on `DevroostOrchestrator`; internal orchestration logic is split into focused helper modules.
 
 ## Internal module boundaries
 

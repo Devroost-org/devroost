@@ -1,9 +1,9 @@
 {
-  "name": "@loom/tasks",
+  "name": "@devroost/tasks",
   "version": "0.1.1",
   "description": "Task execution helpers for Devroost project workflows.",
   "keywords": [
-    "loom",
+    "devroost",
     "tasks",
     "workflow"
   ],
@@ -39,6 +39,6 @@
     "lint": "echo 'No lint rules configured'"
   },
   "dependencies": {
-    "@loom/core": "workspace:*"
+    "@devroost/core": "workspace:*"
   }
 }

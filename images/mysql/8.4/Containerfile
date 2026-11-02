@@ -1,9 +1,9 @@
-ARG LOOM_BASE_IMAGE
-FROM ${LOOM_BASE_IMAGE}
+ARG DEVROOST_BASE_IMAGE
+FROM ${DEVROOST_BASE_IMAGE}
 
 # GHSA-6q48-6c7w-9gw2: replace MySQL Shell's bundled CA package.
 # Verify the immutable wheel before touching the vendor Python environment.
-ADD https://files.pythonhosted.org/packages/c4/51/29046e48f693c54e5b7412216d447a1d8362c9653148d98c02cdf65fa733/certifi-2026.10.19-py3-none-any.whl /tmp/loom-certifi.whl
-COPY patch-certifi.py /tmp/loom-patch-certifi.py
-RUN /usr/lib/mysqlsh/bin/python3.13 /tmp/loom-patch-certifi.py \
-    && rm /tmp/loom-certifi.whl /tmp/loom-patch-certifi.py
+ADD https://files.pythonhosted.org/packages/c4/51/29046e48f693c54e5b7412216d447a1d8362c9653148d98c02cdf65fa733/certifi-2026.10.19-py3-none-any.whl /tmp/devroost-certifi.whl
+COPY patch-certifi.py /tmp/devroost-patch-certifi.py
+RUN /usr/lib/mysqlsh/bin/python3.13 /tmp/devroost-patch-certifi.py \
+    && rm /tmp/devroost-certifi.whl /tmp/devroost-patch-certifi.py

@@ -3,7 +3,7 @@ set -euo pipefail
 
 image_reference="${1:?usage: contract.sh <image-reference>}"
 test_directory="$(mktemp -d)"
-container_name="loom-python-contract-$$"
+container_name="devroost-python-contract-$$"
 
 cleanup() {
   podman rm --force "${container_name}" >/dev/null 2>&1 || true
@@ -29,7 +29,7 @@ printf '%s\n' \
   '    def do_GET(self):' \
   '        self.send_response(200)' \
   '        self.end_headers()' \
-  '        self.wfile.write(b"loom-python-ready")' \
+  '        self.wfile.write(b"devroost-python-ready")' \
   '    def log_message(self, *_args):' \
   '        pass' \
   'HTTPServer(("0.0.0.0", 8000), Handler).serve_forever()' \
@@ -44,7 +44,7 @@ ready=0
 for _attempt in 1 2 3 4 5 6 7 8 9 10; do
   if [[ "$(podman exec "${container_name}" python3 -c \
     'from urllib.request import urlopen; print(urlopen("http://127.0.0.1:8000").read().decode())' \
-    2>/dev/null)" == "loom-python-ready" ]]; then
+    2>/dev/null)" == "devroost-python-ready" ]]; then
     ready=1
     break
   fi

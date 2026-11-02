@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import type { LoomConfig } from "@loom/config";
+import type { DevroostConfig } from "@devroost/config";
 import { defaultOrchestratorDependencies } from "./dependencies.js";
 import {
   backupAllConfiguredServices,
@@ -11,7 +11,7 @@ import {
 } from "./backup.js";
 
 test("listBackupSupportedServices filters services by supported backup type", () => {
-  const config: LoomConfig = {
+  const config: DevroostConfig = {
     version: 1,
     name: "demo",
     runtime: { engine: "podman", rootless: true },
@@ -68,7 +68,7 @@ test("resolveBackupOutputPath uses explicit and generated output paths", () => {
 
 test("backupConfiguredService validates the service and writes to the resolved path", async () => {
   const savedPaths: string[] = [];
-  const config: LoomConfig = {
+  const config: DevroostConfig = {
     version: 1,
     name: "demo",
     runtime: { engine: "podman", rootless: true },
@@ -91,7 +91,7 @@ test("backupConfiguredService validates the service and writes to the resolved p
 });
 
 test("backupAllConfiguredServices rejects when no supported backup services exist", async () => {
-  const config: LoomConfig = {
+  const config: DevroostConfig = {
     version: 1,
     name: "demo",
     runtime: { engine: "podman", rootless: true },

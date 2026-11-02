@@ -1,5 +1,5 @@
 version: 1
-name: loom-db-mariadb
+name: devroost-db-mariadb
 runtime:
   engine: podman
   rootless: true
@@ -8,18 +8,18 @@ runtime:
 services:
   db:
     type: mariadb
-    image: ${MARIADB_IMAGE:-ghcr.io/loom-development/mariadb-11.8@sha256:2439dcd7d14010ecd1ff7a4e1c5abe8e208c34fe35290744deeeaac3569043c3}
+    image: ${MARIADB_IMAGE:-ghcr.io/devroost-org/mariadb-11.8@sha256:2439dcd7d14010ecd1ff7a4e1c5abe8e208c34fe35290744deeeaac3569043c3}
     env:
-      MARIADB_ROOT_PASSWORD: loomroot
-      MARIADB_DATABASE: loom
-      MARIADB_USER: loom
-      MARIADB_PASSWORD: loom
+      MARIADB_ROOT_PASSWORD: devroostroot
+      MARIADB_DATABASE: devroost
+      MARIADB_USER: devroost
+      MARIADB_PASSWORD: devroost
     ports:
       - "3307:3306"
     volumes:
       - ./data/mariadb:/var/lib/mysql
     healthcheck:
-      command: mariadb-admin ping -h 127.0.0.1 -uroot -ploomroot
+      command: mariadb-admin ping -h 127.0.0.1 -uroot -pdevroostroot
       intervalSeconds: 3
       timeoutSeconds: 3
       retries: 30

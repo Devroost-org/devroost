@@ -3,15 +3,15 @@ import assert from "node:assert/strict";
 import { mkdtemp, mkdir, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { loadLoomConfig, loadLoomProject } from "./index.js";
+import { loadDevroostConfig, loadDevroostProject } from "./index.js";
 
 test("config exports are available", () => {
-  assert.equal(typeof loadLoomConfig, "function");
-  assert.equal(typeof loadLoomProject, "function");
+  assert.equal(typeof loadDevroostConfig, "function");
+  assert.equal(typeof loadDevroostProject, "function");
 });
 
-test("loadLoomProject resolves config from parent directories", async () => {
-  const root = await mkdtemp(join(tmpdir(), "loom-config-"));
+test("loadDevroostProject resolves config from parent directories", async () => {
+  const root = await mkdtemp(join(tmpdir(), "devroost-config-"));
   const nested = join(root, "a", "b");
   await mkdir(nested, { recursive: true });
 
@@ -35,7 +35,7 @@ test("loadLoomProject resolves config from parent directories", async () => {
   const previousCwd = process.cwd();
   process.chdir(nested);
   try {
-    const loaded = await loadLoomProject();
+    const loaded = await loadDevroostProject();
     assert.equal(loaded.config.name, "test-project");
     assert.equal(loaded.projectRoot, root);
   } finally {
@@ -43,8 +43,8 @@ test("loadLoomProject resolves config from parent directories", async () => {
   }
 });
 
-test("loadLoomProject rejects unsafe service names", async () => {
-  const root = await mkdtemp(join(tmpdir(), "loom-config-invalid-service-"));
+test("loadDevroostProject rejects unsafe service names", async () => {
+  const root = await mkdtemp(join(tmpdir(), "devroost-config-invalid-service-"));
   const configPath = join(root, "devroost.yaml");
 
   await writeFile(
@@ -62,11 +62,11 @@ test("loadLoomProject rejects unsafe service names", async () => {
     "utf8"
   );
 
-  await assert.rejects(() => loadLoomProject(configPath), /Service names must start with an alphanumeric character/i);
+  await assert.rejects(() => loadDevroostProject(configPath), /Service names must start with an alphanumeric character/i);
 });
 
-test("loadLoomProject rejects invalid route host", async () => {
-  const root = await mkdtemp(join(tmpdir(), "loom-config-invalid-host-"));
+test("loadDevroostProject rejects invalid route host", async () => {
+  const root = await mkdtemp(join(tmpdir(), "devroost-config-invalid-host-"));
   const configPath = join(root, "devroost.yaml");
 
   await writeFile(
@@ -88,11 +88,11 @@ test("loadLoomProject rejects invalid route host", async () => {
     "utf8"
   );
 
-  await assert.rejects(() => loadLoomProject(configPath), /Route host must be a valid hostname/i);
+  await assert.rejects(() => loadDevroostProject(configPath), /Route host must be a valid hostname/i);
 });
 
-test("loadLoomProject interpolates image strings from .env with defaults", async () => {
-  const root = await mkdtemp(join(tmpdir(), "loom-config-env-"));
+test("loadDevroostProject interpolates image strings from .env with defaults", async () => {
+  const root = await mkdtemp(join(tmpdir(), "devroost-config-env-"));
   const configPath = join(root, "devroost.yaml");
   const envPath = join(root, ".env");
 
@@ -116,13 +116,13 @@ test("loadLoomProject interpolates image strings from .env with defaults", async
     "utf8"
   );
 
-  const loaded = await loadLoomProject(configPath);
+  const loaded = await loadDevroostProject(configPath);
   assert.equal(loaded.config.services.app.image, "node:22-alpine");
   assert.equal(loaded.config.services.cache.image, "redis:7-alpine");
 });
 
-test("loadLoomProject interpolates service user fields from .env", async () => {
-  const root = await mkdtemp(join(tmpdir(), "loom-config-user-env-"));
+test("loadDevroostProject interpolates service user fields from .env", async () => {
+  const root = await mkdtemp(join(tmpdir(), "devroost-config-user-env-"));
   const configPath = join(root, "devroost.yaml");
   const envPath = join(root, ".env");
 
@@ -146,14 +146,14 @@ test("loadLoomProject interpolates service user fields from .env", async () => {
     "utf8"
   );
 
-  const loaded = await loadLoomProject(configPath);
+  const loaded = await loadDevroostProject(configPath);
   assert.equal(loaded.config.services.app.user, "1001:1002");
   assert.equal(loaded.config.services.app.execUser, "1001:1002");
   assert.equal(loaded.config.services.app.userns, "keep-id");
 });
 
-test("loadLoomProject reads optional php composer startup toggle", async () => {
-  const root = await mkdtemp(join(tmpdir(), "loom-config-composer-"));
+test("loadDevroostProject reads optional php composer startup toggle", async () => {
+  const root = await mkdtemp(join(tmpdir(), "devroost-config-composer-"));
   const configPath = join(root, "devroost.yaml");
 
   await writeFile(
@@ -173,12 +173,12 @@ test("loadLoomProject reads optional php composer startup toggle", async () => {
     "utf8"
   );
 
-  const loaded = await loadLoomProject(configPath);
+  const loaded = await loadDevroostProject(configPath);
   assert.equal(loaded.config.services.app.composer, false);
 });
 
-test("loadLoomProject throws when an interpolated variable is missing and has no default", async () => {
-  const root = await mkdtemp(join(tmpdir(), "loom-config-missing-env-"));
+test("loadDevroostProject throws when an interpolated variable is missing and has no default", async () => {
+  const root = await mkdtemp(join(tmpdir(), "devroost-config-missing-env-"));
   const configPath = join(root, "devroost.yaml");
 
   await writeFile(
@@ -197,5 +197,5 @@ test("loadLoomProject throws when an interpolated variable is missing and has no
     "utf8"
   );
 
-  await assert.rejects(() => loadLoomProject(configPath), /Missing required environment variable 'APP_IMAGE'/i);
+  await assert.rejects(() => loadDevroostProject(configPath), /Missing required environment variable 'APP_IMAGE'/i);
 });

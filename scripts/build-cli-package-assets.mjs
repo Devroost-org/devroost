@@ -11,12 +11,12 @@ const distDir = resolve(cliDir, "dist");
 const distStacksDir = resolve(distDir, "stacks");
 const sourceStacksDir = resolve(repoDir, "stacks");
 const workspacePackageAliases = {
-  "@loom/config": resolve(repoDir, "packages", "config", "src", "index.ts"),
-  "@loom/core": resolve(repoDir, "packages", "core", "src", "index.ts"),
-  "@loom/https": resolve(repoDir, "packages", "https", "src", "index.ts"),
-  "@loom/network": resolve(repoDir, "packages", "network", "src", "index.ts"),
-  "@loom/runtime-podman": resolve(repoDir, "packages", "runtime-podman", "src", "index.ts"),
-  "@loom/tasks": resolve(repoDir, "packages", "tasks", "src", "index.ts")
+  "@devroost/config": resolve(repoDir, "packages", "config", "src", "index.ts"),
+  "@devroost/core": resolve(repoDir, "packages", "core", "src", "index.ts"),
+  "@devroost/https": resolve(repoDir, "packages", "https", "src", "index.ts"),
+  "@devroost/network": resolve(repoDir, "packages", "network", "src", "index.ts"),
+  "@devroost/runtime-podman": resolve(repoDir, "packages", "runtime-podman", "src", "index.ts"),
+  "@devroost/tasks": resolve(repoDir, "packages", "tasks", "src", "index.ts")
 };
 function run(command, args, cwd) {
   execFileSync(command, args, { cwd, stdio: "inherit" });

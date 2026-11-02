@@ -9,13 +9,13 @@ import { loadCatalog, validateCatalog } from "./catalog.mjs";
 
 const validCatalog = {
   schemaVersion: 1,
-  registry: "ghcr.io/loom-development",
+  registry: "ghcr.io/devroost-org",
   images: [
     {
-      name: "loom-php",
+      name: "devroost-php",
       kind: "custom",
       source: "docker.io/library/php:8.4.25-apache@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-      version: "8.4.25-loom.1",
+      version: "8.4.25-devroost.1",
       platforms: ["linux/amd64", "linux/arm64"],
       context: "images/php"
     }
@@ -24,18 +24,18 @@ const validCatalog = {
 
 function addDependentImage(catalog, overrides = {}) {
   catalog.images.push({
-    name: "loom-wordpress",
+    name: "devroost-wordpress",
     kind: "custom",
     source: "docker.io/library/wordpress@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-    runtime: "loom-php",
-    version: "6.8.3-php8.4-loom.1",
+    runtime: "devroost-php",
+    version: "6.8.3-php8.4-devroost.1",
     platforms: ["linux/amd64", "linux/arm64"],
     context: "images/wordpress",
     ...overrides
   });
 }
 
-test("accepts a complete Loom image catalog", () => {
+test("accepts a complete Devroost image catalog", () => {
   assert.deepEqual(validateCatalog(validCatalog), []);
 });
 
@@ -44,11 +44,11 @@ test("rejects duplicate image names", () => {
   catalog.images.push(structuredClone(catalog.images[0]));
 
   assert.deepEqual(validateCatalog(catalog), [
-    'images contains duplicate name "loom-php"'
+    'images contains duplicate name "devroost-php"'
   ]);
 });
 
-test("rejects catalog entries that cannot produce immutable Loom images", () => {
+test("rejects catalog entries that cannot produce immutable Devroost images", () => {
   const catalog = structuredClone(validCatalog);
   catalog.registry = "docker.io/example";
   catalog.images[0].source = "docker.io/library/php:8.4-apache";
@@ -56,15 +56,15 @@ test("rejects catalog entries that cannot produce immutable Loom images", () => 
   delete catalog.images[0].context;
 
   assert.deepEqual(validateCatalog(catalog), [
-    'registry must be "ghcr.io/loom-development"',
-    'image "loom-php" source must include an immutable sha256 digest',
-    'image "loom-php" must support linux/amd64 and linux/arm64',
-    'custom image "loom-php" must define a relative context under images/'
+    'registry must be "ghcr.io/devroost-org"',
+    'image "devroost-php" source must include an immutable sha256 digest',
+    'image "devroost-php" must support linux/amd64 and linux/arm64',
+    'custom image "devroost-php" must define a relative context under images/'
   ]);
 });
 
 test("loads a valid catalog from disk", async () => {
-  const directory = await mkdtemp(path.join(tmpdir(), "loom-image-catalog-"));
+  const directory = await mkdtemp(path.join(tmpdir(), "devroost-image-catalog-"));
   const catalogPath = path.join(directory, "catalog.json");
   await writeFile(catalogPath, JSON.stringify(validCatalog));
 
@@ -81,16 +81,16 @@ test("repository catalog covers every approved runtime and mirror", async () => 
   assert.deepEqual(
     catalog.images.map(({ name }) => name),
     [
-      "loom-php",
-      "loom-wordpress",
-      "loom-node-22",
-      "loom-node-24",
-      "loom-python-3.12",
-      "loom-ruby-3.3",
-      "loom-bun-1",
-      "loom-java-21",
-      "loom-dotnet-8",
-      "loom-sqlite-3",
+      "devroost-php",
+      "devroost-wordpress",
+      "devroost-node-22",
+      "devroost-node-24",
+      "devroost-python-3.12",
+      "devroost-ruby-3.3",
+      "devroost-bun-1",
+      "devroost-java-21",
+      "devroost-dotnet-8",
+      "devroost-sqlite-3",
       "postgres-16",
       "mysql-8.4",
       "mariadb-11.8",
@@ -106,7 +106,7 @@ test("reports an invalid catalog document instead of throwing", () => {
   assert.deepEqual(validateCatalog(null), ["catalog must be an object"]);
   assert.deepEqual(validateCatalog({}), [
     "schemaVersion must be 1",
-    'registry must be "ghcr.io/loom-development"',
+    'registry must be "ghcr.io/devroost-org"',
     "images must be an array"
   ]);
 });
@@ -114,7 +114,7 @@ test("reports an invalid catalog document instead of throwing", () => {
 test("reports malformed image entry fields", () => {
   const catalog = {
     schemaVersion: 1,
-    registry: "ghcr.io/loom-development",
+    registry: "ghcr.io/devroost-org",
     images: [
       {
         name: "Bad Name",
@@ -156,7 +156,7 @@ test("rejects a missing custom runtime dependency", () => {
   addDependentImage(catalog, { runtime: "missing" });
 
   assert.deepEqual(validateCatalog(catalog), [
-    'image "loom-wordpress" runtime "missing" does not exist'
+    'image "devroost-wordpress" runtime "missing" does not exist'
   ]);
 });
 
@@ -164,7 +164,7 @@ test("rejects malformed, mirrored, and platform-incompatible runtimes", () => {
   const malformed = structuredClone(validCatalog);
   addDependentImage(malformed, { runtime: "Bad Runtime" });
   assert.deepEqual(validateCatalog(malformed), [
-    'image "loom-wordpress" has invalid runtime "Bad Runtime"'
+    'image "devroost-wordpress" has invalid runtime "Bad Runtime"'
   ]);
 
   const mirrored = structuredClone(validCatalog);
@@ -177,15 +177,15 @@ test("rejects malformed, mirrored, and platform-incompatible runtimes", () => {
   });
   addDependentImage(mirrored, { runtime: "postgres-16" });
   assert.deepEqual(validateCatalog(mirrored), [
-    'image "loom-wordpress" runtime "postgres-16" must be custom'
+    'image "devroost-wordpress" runtime "postgres-16" must be custom'
   ]);
 
   const incompatible = structuredClone(validCatalog);
   incompatible.images[0].platforms = ["linux/amd64"];
   addDependentImage(incompatible);
   assert.deepEqual(validateCatalog(incompatible), [
-    'image "loom-php" must support linux/amd64 and linux/arm64',
-    'image "loom-wordpress" platform "linux/arm64" is not supported by runtime "loom-php"'
+    'image "devroost-php" must support linux/amd64 and linux/arm64',
+    'image "devroost-wordpress" platform "linux/arm64" is not supported by runtime "devroost-php"'
   ]);
 });
 
@@ -195,8 +195,8 @@ test("accepts an acyclic runtime and rejects dependency cycles", () => {
   assert.deepEqual(validateCatalog(acyclic), []);
 
   const cyclic = structuredClone(acyclic);
-  cyclic.images[0].runtime = "loom-wordpress";
+  cyclic.images[0].runtime = "devroost-wordpress";
   assert.deepEqual(validateCatalog(cyclic), [
-    "image runtime dependency cycle: loom-php -> loom-wordpress -> loom-php"
+    "image runtime dependency cycle: devroost-php -> devroost-wordpress -> devroost-php"
   ]);
 });

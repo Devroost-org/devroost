@@ -1,4 +1,4 @@
-# @loom/https
+# @devroost/https
 
 Local HTTPS certificate utilities for Devroost routes.
 

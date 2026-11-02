@@ -8,7 +8,7 @@ import { ensureLocalCertificates } from "./index.js";
 
 test("certificates are reused when valid and renewed for new hosts or invalid keys", async (context) => {
   const previous = process.cwd();
-  const root = await mkdtemp(join(tmpdir(), "loom-certificate-test-"));
+  const root = await mkdtemp(join(tmpdir(), "devroost-certificate-test-"));
   try {
     process.chdir(root);
     const paths = await ensureLocalCertificates("demo", ["demo.test"]);

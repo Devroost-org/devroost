@@ -1,5 +1,5 @@
 version: 1
-name: loom-db-elasticsearch
+name: devroost-db-elasticsearch
 runtime:
   engine: podman
   rootless: true
@@ -8,7 +8,7 @@ runtime:
 services:
   db:
     type: elasticsearch
-    image: ${ELASTICSEARCH_IMAGE:-ghcr.io/loom-development/elasticsearch-8.19@sha256:e4797708584bd0df7c746b33a6640d243018a0ae8c8b088391c6f4675a3bef52}
+    image: ${ELASTICSEARCH_IMAGE:-ghcr.io/devroost-org/elasticsearch-8.19@sha256:e4797708584bd0df7c746b33a6640d243018a0ae8c8b088391c6f4675a3bef52}
     env:
       discovery.type: single-node
       xpack.security.enabled: "false"

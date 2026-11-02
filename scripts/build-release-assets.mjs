@@ -38,7 +38,7 @@ function run(command, args) {
 
 await rm(releaseDir, { recursive: true, force: true });
 await mkdir(windowsStageDir, { recursive: true });
-run("pnpm", ["--filter", "@loom/stacks", "build"]);
+run("pnpm", ["--filter", "@devroost/stacks", "build"]);
 await copyPublishableStackAssets(resolve(rootDir, "stacks"), releaseStacksDir);
 
 run("pnpm", [

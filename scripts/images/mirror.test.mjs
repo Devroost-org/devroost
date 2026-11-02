@@ -13,16 +13,16 @@ const mirror = {
 };
 
 test("constructs a manifest-list copy without a shell", () => {
-  assert.deepEqual(createMirrorCopy(mirror, "ghcr.io/loom-development"), {
+  assert.deepEqual(createMirrorCopy(mirror, "ghcr.io/devroost-org"), {
     command: "skopeo",
     args: [
       "copy",
       "--all",
       `docker://docker.io/library/postgres@sha256:${"a".repeat(64)}`,
-      "docker://ghcr.io/loom-development/postgres-16:16.9-alpine"
+      "docker://ghcr.io/devroost-org/postgres-16:16.9-alpine"
     ],
     source: `docker.io/library/postgres@sha256:${"a".repeat(64)}`,
-    destination: "ghcr.io/loom-development/postgres-16:16.9-alpine"
+    destination: "ghcr.io/devroost-org/postgres-16:16.9-alpine"
   });
 });
 
@@ -42,7 +42,7 @@ test("copies all platforms and verifies source and destination digests", async (
   const digest = `sha256:${"a".repeat(64)}`;
 
   const result = await mirrorImage("postgres-16", {
-    catalog: { registry: "ghcr.io/loom-development", images: [mirror] },
+    catalog: { registry: "ghcr.io/devroost-org", images: [mirror] },
     execute: async (command, args) => calls.push({ command, args }),
     inspect: async (reference) => {
       calls.push({ inspect: reference });
@@ -52,9 +52,9 @@ test("copies all platforms and verifies source and destination digests", async (
 
   assert.equal(result.digest, digest);
   assert.deepEqual(calls, [
-    { command: "skopeo", args: createMirrorCopy(mirror, "ghcr.io/loom-development").args },
+    { command: "skopeo", args: createMirrorCopy(mirror, "ghcr.io/devroost-org").args },
     { inspect: `docker.io/library/postgres@sha256:${"a".repeat(64)}` },
-    { inspect: "ghcr.io/loom-development/postgres-16:16.9-alpine" }
+    { inspect: "ghcr.io/devroost-org/postgres-16:16.9-alpine" }
   ]);
 });
 
@@ -62,7 +62,7 @@ test("rejects a destination digest changed during mirroring", async () => {
   const digests = [`sha256:${"a".repeat(64)}`, `sha256:${"b".repeat(64)}`];
   await assert.rejects(
     mirrorImage("postgres-16", {
-      catalog: { registry: "ghcr.io/loom-development", images: [mirror] },
+      catalog: { registry: "ghcr.io/devroost-org", images: [mirror] },
       execute: async () => {},
       inspect: async () => digests.shift()
     }),
@@ -90,7 +90,7 @@ test("defines native readiness probes for every infrastructure mirror", () => {
 test("starts the upstream entrypoint, waits for readiness, and removes the container", async () => {
   const calls = [];
   let probeAttempts = 0;
-  await testMirror("redis-7.4", "ghcr.io/loom-development/redis-7.4@sha256:test", {
+  await testMirror("redis-7.4", "ghcr.io/devroost-org/redis-7.4@sha256:test", {
     attempts: 2,
     interval: 0,
     execute: async (command, args) => {
@@ -100,7 +100,7 @@ test("starts the upstream entrypoint, waits for readiness, and removes the conta
   });
 
   assert.equal(calls[0].args[0], "run");
-  assert.equal(calls[0].args.at(-1), "ghcr.io/loom-development/redis-7.4@sha256:test");
+  assert.equal(calls[0].args.at(-1), "ghcr.io/devroost-org/redis-7.4@sha256:test");
   assert.deepEqual(calls[2].args.slice(-2), ["redis-cli", "ping"]);
   assert.deepEqual(calls.at(-1).args.slice(0, 2), ["rm", "--force"]);
 });
@@ -108,7 +108,7 @@ test("starts the upstream entrypoint, waits for readiness, and removes the conta
 test("does not fail a successful readiness probe when Podman cleanup fails", async () => {
   const cleanupErrors = [];
 
-  await testMirror("mysql-8.4", "ghcr.io/loom-development/mysql-8.4@sha256:test", {
+  await testMirror("mysql-8.4", "ghcr.io/devroost-org/mysql-8.4@sha256:test", {
     attempts: 1,
     interval: 0,
     reportCleanupError: (message) => cleanupErrors.push(message),

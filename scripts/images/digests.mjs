@@ -129,7 +129,7 @@ export async function main(args, dependencies = {}) {
   );
   const releases = await (dependencies.loadReleases ?? loadReleaseRecords)(releaseDirectory);
   const identity = dependencies.signatureIdentity
-    ?? "https://github.com/Loom-development/Loom/.github/workflows/images-release.yml@refs/heads/main";
+    ?? "https://github.com/Devroost-org/devroost/.github/workflows/images-release.yml@refs/heads/main";
   const document = createDigestDocument(catalog, releases, identity);
   const serialized = `${JSON.stringify(document, null, 2)}\n`;
   if (outputPath) await fs.writeFile(outputPath, serialized);

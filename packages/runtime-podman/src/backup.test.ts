@@ -7,7 +7,7 @@ import { join } from "node:path";
 import { Writable } from "node:stream";
 import { EventEmitter } from "node:events";
 import { gzipSync } from "node:zlib";
-import type { LoomService } from "@loom/config";
+import type { DevroostService } from "@devroost/config";
 import { backupServiceToFileWithDependencies, restoreServiceFromFileWithDependencies, REDIS_RESTORE_SCRIPT } from "./backup.js";
 
 class FakeBackupProcess extends EventEmitter {
@@ -47,17 +47,17 @@ class CollectingWritable extends Writable {
   }
 }
 
-const postgresService: LoomService = {
+const postgresService: DevroostService = {
   type: "postgres",
   image: "postgres:16"
 };
 
-const mysqlService: LoomService = {
+const mysqlService: DevroostService = {
   type: "mysql",
   image: "mysql:8.4"
 };
 
-const mariadbService: LoomService = {
+const mariadbService: DevroostService = {
   type: "mariadb",
   image: "mariadb:11"
 };
@@ -154,8 +154,8 @@ test("restoreServiceFromFile copies the input file and runs the restore command"
   );
 
   assert.deepEqual(commands, [
-    ["cp", "/tmp/backup.sql", "demo-db:/tmp/loom-restore.sql"],
-    ["exec", "demo-db", "sh", "-c", 'psql -v ON_ERROR_STOP=1 -U "${POSTGRES_USER:-postgres}" -d "${POSTGRES_DB:-postgres}" -f /tmp/loom-restore.sql']
+    ["cp", "/tmp/backup.sql", "demo-db:/tmp/devroost-restore.sql"],
+    ["exec", "demo-db", "sh", "-c", 'psql -v ON_ERROR_STOP=1 -U "${POSTGRES_USER:-postgres}" -d "${POSTGRES_DB:-postgres}" -f /tmp/devroost-restore.sql']
   ]);
 });
 
@@ -179,8 +179,8 @@ test("restoreServiceFromFile uses mysql binary mode and password env vars", asyn
   );
 
   assert.deepEqual(commands, [
-    ["cp", "/tmp/backup.sql", "demo-db:/tmp/loom-restore.sql"],
-    ["exec", "demo-db", "sh", "-c", 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql --binary-mode=1 -h 127.0.0.1 -uroot "${MYSQL_DATABASE:-loom}" < /tmp/loom-restore.sql']
+    ["cp", "/tmp/backup.sql", "demo-db:/tmp/devroost-restore.sql"],
+    ["exec", "demo-db", "sh", "-c", 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql --binary-mode=1 -h 127.0.0.1 -uroot "${MYSQL_DATABASE:-devroost}" < /tmp/devroost-restore.sql']
   ]);
 });
 
@@ -204,8 +204,8 @@ test("restoreServiceFromFile uses mariadb binary mode and password env vars", as
   );
 
   assert.deepEqual(commands, [
-    ["cp", "/tmp/backup.sql", "demo-db:/tmp/loom-restore.sql"],
-    ["exec", "demo-db", "sh", "-c", 'MYSQL_PWD="$MARIADB_ROOT_PASSWORD" mariadb --binary-mode=1 -h 127.0.0.1 -uroot "${MARIADB_DATABASE:-loom}" < /tmp/loom-restore.sql']
+    ["cp", "/tmp/backup.sql", "demo-db:/tmp/devroost-restore.sql"],
+    ["exec", "demo-db", "sh", "-c", 'MYSQL_PWD="$MARIADB_ROOT_PASSWORD" mariadb --binary-mode=1 -h 127.0.0.1 -uroot "${MARIADB_DATABASE:-devroost}" < /tmp/devroost-restore.sql']
   ]);
 });
 
@@ -216,7 +216,7 @@ test("restoreServiceFromFile copies sqlite backups directly into the data path",
     "demo",
     "db",
     { type: "sqlite", image: "alpine:3.20" },
-    "/tmp/loom.db",
+    "/tmp/devroost.db",
     {
       isContainerRunningByName: async () => true,
       ensureInputReadable: async () => undefined,
@@ -228,7 +228,7 @@ test("restoreServiceFromFile copies sqlite backups directly into the data path",
     }
   );
 
-  assert.deepEqual(commands, [["cp", "/tmp/loom.db", "demo-db:/data/loom.db"]]);
+  assert.deepEqual(commands, [["cp", "/tmp/devroost.db", "demo-db:/data/devroost.db"]]);
 });
 
 test("restoreServiceFromFile rebuilds Redis AOF after staging the snapshot", async () => {
@@ -282,7 +282,7 @@ test("restoreServiceFromFile rejects unsupported restore service types", async (
         "demo",
         "db",
         { type: "sqlserver", image: "mcr.microsoft.com/mssql/server:2022-latest" },
-        "/tmp/loom.bak",
+        "/tmp/devroost.bak",
         {
           isContainerRunningByName: async () => true,
           ensureInputReadable: async () => undefined,
@@ -295,7 +295,7 @@ test("restoreServiceFromFile rejects unsupported restore service types", async (
 });
 
 test("restoreServiceFromFile decompresses gzip-compressed mysql dumps before copying", async () => {
-  const tempRoot = await mkdtemp(join(tmpdir(), "loom-runtime-restore-"));
+  const tempRoot = await mkdtemp(join(tmpdir(), "devroost-runtime-restore-"));
   const inputPath = join(tempRoot, "backup.sql.gz");
   const commands: string[][] = [];
 
@@ -324,7 +324,7 @@ test("restoreServiceFromFile decompresses gzip-compressed mysql dumps before cop
       "demo-db",
       "sh",
       "-c",
-      'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql --binary-mode=1 -h 127.0.0.1 -uroot "${MYSQL_DATABASE:-loom}" < /tmp/loom-restore.sql'
+      'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql --binary-mode=1 -h 127.0.0.1 -uroot "${MYSQL_DATABASE:-devroost}" < /tmp/devroost-restore.sql'
     ]);
   } finally {
     await rm(tempRoot, { recursive: true, force: true });
@@ -332,7 +332,7 @@ test("restoreServiceFromFile decompresses gzip-compressed mysql dumps before cop
 });
 
 test("restoreServiceFromFile rejects xz-compressed mysql dumps with a helpful error", async () => {
-  const tempRoot = await mkdtemp(join(tmpdir(), "loom-runtime-restore-"));
+  const tempRoot = await mkdtemp(join(tmpdir(), "devroost-runtime-restore-"));
   const inputPath = join(tempRoot, "backup.sql.xz");
 
   await writeFile(inputPath, Buffer.from([0xfd, 0x37, 0x7a, 0x58, 0x5a, 0x00]));

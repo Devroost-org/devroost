@@ -46,7 +46,7 @@ test("release workflow publishes only from main and signs the scanned manifest d
     workflow,
     /permissions:\s*\n\s+contents: read\s*\n\s+packages: write\s*\n\s+id-token: write/
   );
-  assert.match(workflow, /ghcr\.io\/loom-development/);
+  assert.match(workflow, /ghcr\.io\/devroost-org/);
   assert.match(workflow, /docker:\/\/\$IMAGE/);
   assert.match(workflow, /podman manifest push --all/);
   assert.match(workflow, /skopeo inspect.*\.Digest/);

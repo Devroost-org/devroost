@@ -17,7 +17,7 @@ import {
   stopService,
   tailServiceLogs,
   waitForServiceReady
-} from "@loom/runtime-podman";
+} from "@devroost/runtime-podman";
 import {
   ensureRouteHosts,
   ensureRouteProxy,
@@ -25,8 +25,8 @@ import {
   resolveRouteBindings,
   stopRouteHosts,
   stopRouteProxy
-} from "@loom/network";
-import { ensureLocalCertificates } from "@loom/https";
+} from "@devroost/network";
+import { ensureLocalCertificates } from "@devroost/https";
 
 export interface OrchestratorDependencies {
   backupExtensionForServiceType: typeof backupExtensionForServiceType;

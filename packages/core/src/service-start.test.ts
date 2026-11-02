@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import type { LoomConfig } from "@loom/config";
+import type { DevroostConfig } from "@devroost/config";
 import { startConfiguredService } from "./service-start.js";
 
-function createConfig(serviceType: string): LoomConfig {
+function createConfig(serviceType: string): DevroostConfig {
   return {
     version: 1,
     name: "demo",

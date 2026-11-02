@@ -1,9 +1,9 @@
-import type { LoomConfig } from "@loom/config";
+import type { DevroostConfig } from "@devroost/config";
 import { chmod, copyFile, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { homedir } from "node:os";
-import type { CertificatePaths } from "@loom/https";
-import { containerName, ensurePodmanNetwork, runPodman } from "@loom/runtime-podman";
+import type { CertificatePaths } from "@devroost/https";
+import { containerName, ensurePodmanNetwork, runPodman } from "@devroost/runtime-podman";
 
 export interface RouteBinding {
   host: string;
@@ -26,20 +26,20 @@ export interface RouteHostManagementResult {
 }
 
 export function projectNetworkName(projectName: string): string {
-  return `loom-${projectName}`;
+  return `devroost-${projectName}`;
 }
 
 function windowsHostsFilePath(): string {
   const systemRoot = process.env.SystemRoot ?? "C:\\Windows";
-  return process.env.LOOM_WINDOWS_HOSTS_FILE ?? resolve(systemRoot, "System32", "drivers", "etc", "hosts");
+  return process.env.DEVROOST_WINDOWS_HOSTS_FILE ?? resolve(systemRoot, "System32", "drivers", "etc", "hosts");
 }
 
 function managedHostsStartMarker(projectName: string): string {
-  return `# >>> loom:${projectName}`;
+  return `# >>> devroost:${projectName}`;
 }
 
 function managedHostsEndMarker(projectName: string): string {
-  return `# <<< loom:${projectName}`;
+  return `# <<< devroost:${projectName}`;
 }
 
 function escapeRegExp(value: string): string {
@@ -111,7 +111,7 @@ function parsePublishedPort(portMapping: string): { host: number; container: num
   return { host, container };
 }
 
-export function resolveRouteBindings(config: LoomConfig): RouteBinding[] {
+export function resolveRouteBindings(config: DevroostConfig): RouteBinding[] {
   return (config.routes ?? []).map((route) => {
     assertSafeRouteHost(route.host);
     assertSafeServiceName(route.service);
@@ -137,13 +137,13 @@ export function resolveRouteBindings(config: LoomConfig): RouteBinding[] {
   });
 }
 
-export async function ensureServiceNetwork(config: LoomConfig): Promise<string> {
+export async function ensureServiceNetwork(config: DevroostConfig): Promise<string> {
   const network = projectNetworkName(config.name);
   await ensurePodmanNetwork(network);
   return network;
 }
 
-const SHARED_PROXY = "loom-proxy";
+const SHARED_PROXY = "devroost-proxy";
 const PROXY_SITES_DIR = "/etc/caddy/sites";
 
 function buildProjectCaddyfile(projectName: string, bindings: RouteBinding[], certPath: string, keyPath: string): string {
@@ -201,7 +201,7 @@ async function reloadProxy(run: typeof runPodman): Promise<void> {
 }
 
 export async function ensureRouteProxy(
-  config: LoomConfig,
+  config: DevroostConfig,
   bindings: RouteBinding[],
   certPaths: CertificatePaths,
   networkName: string,
@@ -222,7 +222,7 @@ export async function ensureRouteProxy(
 
   let exists = (await run(["container", "exists", SHARED_PROXY])).ok;
   if (exists) {
-    const version = await run(["inspect", "--format", '{{ index .Config.Labels "loom.proxy-version" }}', SHARED_PROXY]);
+    const version = await run(["inspect", "--format", '{{ index .Config.Labels "devroost.proxy-version" }}', SHARED_PROXY]);
     if (!version.ok) throw new Error(`Failed to inspect route proxy: ${version.stderr}`);
     // Replace the old project-local mount layout once. Its files cannot serve other projects.
     if (version.stdout.trim() !== "2") {
@@ -234,7 +234,7 @@ export async function ensureRouteProxy(
 
   if (!exists) {
     const start = await run([
-      "run", "-d", "--name", SHARED_PROXY, "--label", "loom.proxy-version=2",
+      "run", "-d", "--name", SHARED_PROXY, "--label", "devroost.proxy-version=2",
       "--network", networkName,
       "-p", `${hostHttpPort}:80`, "-p", `${hostHttpsPort}:443`,
       "-v", `${runDir}:/etc/caddy/sites:ro`, "-v", `${certDir}:/certs:ro`,

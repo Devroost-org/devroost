@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { mkdir, mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { LoomProjectManifestV2 } from "./project-manifest.js";
+import type { DevroostProjectManifestV2 } from "./project-manifest.js";
 import { applyProjectClean, planProjectClean } from "./project-clean.js";
 import { findStackDefinition, type StackDefinition, type StackGeneratedPath } from "./stacks.js";
 
@@ -11,7 +11,7 @@ async function fixture(generatedPaths: readonly StackGeneratedPath[] = [
   { path: "dist", category: "build" },
   { path: "node_modules", category: "dependency" }
 ]) {
-  const root = await mkdtemp(join(tmpdir(), "loom-clean-"));
+  const root = await mkdtemp(join(tmpdir(), "devroost-clean-"));
   const projectRoot = join(root, "project");
   await mkdir(join(projectRoot, ".devroost", "database"), { recursive: true });
   await mkdir(join(projectRoot, "src"), { recursive: true });
@@ -28,9 +28,9 @@ async function fixture(generatedPaths: readonly StackGeneratedPath[] = [
     generatedPaths, protectedPaths: ["src"],
     compatibility: { architectures: ["x64"], runtime: "podman-rootless" }
   };
-  const manifest: LoomProjectManifestV2 = {
+  const manifest: DevroostProjectManifestV2 = {
     version: 2, devroostVersion: "0.3.4", stack: { id: "node", scaffoldVersion: "1" },
-    ownedFiles: { "devroost.yaml": { sha256: "a".repeat(64), baselinePath: ".devroost/baselines/loom" } },
+    ownedFiles: { "devroost.yaml": { sha256: "a".repeat(64), baselinePath: ".devroost/baselines/devroost" } },
     renderInputs: { projectName: "demo", databases: [], adopted: false }
   };
   return { root, projectRoot, stack, manifest };

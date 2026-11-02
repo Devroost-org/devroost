@@ -14,7 +14,7 @@ devroost status
 ## Service
 
 - `db`
-  - Runtime: `${POSTGRES_IMAGE:-ghcr.io/loom-development/postgres-16@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685}`
+  - Runtime: `${POSTGRES_IMAGE:-ghcr.io/devroost-org/postgres-16@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685}`
   - Port: `5432`
 
 ## Route

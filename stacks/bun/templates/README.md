@@ -14,7 +14,7 @@ devroost status
 ## Services
 
 - `app`
-  - Runtime: `${BUN_IMAGE:-ghcr.io/loom-development/loom-bun-1@sha256:4d640f6c2554c4ba738d1713dbec45be112cd59f6939d53fef7dc5ec78d9acda}`
+  - Runtime: `${BUN_IMAGE:-ghcr.io/devroost-org/devroost-bun-1@sha256:4d640f6c2554c4ba738d1713dbec45be112cd59f6939d53fef7dc5ec78d9acda}`
   - Port: `3004`
   - Purpose: Bun development server
 

@@ -24,7 +24,7 @@ function replaceRequired(source, pattern, replacement, label) {
 
 export function renderPublishedImageData(document) {
   if (document?.schemaVersion !== 1) throw new Error("Digest document schemaVersion must be 1");
-  if (document?.registry !== "ghcr.io/loom-development") throw new Error("Digest document registry is invalid");
+  if (document?.registry !== "ghcr.io/devroost-org") throw new Error("Digest document registry is invalid");
   if (!Array.isArray(document?.images)) throw new Error("Digest document images must be an array");
   const names = new Set();
   const images = [...document.images].sort((left, right) => left.name.localeCompare(right.name)).map((record) => {

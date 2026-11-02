@@ -12,7 +12,7 @@ export interface PublishedImageDocument {
   images: readonly PublishedImageRecord[];
 }
 
-const publishedRegistry = "ghcr.io/loom-development";
+const publishedRegistry = "ghcr.io/devroost-org";
 const digestPattern = /^sha256:[a-f0-9]{64}$/;
 
 export function createPublishedImageResolver(document: unknown): (name: string) => string {

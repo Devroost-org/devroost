@@ -1,4 +1,4 @@
-import type { LoomConfig } from "@loom/config";
+import type { DevroostConfig } from "@devroost/config";
 import { resolve } from "node:path";
 import type { OrchestratorDependencies } from "./dependencies.js";
 import { requireConfiguredService } from "./services.js";
@@ -40,7 +40,7 @@ export function requireRestoreSupport(
 }
 
 export async function restoreConfiguredService(
-  config: LoomConfig,
+  config: DevroostConfig,
   projectRoot: string,
   serviceName: string,
   inputPath: string,

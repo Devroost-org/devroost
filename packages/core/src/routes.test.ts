@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import type { LoomConfig } from "@loom/config";
+import type { DevroostConfig } from "@devroost/config";
 import { publishConfiguredRoutes, type RouteBinding } from "./routes.js";
 
-function createConfig(): LoomConfig {
+function createConfig(): DevroostConfig {
   return {
     version: 1,
     name: "demo",
@@ -34,7 +34,7 @@ test("publishConfiguredRoutes removes stale proxy and hosts when no routes remai
       ensureRouteHosts: async () => ({ managedHosts: [], skippedHosts: [] }),
       ensureRouteProxy: async () => {
         proxyCalls += 1;
-        return { containerName: "loom-proxy", httpPort: 8080, httpsPort: 8443 };
+        return { containerName: "devroost-proxy", httpPort: 8080, httpsPort: 8443 };
       }
     },
     {
@@ -87,7 +87,7 @@ test("publishConfiguredRoutes configures proxy and writes route and https summar
       ensureRouteHosts: async () => ({ managedHosts: [], skippedHosts: [] }),
       ensureRouteProxy: async (_config, bindings, _certificateInfo, networkName) => {
         proxyCalls.push({ bindings, networkName });
-        return { containerName: "loom-proxy", httpPort: 8080, httpsPort: 8443 };
+        return { containerName: "devroost-proxy", httpPort: 8080, httpsPort: 8443 };
       }
     },
     {
@@ -147,7 +147,7 @@ test("publishConfiguredRoutes prints /etc/hosts instructions when hosts could no
       stopRouteHosts: async () => {},
       ensureLocalCertificates: async () => ({ certPath: "/tmp/cert.pem", keyPath: "/tmp/key.pem" }),
       ensureRouteHosts: async () => ({ managedHosts: [], skippedHosts: [], pendingHosts: ["demo.test"] }),
-      ensureRouteProxy: async () => ({ containerName: "loom-proxy", httpPort: 8080, httpsPort: 8443 })
+      ensureRouteProxy: async () => ({ containerName: "devroost-proxy", httpPort: 8080, httpsPort: 8443 })
     },
     {
       writeOut(message) { lines.push(message); },

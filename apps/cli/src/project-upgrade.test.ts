@@ -4,14 +4,14 @@ import { createHash } from "node:crypto";
 import { lstat, mkdir, mkdtemp, readFile, readdir, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { LoomProjectManifestV2 } from "./project-manifest.js";
+import type { DevroostProjectManifestV2 } from "./project-manifest.js";
 import { applyProjectUpgrade, planProjectUpgrade } from "./project-upgrade.js";
 import { findStackDefinition, type StackDefinition } from "./stacks.js";
 
 const sha256 = (value: string) => createHash("sha256").update(value).digest("hex");
 
 async function fixture() {
-  const root = await mkdtemp(join(tmpdir(), "loom-upgrade-"));
+  const root = await mkdtemp(join(tmpdir(), "devroost-upgrade-"));
   const projectRoot = join(root, "project");
   const stacksRoot = join(root, "stacks");
   const assetRoot = join(stacksRoot, "node", "templates");
@@ -19,11 +19,11 @@ async function fixture() {
   await mkdir(assetRoot, { recursive: true });
   await writeFile(join(assetRoot, "devroost.yaml"), "name: template\nservices:\n  app:\n    type: node\n", "utf8");
   await writeFile(join(assetRoot, ".env.example"), "NODE_IMAGE=node:24\n", "utf8");
-  const oldLoom = "name: loom-demo\nservices:\n  app:\n    type: node\n";
+  const oldDevroost = "name: devroost-demo\nservices:\n  app:\n    type: node\n";
   const oldEnv = "NODE_IMAGE=node:22\n";
-  await writeFile(join(projectRoot, "devroost.yaml"), `${oldLoom}# local\n`, "utf8");
+  await writeFile(join(projectRoot, "devroost.yaml"), `${oldDevroost}# local\n`, "utf8");
   await writeFile(join(projectRoot, "source.ts"), "developer owned\n", "utf8");
-  await writeFile(join(projectRoot, ".devroost", "baselines", "loom"), oldLoom, "utf8");
+  await writeFile(join(projectRoot, ".devroost", "baselines", "devroost"), oldDevroost, "utf8");
   await writeFile(join(projectRoot, ".devroost", "baselines", "env"), oldEnv, "utf8");
   const stack: StackDefinition = {
     id: "node",
@@ -38,15 +38,15 @@ async function fixture() {
     protectedPaths: ["src"],
     compatibility: { architectures: ["arm", "arm64", "x64"], runtime: "podman-rootless" }
   };
-  const manifest: LoomProjectManifestV2 = {
+  const manifest: DevroostProjectManifestV2 = {
     version: 2,
     devroostVersion: "0.3.4",
     stack: { id: "node", scaffoldVersion: "1" },
     ownedFiles: {
-      "devroost.yaml": { sha256: sha256(oldLoom), baselinePath: ".devroost/baselines/loom" },
+      "devroost.yaml": { sha256: sha256(oldDevroost), baselinePath: ".devroost/baselines/devroost" },
       ".env.example": { sha256: sha256(oldEnv), baselinePath: ".devroost/baselines/env" }
     },
-    renderInputs: { projectName: "loom-demo", databases: [], adopted: false }
+    renderInputs: { projectName: "devroost-demo", databases: [], adopted: false }
   };
   return { root, projectRoot, stacksRoot, stack, manifest };
 }
@@ -60,7 +60,7 @@ test("planner classifies only manifest-owned files and renders candidates", asyn
       { path: "devroost.yaml", state: "modified" }
     ]);
     assert.equal(await readFile(plan.files[0].candidatePath, "utf8"), "NODE_IMAGE=node:24\n");
-    assert.match(await readFile(plan.files[1].candidatePath, "utf8"), /^name: loom-demo$/m);
+    assert.match(await readFile(plan.files[1].candidatePath, "utf8"), /^name: devroost-demo$/m);
     assert.equal(plan.files.some((file) => file.path === "source.ts"), false);
   } finally {
     await rm(value.root, { recursive: true, force: true });
@@ -70,7 +70,7 @@ test("planner classifies only manifest-owned files and renders candidates", asyn
 test("planner marks baseline-identical current files unchanged and hashes identical candidates", async () => {
   const value = await fixture();
   try {
-    const baseline = await readFile(join(value.projectRoot, ".devroost/baselines/loom"), "utf8");
+    const baseline = await readFile(join(value.projectRoot, ".devroost/baselines/devroost"), "utf8");
     await writeFile(join(value.projectRoot, "devroost.yaml"), baseline, "utf8");
     await writeFile(join(value.projectRoot, ".env.example"), "NODE_IMAGE=node:24\n", "utf8");
     const plan = await planProjectUpgrade(value);
@@ -108,14 +108,14 @@ test("planner replays PHP docroot and exact database definition pins", async () 
     value.manifest = {
       ...value.manifest,
       stack: { id: "php", scaffoldVersion: "1" },
-      renderInputs: { projectName: "loom-php", phpDocroot: "public", databases: ["postgres", "mysql", "mariadb", "mongodb", "redis"], adopted: false }
+      renderInputs: { projectName: "devroost-php", phpDocroot: "public", databases: ["postgres", "mysql", "mariadb", "mongodb", "redis"], adopted: false }
     };
     await writeFile(join(value.stacksRoot, "node", "templates", "devroost.yaml"), [
       "name: template", "services:", "  app:", "    type: php", "    command: |", "      old", "    volumes:", "      - ./:/app", ""
     ].join("\n"), "utf8");
     const plan = await planProjectUpgrade(value);
     const candidate = await readFile(plan.files.find((file) => file.path === "devroost.yaml")!.candidatePath, "utf8");
-    assert.match(candidate, /^name: loom-php$/m);
+    assert.match(candidate, /^name: devroost-php$/m);
     assert.match(candidate, /DocumentRoot \/app\/public/);
     const cases = [
       { db: "postgres", stackId: "db-postgres", env: "POSTGRES_IMAGE" },
@@ -139,14 +139,14 @@ test("planner replays PHP docroot and exact database definition pins", async () 
 test("applier updates missing and unchanged files while skipping modified files", async () => {
   const value = await fixture();
   try {
-    const baseline = await readFile(join(value.projectRoot, ".devroost/baselines/loom"), "utf8");
+    const baseline = await readFile(join(value.projectRoot, ".devroost/baselines/devroost"), "utf8");
     await writeFile(join(value.projectRoot, "devroost.yaml"), baseline, "utf8");
     const sourceBefore = await readFile(join(value.projectRoot, "source.ts"));
     const plan = await planProjectUpgrade(value);
     const result = await applyProjectUpgrade(plan, { forceModified: false });
     assert.deepEqual(result, { updated: [".env.example", "devroost.yaml"], skipped: [] });
     assert.equal(await readFile(join(value.projectRoot, ".env.example"), "utf8"), "NODE_IMAGE=node:24\n");
-    assert.match(await readFile(join(value.projectRoot, "devroost.yaml"), "utf8"), /^name: loom-demo$/m);
+    assert.match(await readFile(join(value.projectRoot, "devroost.yaml"), "utf8"), /^name: devroost-demo$/m);
     assert.deepEqual(await readFile(join(value.projectRoot, "source.ts")), sourceBefore);
     const manifest = JSON.parse(await readFile(join(value.projectRoot, ".devroost/manifest.json"), "utf8"));
     assert.equal(manifest.version, 2);
@@ -190,12 +190,12 @@ test("applier preserves manifest and baselines when a destination write fails", 
   const value = await fixture();
   try {
     await writeFile(join(value.projectRoot, ".devroost", "manifest.json"), "old manifest\n", "utf8");
-    const baselineBefore = await readFile(join(value.projectRoot, ".devroost", "baselines", "loom"));
+    const baselineBefore = await readFile(join(value.projectRoot, ".devroost", "baselines", "devroost"));
     const plan = await planProjectUpgrade(value);
     await mkdir(join(value.projectRoot, ".env.example"));
     await assert.rejects(applyProjectUpgrade(plan, { forceModified: true }));
     assert.equal(await readFile(join(value.projectRoot, ".devroost", "manifest.json"), "utf8"), "old manifest\n");
-    assert.deepEqual(await readFile(join(value.projectRoot, ".devroost", "baselines", "loom")), baselineBefore);
+    assert.deepEqual(await readFile(join(value.projectRoot, ".devroost", "baselines", "devroost")), baselineBefore);
     assert.equal((await readdir(join(value.projectRoot, ".devroost"))).some((path) => path.startsWith("upgrade-")), false);
   } finally {
     await rm(value.root, { recursive: true, force: true });

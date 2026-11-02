@@ -1,12 +1,12 @@
-import type { LoomConfig } from "@loom/config";
+import type { DevroostConfig } from "@devroost/config";
 import { resolve } from "node:path";
 import type { OrchestratorDependencies } from "./dependencies.js";
 import { requireConfiguredService } from "./services.js";
 
 export function listBackupSupportedServices(
-  config: LoomConfig,
+  config: DevroostConfig,
   backupExtensionForServiceType: (serviceType: string) => string | null
-): Array<[string, LoomConfig["services"][string]]> {
+): Array<[string, DevroostConfig["services"][string]]> {
   return Object.entries(config.services).filter(([, service]) =>
     Boolean(backupExtensionForServiceType(service.type))
   );
@@ -58,7 +58,7 @@ type BackupDependencies = Pick<
 >;
 
 export async function backupConfiguredService(
-  config: LoomConfig,
+  config: DevroostConfig,
   projectRoot: string,
   serviceName: string,
   dependencies: BackupDependencies,
@@ -88,7 +88,7 @@ export async function backupConfiguredService(
 }
 
 export async function backupAllConfiguredServices(
-  config: LoomConfig,
+  config: DevroostConfig,
   projectRoot: string,
   dependencies: BackupDependencies
 ): Promise<Array<{ service: string; path: string }>> {

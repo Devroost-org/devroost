@@ -1,7 +1,7 @@
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = "loom-django-react-dev-secret"
+SECRET_KEY = "devroost-django-react-dev-secret"
 DEBUG = True
 ALLOWED_HOSTS = ["*"]
 

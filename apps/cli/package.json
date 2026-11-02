@@ -1,6 +1,6 @@
 {
   "name": "devroost",
-  "version": "0.3.9",
+  "version": "0.3.10",
   "description": "Devroost is a Podman-based local development CLI for application runtimes, databases, and HTTPS.",
   "keywords": [
     "devroost",
@@ -61,13 +61,13 @@
     "lint": "echo 'No lint rules configured'"
   },
   "devDependencies": {
-    "@loom/stacks": "workspace:*",
+    "@devroost/stacks": "workspace:*",
     "cac": "^6.7.14",
-    "@loom/config": "workspace:*",
-    "@loom/core": "workspace:*",
-    "@loom/https": "workspace:*",
-    "@loom/network": "workspace:*",
-    "@loom/runtime-podman": "workspace:*",
-    "@loom/tasks": "workspace:*"
+    "@devroost/config": "workspace:*",
+    "@devroost/core": "workspace:*",
+    "@devroost/https": "workspace:*",
+    "@devroost/network": "workspace:*",
+    "@devroost/runtime-podman": "workspace:*",
+    "@devroost/tasks": "workspace:*"
   }
 }

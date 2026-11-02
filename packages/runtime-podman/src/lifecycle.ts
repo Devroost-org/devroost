@@ -1,4 +1,4 @@
-import type { LoomService } from "@loom/config";
+import type { DevroostService } from "@devroost/config";
 import {
   assertContainerOwnership,
   buildPodmanRunArgs,
@@ -25,7 +25,7 @@ interface EnsureServiceStartedDependencies {
   buildRunArgs?: (
     serviceName: string,
     containerNameValue: string,
-    service: LoomService,
+    service: DevroostService,
     networkName: string,
     expectedImage: string,
     expectedServiceHash: string,
@@ -100,7 +100,7 @@ export function buildExecArgs(
 export async function ensureServiceStarted(
   projectName: string,
   serviceName: string,
-  service: LoomService,
+  service: DevroostService,
   networkName: string
 ): Promise<void> {
   return ensureServiceStartedWithDependencies(projectName, serviceName, service, networkName);
@@ -109,7 +109,7 @@ export async function ensureServiceStarted(
 export async function ensureServiceStartedWithDependencies(
   projectName: string,
   serviceName: string,
-  service: LoomService,
+  service: DevroostService,
   networkName: string,
   dependencies: EnsureServiceStartedDependencies = {}
 ): Promise<void> {
@@ -145,7 +145,7 @@ export async function ensureServiceStartedWithDependencies(
   if (await containerExistsByName(name)) {
     await assertContainerOwnership(projectName, name, inspectContainerLabelByName);
     const currentImage = await inspectContainerImageByName(name);
-    const currentServiceHash = await inspectContainerLabelByName(name, "loom.service-hash");
+    const currentServiceHash = await inspectContainerLabelByName(name, "devroost.service-hash");
 
     if (
       (currentImage && currentImage !== expectedImage) ||

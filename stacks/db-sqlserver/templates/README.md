@@ -14,7 +14,7 @@ devroost status
 ## Service
 
 - `db`
-  - Runtime: `${MSSQL_IMAGE:-ghcr.io/loom-development/mssql-2022@sha256:ba4c8329f48fb8f02e1416be6a930ebfd71268caee78aa985f3af4315e457c89}`
+  - Runtime: `${MSSQL_IMAGE:-ghcr.io/devroost-org/mssql-2022@sha256:ba4c8329f48fb8f02e1416be6a930ebfd71268caee78aa985f3af4315e457c89}`
   - Port: `1433`
 
 ## Route

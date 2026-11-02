@@ -1,5 +1,5 @@
 version: 1
-name: loom-db-mysql
+name: devroost-db-mysql
 runtime:
   engine: podman
   rootless: true
@@ -8,18 +8,18 @@ runtime:
 services:
   db:
     type: mysql
-    image: ${MYSQL_IMAGE:-ghcr.io/loom-development/mysql-8.4@sha256:b3b90af2a6552ae30c266fdb7d5dd55f3afb72404bb78d37fe8a23eb857fd3fb}
+    image: ${MYSQL_IMAGE:-ghcr.io/devroost-org/mysql-8.4@sha256:b3b90af2a6552ae30c266fdb7d5dd55f3afb72404bb78d37fe8a23eb857fd3fb}
     env:
-      MYSQL_ROOT_PASSWORD: loomroot
-      MYSQL_DATABASE: loom
-      MYSQL_USER: loom
-      MYSQL_PASSWORD: loom
+      MYSQL_ROOT_PASSWORD: devroostroot
+      MYSQL_DATABASE: devroost
+      MYSQL_USER: devroost
+      MYSQL_PASSWORD: devroost
     ports:
       - "3306:3306"
     volumes:
       - ./data/mysql:/var/lib/mysql
     healthcheck:
-      command: mysqladmin ping -h 127.0.0.1 -uroot -ploomroot
+      command: mysqladmin ping -h 127.0.0.1 -uroot -pdevroostroot
       intervalSeconds: 3
       timeoutSeconds: 3
       retries: 30

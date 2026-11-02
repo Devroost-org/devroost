@@ -1,5 +1,5 @@
-import type { LoomConfig } from "@loom/config";
-import type { RouteBinding } from "@loom/network";
+import type { DevroostConfig } from "@devroost/config";
+import type { RouteBinding } from "@devroost/network";
 import type { OrchestratorDependencies } from "./dependencies.js";
 import type { OrchestratorOutput } from "./output.js";
 import { resolveHttpsInfo, resolveProxyCertificateInfo } from "./https.js";
@@ -13,7 +13,7 @@ type RouteStartupDependencies = Pick<
 type RouteStartupOutput = Pick<OrchestratorOutput, "writeOut" | "writeErr">;
 
 export async function publishConfiguredRoutes(
-  config: LoomConfig,
+  config: DevroostConfig,
   routeBindings: RouteBinding[],
   networkName: string,
   dependencies: RouteStartupDependencies,

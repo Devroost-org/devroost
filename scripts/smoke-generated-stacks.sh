@@ -38,7 +38,7 @@ resolve_devroost_bin() {
 require_command node
 
 run_id="$(node -e 'process.stdout.write(require("node:crypto").randomUUID().replaceAll("-", ""))')"
-work_root_owner="loom-generated-smoke:$run_id"
+work_root_owner="devroost-generated-smoke:$run_id"
 
 if [ -n "${DEVROOST_GENERATED_SMOKE_DIR:-}" ]; then
   requested_work_root="$DEVROOST_GENERATED_SMOKE_DIR"
@@ -53,7 +53,7 @@ if [ -n "${DEVROOST_GENERATED_SMOKE_DIR:-}" ]; then
   work_root="$(CDPATH= cd -- "$requested_work_root" && pwd)"
   KEEP_WORK_ROOT=1
 else
-  work_root="$(mktemp -d "${TMPDIR:-/tmp}/loom-generated-smoke-XXXXXX")"
+  work_root="$(mktemp -d "${TMPDIR:-/tmp}/devroost-generated-smoke-XXXXXX")"
 fi
 
 work_root_marker="$work_root/.devroost-generated-smoke-owner"
@@ -265,7 +265,7 @@ published_image_preflight() {
     return 1
   }
   while IFS= read -r image_reference; do
-    if ! printf '%s\n' "$image_reference" | grep -Eq '^ghcr\.io/loom-development/[^@]+@sha256:[a-f0-9]{64}$'; then
+    if ! printf '%s\n' "$image_reference" | grep -Eq '^ghcr\.io/devroost-org/[^@]+@sha256:[a-f0-9]{64}$'; then
       echo "Generated project image is not an immutable Devroost GHCR reference: $image_reference" >&2
       return 1
     fi
@@ -295,9 +295,9 @@ verify_stack() {
       assert_owner .devroost-smoke-owned || return 1
       ;;
     db-sqlite)
-      run_devroost exec db -- sqlite3 /data/loom.db "select 1;" || return 1
-      assert_owner data/sqlite/loom.db || return 1
-      assert_writable data/sqlite/loom.db || return 1
+      run_devroost exec db -- sqlite3 /data/devroost.db "select 1;" || return 1
+      assert_owner data/sqlite/devroost.db || return 1
+      assert_writable data/sqlite/devroost.db || return 1
       ;;
     php-wordpress)
       run_devroost exec app -- php -r "exit((int)!@fsockopen('127.0.0.1', 80));" || return 1

@@ -1,9 +1,9 @@
 {
-  "name": "@loom/config",
+  "name": "@devroost/config",
   "version": "0.1.1",
   "description": "Configuration loading and schema validation for Devroost projects.",
   "keywords": [
-    "loom",
+    "devroost",
     "podman",
     "config"
   ],

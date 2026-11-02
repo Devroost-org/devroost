@@ -15,8 +15,8 @@ const repoDir = resolve(cliDir, "..", "..");
 const executeFile = promisify(execFile);
 
 async function createNpmPackage(): Promise<{ archivePath: string; cleanup(): void }> {
-  const npmCache = mkdtempSync(resolve(tmpdir(), "loom-npm-cache-"));
-  const packDir = mkdtempSync(resolve(tmpdir(), "loom-npm-pack-"));
+  const npmCache = mkdtempSync(resolve(tmpdir(), "devroost-npm-cache-"));
+  const packDir = mkdtempSync(resolve(tmpdir(), "devroost-npm-pack-"));
   try {
     await executeFile("npm", ["pack", "--json", "--pack-destination", packDir], {
       cwd: cliDir,
@@ -116,8 +116,8 @@ test("npm package publishes the root README as its package documentation", async
 
 test("npm installs the produced CLI tgz and executes its binary without workspace dependencies", async () => {
   const packed = await createNpmPackage();
-  const installRoot = await mkdtemp(resolve(tmpdir(), "loom-npm-install-"));
-  const npmCache = await mkdtemp(resolve(tmpdir(), "loom-npm-install-cache-"));
+  const installRoot = await mkdtemp(resolve(tmpdir(), "devroost-npm-install-"));
+  const npmCache = await mkdtemp(resolve(tmpdir(), "devroost-npm-install-cache-"));
   const targetDir = resolve(installRoot, "generated-node");
   try {
     await executeFile("npm", ["install", "--no-audit", "--no-fund", packed.archivePath], {
@@ -134,10 +134,11 @@ test("npm installs the produced CLI tgz and executes its binary without workspac
 
     const installedPackage = JSON.parse(await readFile(resolve(installRoot, "node_modules", "devroost", "package.json"), "utf8")) as {
       name: string;
+      bin: Record<string, string>;
       dependencies?: Record<string, string>;
     };
     assert.equal(installedPackage.name, "devroost");
-    await assert.rejects(readFile(resolve(installRoot, "node_modules", ".bin", "loom")), { code: "ENOENT" });
+    assert.deepEqual(Object.keys(installedPackage.bin), ["devroost"]);
     const help = await executeFile(resolve(installRoot, "node_modules", ".bin", "devroost"), ["--help"], { encoding: "utf8" });
     assert.match(help.stdout, /devroost/);
     assert.deepEqual(installedPackage.dependencies ?? {}, {});
@@ -154,7 +155,7 @@ test("npm installs the produced CLI tgz and executes its binary without workspac
 });
 
 async function isolatedCliFixture(projectDirName: string) {
-  const tempRoot = await mkdtemp(resolve(tmpdir(), "loom-packaged-cli-"));
+  const tempRoot = await mkdtemp(resolve(tmpdir(), "devroost-packaged-cli-"));
   const packageDistDir = resolve(tempRoot, "install", "package", "dist");
   const workspaceDir = resolve(tempRoot, "workspace");
   const targetDir = resolve(workspaceDir, projectDirName);
@@ -228,7 +229,7 @@ test("release archives publish canonical stack assets without legacy examples", 
     });
     const paths = stdout.trim().split("\n").map((path) => path.replace(/^\.\//, "")).sort();
     assert.ok(paths.includes("devroost"), `${archive} is missing the Devroost launcher`);
-    assert.equal(paths.includes("loom"), false, `${archive} must not include the old command`);
+    assert.deepEqual(paths.filter((path) => !path.includes("/")), ["devroost", "devroost.mjs"]);
     assert.ok(paths.includes("devroost.mjs"), `${archive} is missing the CLI bundle`);
     assertCanonicalStackAssets(paths, "stacks/");
     assert.equal(hasLegacyExampleAssets(paths), false);
@@ -242,7 +243,7 @@ test("release archives publish canonical stack assets without legacy examples", 
     ], { encoding: "utf8", maxBuffer: 10 * 1024 * 1024 });
     const paths = (JSON.parse(stdout) as string[]).sort();
     assert.ok(paths.includes("devroost.cmd"), `${archive} is missing the Devroost launcher`);
-    assert.equal(paths.includes("loom.cmd"), false, `${archive} must not include the old command`);
+    assert.deepEqual(paths.filter((path) => !path.includes("/")), ["devroost.cmd", "devroost.mjs"]);
     assert.ok(paths.includes("devroost.mjs"), `${archive} is missing the CLI bundle`);
     assertCanonicalStackAssets(paths, "stacks/");
     assert.equal(hasLegacyExampleAssets(paths), false);

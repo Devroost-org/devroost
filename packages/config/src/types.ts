@@ -1,7 +1,7 @@
-export type LoomServiceType = "node" | "php" | "python" | "postgres" | "redis" | string;
+export type DevroostServiceType = "node" | "php" | "python" | "postgres" | "redis" | string;
 
-export interface LoomService {
-  type: LoomServiceType;
+export interface DevroostService {
+  type: DevroostServiceType;
   image: string;
   composer?: boolean;
   user?: string;
@@ -23,19 +23,19 @@ export interface LoomService {
   };
 }
 
-export interface LoomRoute {
+export interface DevroostRoute {
   host: string;
   service: string;
   port: number;
   https?: boolean;
 }
 
-export interface LoomTask {
+export interface DevroostTask {
   service: string;
   command: string;
 }
 
-export interface LoomConfig {
+export interface DevroostConfig {
   version: number;
   name: string;
   runtime: {
@@ -45,7 +45,7 @@ export interface LoomConfig {
       managed: boolean;
     };
   };
-  services: Record<string, LoomService>;
-  routes?: LoomRoute[];
-  tasks?: Record<string, LoomTask>;
+  services: Record<string, DevroostService>;
+  routes?: DevroostRoute[];
+  tasks?: Record<string, DevroostTask>;
 }

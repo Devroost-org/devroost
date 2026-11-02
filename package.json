@@ -1,6 +1,6 @@
 {
   "name": "devroost",
-  "version": "0.3.9",
+  "version": "0.3.10",
   "private": true,
   "description": "Devroost is a Podman-based local development CLI for application runtimes, databases, and HTTPS.",
   "license": "Elastic-2.0",

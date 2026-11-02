@@ -100,9 +100,9 @@ test("generated-stack smoke initializes disposable projects by public ID", () =>
   assert.match(smoke, /run_devroost init "\$stack_id" --dir "\$project_dir"/);
   assert.doesNotMatch(smoke, /stacks\/[^\s]+\/templates\/devroost\.yaml/);
   const sqliteVerification = smoke.match(/db-sqlite\)([\s\S]*?)\n {6};;/)?.[1] ?? "";
-  const sqliteQuery = sqliteVerification.indexOf("run_devroost exec db -- sqlite3 /data/loom.db");
-  const sqliteOwner = sqliteVerification.indexOf("assert_owner data/sqlite/loom.db");
-  const sqliteWritable = sqliteVerification.indexOf("assert_writable data/sqlite/loom.db");
+  const sqliteQuery = sqliteVerification.indexOf("run_devroost exec db -- sqlite3 /data/devroost.db");
+  const sqliteOwner = sqliteVerification.indexOf("assert_owner data/sqlite/devroost.db");
+  const sqliteWritable = sqliteVerification.indexOf("assert_writable data/sqlite/devroost.db");
   assert.ok(sqliteQuery >= 0 && sqliteQuery < sqliteOwner && sqliteOwner < sqliteWritable);
   assert.match(smoke, /work_root_marker/);
   assert.match(smoke, /created_projects_file/);
@@ -123,7 +123,7 @@ test("published-image smoke validates and pulls the generated GHCR digest", () =
   assert.match(wrapper, /smoke-generated-stacks\.sh/);
 
   const smoke = readFileSync(resolve(repoDir, "scripts", "smoke-generated-stacks.sh"), "utf8");
-  assert.ok(smoke.includes("^ghcr\\.io/loom-development/[^@]+@sha256:[a-f0-9]{64}$"));
+  assert.ok(smoke.includes("^ghcr\\.io/devroost-org/[^@]+@sha256:[a-f0-9]{64}$"));
   assert.match(smoke, /podman pull/);
   const init = smoke.indexOf('run_devroost init "$stack_id"');
   const pull = smoke.indexOf('podman pull "$image_reference"');
@@ -132,7 +132,7 @@ test("published-image smoke validates and pulls the generated GHCR digest", () =
 });
 
 test("generated-stack smoke refuses a pre-existing custom workspace", async () => {
-  const tempRoot = await mkdtemp(resolve(tmpdir(), "loom-smoke-root-test-"));
+  const tempRoot = await mkdtemp(resolve(tmpdir(), "devroost-smoke-root-test-"));
   const sharedRoot = resolve(tempRoot, "shared");
   const sentinel = resolve(sharedRoot, "sentinel.txt");
   await mkdir(sharedRoot);

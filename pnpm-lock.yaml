@@ -41,25 +41,25 @@ importers:
 
   apps/cli:
     devDependencies:
-      '@loom/stacks':
+      '@devroost/stacks':
         specifier: workspace:*
         version: link:../../stacks
-      '@loom/config':
+      '@devroost/config':
         specifier: workspace:*
         version: link:../../packages/config
-      '@loom/core':
+      '@devroost/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@loom/https':
+      '@devroost/https':
         specifier: workspace:*
         version: link:../../packages/https
-      '@loom/network':
+      '@devroost/network':
         specifier: workspace:*
         version: link:../../packages/network
-      '@loom/runtime-podman':
+      '@devroost/runtime-podman':
         specifier: workspace:*
         version: link:../../packages/runtime-podman
-      '@loom/tasks':
+      '@devroost/tasks':
         specifier: workspace:*
         version: link:../../packages/tasks
       cac:
@@ -77,16 +77,16 @@ importers:
 
   packages/core:
     dependencies:
-      '@loom/config':
+      '@devroost/config':
         specifier: workspace:*
         version: link:../config
-      '@loom/https':
+      '@devroost/https':
         specifier: workspace:*
         version: link:../https
-      '@loom/network':
+      '@devroost/network':
         specifier: workspace:*
         version: link:../network
-      '@loom/runtime-podman':
+      '@devroost/runtime-podman':
         specifier: workspace:*
         version: link:../runtime-podman
 
@@ -94,25 +94,25 @@ importers:
 
   packages/network:
     dependencies:
-      '@loom/config':
+      '@devroost/config':
         specifier: workspace:*
         version: link:../config
-      '@loom/https':
+      '@devroost/https':
         specifier: workspace:*
         version: link:../https
-      '@loom/runtime-podman':
+      '@devroost/runtime-podman':
         specifier: workspace:*
         version: link:../runtime-podman
 
   packages/runtime-podman:
     dependencies:
-      '@loom/config':
+      '@devroost/config':
         specifier: workspace:*
         version: link:../config
 
   packages/tasks:
     dependencies:
-      '@loom/core':
+      '@devroost/core':
         specifier: workspace:*
         version: link:../core
 

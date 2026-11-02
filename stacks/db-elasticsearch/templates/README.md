@@ -14,7 +14,7 @@ devroost status
 ## Service
 
 - `db`
-  - Runtime: `${ELASTICSEARCH_IMAGE:-ghcr.io/loom-development/elasticsearch-8.19@sha256:e4797708584bd0df7c746b33a6640d243018a0ae8c8b088391c6f4675a3bef52}`
+  - Runtime: `${ELASTICSEARCH_IMAGE:-ghcr.io/devroost-org/elasticsearch-8.19@sha256:e4797708584bd0df7c746b33a6640d243018a0ae8c8b088391c6f4675a3bef52}`
   - Ports: `9200`, `9300`
 
 ## Route

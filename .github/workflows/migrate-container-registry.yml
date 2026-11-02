@@ -1,8 +1,5 @@
 name: Migrate Container Registry
 on:
-  push:
-    branches: [main]
-    paths: [.github/workflows/migrate-container-registry.yml]
   workflow_dispatch:
 permissions:
   contents: write
@@ -35,10 +32,10 @@ jobs:
           const source=JSON.parse(fs.readFileSync('images/digests.json'));
           const migrated={...source, registry:'ghcr.io/devroost-org', signatureIdentity:'https://github.com/Devroost-org/devroost/.github/workflows/migrate-container-registry.yml@refs/heads/main', images:[]};
           for(const record of source.images){
-            const name=record.name.replace(/^loom-/, 'devroost-');
-            const version=record.version.replace(/-loom\./, '-devroost.');
+            const name=record.name;
+            const version=record.version;
             const destination=`${migrated.registry}/${name}`;
-            execFileSync('skopeo',['copy','--all','--preserve-digests','--retry-times','3',`docker://${record.image}@${record.digest}`,`docker://${destination}:${version}`],{stdio:'inherit'});
+            if(record.image!==destination)execFileSync('skopeo',['copy','--all','--preserve-digests','--retry-times','3',`docker://${record.image}@${record.digest}`,`docker://${destination}:${version}`],{stdio:'inherit'});
             const digest=execFileSync('skopeo',['inspect','--format','{{.Digest}}',`docker://${destination}:${version}`],{encoding:'utf8'}).trim();
             if(digest!==record.digest)throw Error(`Digest mismatch for ${name}`);
             execFileSync('cosign',['sign','--yes',`${destination}@${digest}`],{stdio:'inherit'});
@@ -52,8 +49,10 @@ jobs:
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add images/registry-migration.json
-          git commit -m 'chore(images): record verified Devroost registry migration'
-          git push origin HEAD:main
+          if ! git diff --cached --quiet; then
+            git commit -m 'chore(images): record verified Devroost registry migration'
+            git push origin HEAD:main
+          fi
       - uses: actions/upload-artifact@v7
         if: always()
         with:

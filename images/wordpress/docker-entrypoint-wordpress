@@ -2,20 +2,20 @@
 set -euo pipefail
 
 if [[ "${1:-}" == "apache2-foreground" ]]; then
-  case "${LOOM_DOCUMENT_ROOT:-}" in
+  case "${DEVROOST_DOCUMENT_ROOT:-}" in
     /*) ;;
     *)
-      printf 'LOOM_DOCUMENT_ROOT must be an absolute path, got %q\n' \
-        "${LOOM_DOCUMENT_ROOT:-}" >&2
+      printf 'DEVROOST_DOCUMENT_ROOT must be an absolute path, got %q\n' \
+        "${DEVROOST_DOCUMENT_ROOT:-}" >&2
       exit 64
       ;;
   esac
 
-  mkdir -p "${LOOM_DOCUMENT_ROOT}"
-  if [[ ! -e "${LOOM_DOCUMENT_ROOT}/index.php" ]]; then
+  mkdir -p "${DEVROOST_DOCUMENT_ROOT}"
+  if [[ ! -e "${DEVROOST_DOCUMENT_ROOT}/index.php" ]]; then
     tar --create --directory /usr/src/wordpress . \
-      | tar --extract --directory "${LOOM_DOCUMENT_ROOT}"
+      | tar --extract --directory "${DEVROOST_DOCUMENT_ROOT}"
   fi
 fi
 
-exec docker-entrypoint-loom "$@"
+exec docker-entrypoint-devroost "$@"

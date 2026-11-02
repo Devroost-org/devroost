@@ -6,13 +6,13 @@ import { applyCatalogUpdates, checkCatalogUpdates } from "./check-updates.mjs";
 const digest = (character) => `sha256:${character.repeat(64)}`;
 const catalog = {
   schemaVersion: 1,
-  registry: "ghcr.io/loom-development",
+  registry: "ghcr.io/devroost-org",
   images: [
     {
-      name: "loom-node-24",
+      name: "devroost-node-24",
       kind: "custom",
       source: `docker.io/library/node:24.20.0-alpine@${digest("a")}`,
-      version: "24.20.0-loom.3",
+      version: "24.20.0-devroost.3",
       platforms: ["linux/amd64", "linux/arm64"],
       context: "images/node"
     }
@@ -21,7 +21,7 @@ const catalog = {
 
 test("leaves catalog bytes unchanged when registry metadata has not changed", () => {
   const result = applyCatalogUpdates(catalog, [
-    { name: "loom-node-24", digest: digest("a") }
+    { name: "devroost-node-24", digest: digest("a") }
   ]);
   assert.equal(result.changed, false);
   assert.deepEqual(result.catalog, catalog);
@@ -29,7 +29,7 @@ test("leaves catalog bytes unchanged when registry metadata has not changed", ()
 
 test("updates a changed digest behind the pinned upstream tag", () => {
   const result = applyCatalogUpdates(catalog, [
-    { name: "loom-node-24", digest: digest("b") }
+    { name: "devroost-node-24", digest: digest("b") }
   ]);
   assert.equal(result.changed, true);
   assert.equal(
@@ -41,13 +41,13 @@ test("updates a changed digest behind the pinned upstream tag", () => {
 test("applies an explicitly reported tool source and version change", () => {
   const result = applyCatalogUpdates(catalog, [
     {
-      name: "loom-node-24",
+      name: "devroost-node-24",
       source: "docker.io/library/node:24.5.0-alpine",
       digest: digest("c"),
-      version: "24.5.0-loom.1"
+      version: "24.5.0-devroost.1"
     }
   ]);
-  assert.equal(result.catalog.images[0].version, "24.5.0-loom.1");
+  assert.equal(result.catalog.images[0].version, "24.5.0-devroost.1");
   assert.equal(
     result.catalog.images[0].source,
     `docker.io/library/node:24.5.0-alpine@${digest("c")}`
@@ -59,6 +59,6 @@ test("fails the whole check without returning a partial catalog on registry fail
     checkCatalogUpdates(catalog, async () => {
       throw new Error("registry unavailable");
     }),
-    /loom-node-24.*registry unavailable/
+    /devroost-node-24.*registry unavailable/
   );
 });

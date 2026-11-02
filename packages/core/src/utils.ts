@@ -1,4 +1,4 @@
-import type { LoomConfig } from "@loom/config";
+import type { DevroostConfig } from "@devroost/config";
 
 function levenshteinDistance(a: string, b: string): number {
   const matrix: number[][] = Array.from({ length: a.length + 1 }, () =>
@@ -44,7 +44,7 @@ export function closestServiceName(target: string, candidates: string[]): string
   return best.score <= threshold ? best.candidate : undefined;
 }
 
-export function dependencyOrder(config: LoomConfig): string[] {
+export function dependencyOrder(config: DevroostConfig): string[] {
   const visited = new Set<string>();
   const temp = new Set<string>();
   const ordered: string[] = [];
