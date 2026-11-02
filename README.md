@@ -1,10 +1,17 @@
-# Loom
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Loom-development/Loom/main/assets/branding/loom-dev-logo.png" alt="Loom dev — connected infinity-loop wordmark" width="800">
+</p>
 
-Local development environments without Docker Desktop or hand-written container setup.
+# Loom — local development CLI
 
-Loom creates and runs complete development projects with Podman. Choose a stack,
-start it, and work with the source files in your normal editor. Loom handles the
-application runtime, databases, startup order, health checks, and local HTTPS.
+Loom (`loomdev` on npm) creates and runs full-stack dev environments with Podman.
+Choose a development stack, start it, and work with the source files in your
+normal editor. Loom handles application runtimes, databases, startup order,
+health checks, and local HTTPS.
+
+Install the `loomdev` package and use the `loom` command, or run it with
+`npx loomdev@latest`. Build Node.js, Python, PHP, Ruby, Java, and .NET projects
+without Docker Desktop or hand-written container setup.
 
 ## What Loom gives you
 

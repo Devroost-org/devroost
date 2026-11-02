@@ -1,19 +1,23 @@
 {
   "name": "loomdev",
   "version": "0.3.7",
-  "description": "Loom CLI: Podman-based local development environments with HTTPS, databases, and ready-to-use application stacks.",
+  "description": "Loom (loomdev) is a local development CLI for Podman: run full-stack dev environments with application runtimes, databases, and HTTPS.",
   "keywords": [
     "loom",
     "loomdev",
-    "cli",
-    "podman",
-    "containers",
+    "dev",
+    "development",
     "local-development",
     "development-environment",
     "dev-environment",
     "devtools",
+    "developer-tools",
+    "cli",
+    "podman",
+    "containers",
+    "full-stack",
     "https",
-    "full-stack"
+    "database"
   ],
   "repository": {
     "type": "git",
