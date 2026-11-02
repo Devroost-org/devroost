@@ -14,4 +14,4 @@ Pass `--php-docroot <path>` to `devroost init php` when the application entrypoi
 is not the project root. The generated `.env` exposes the exact default PHP
 image tag and may be edited for an explicit runtime override:
 
-- `${PHP_IMAGE:-ghcr.io/devroost-org/devroost-php@sha256:d9f67c2ee13bdc0f17cb836c435acb5787062311ac1843aa3ee4cb7ff11c799d}`
+- `${PHP_IMAGE:-ghcr.io/devroost-org/devroost-php@sha256:3ca4a5a3832c205dacfbe05b44a8693c4c8283f773ec48f0d82a7930d3ebcff9}`

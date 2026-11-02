@@ -18,7 +18,7 @@ The first `devroost start` can take a while because the container installs nativ
 ## Services
 
 - `app`
-  - Base image: `${RUBY_IMAGE:-ghcr.io/devroost-org/devroost-ruby-3.3@sha256:fa3ff65b942751619cecc93a2fbecd23aee0c03400d99390c0be4242938e99e1}`
+  - Base image: `${RUBY_IMAGE:-ghcr.io/devroost-org/devroost-ruby-3.3@sha256:3232065fec6fdeff455de0436b1b3f0113c70dee4707230b48647309d66dbbce}`
   - Port: `3008`
   - Purpose: Ruby container running the bootstrapped Rails 7 app with Hotwire defaults
 

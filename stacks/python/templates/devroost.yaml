@@ -8,7 +8,7 @@ runtime:
 services:
   app:
     type: python
-    image: ${PYTHON_IMAGE:-ghcr.io/devroost-org/devroost-python-3.12@sha256:dfc56d79d2e1ec7552b172f58bab8468929cf80dca40a33078654bc5fb8d9a94}
+    image: ${PYTHON_IMAGE:-ghcr.io/devroost-org/devroost-python-3.12@sha256:b67c733c69e09facfac79cf75702382543ffc43c3f43354887a9ade847d717eb}
     user: ${HOST_UID:-1000}:${HOST_GID:-1000}
     userns: keep-id
     workdir: /app

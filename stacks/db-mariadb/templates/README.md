@@ -14,7 +14,7 @@ devroost status
 ## Service
 
 - `db`
-  - Runtime: `${MARIADB_IMAGE:-ghcr.io/devroost-org/mariadb-11.8@sha256:2439dcd7d14010ecd1ff7a4e1c5abe8e208c34fe35290744deeeaac3569043c3}`
+  - Runtime: `${MARIADB_IMAGE:-ghcr.io/devroost-org/mariadb-11.8@sha256:c4124d1afa875e47f2892edf26b482fa54f796e2f342d3717a04ca091a22a9bd}`
   - Port: `3307`
 
 ## Route

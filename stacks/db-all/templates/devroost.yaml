@@ -8,7 +8,7 @@ runtime:
 services:
   mysql:
     type: mysql
-    image: ${MYSQL_IMAGE:-ghcr.io/devroost-org/mysql-8.4@sha256:b3b90af2a6552ae30c266fdb7d5dd55f3afb72404bb78d37fe8a23eb857fd3fb}
+    image: ${MYSQL_IMAGE:-ghcr.io/devroost-org/mysql-8.4@sha256:221c78806de3686d3fb4569df99af86bdb0f5cf4f7087e1e2d9c4527fa5e681a}
     env:
       MYSQL_ROOT_PASSWORD: devroostroot
       MYSQL_DATABASE: devroost
@@ -27,7 +27,7 @@ services:
 
   sqlserver:
     type: sqlserver
-    image: ${MSSQL_IMAGE:-ghcr.io/devroost-org/mssql-2022@sha256:ba4c8329f48fb8f02e1416be6a930ebfd71268caee78aa985f3af4315e457c89}
+    image: ${MSSQL_IMAGE:-ghcr.io/devroost-org/mssql-2022@sha256:4402d880dd4c34bfa7d8705e56a86cd6c88da80a1f6bbbe741f999e76264a090}
     env:
       ACCEPT_EULA: "Y"
       MSSQL_SA_PASSWORD: "DevroostDev!Passw0rd"
@@ -39,7 +39,7 @@ services:
 
   postgres:
     type: postgres
-    image: ${POSTGRES_IMAGE:-ghcr.io/devroost-org/postgres-16@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685}
+    image: ${POSTGRES_IMAGE:-ghcr.io/devroost-org/postgres-16@sha256:0cefaabd882e42bcb2a2f3dc56d3ce4770560ba62fd7f197f1a2e008fd5731ab}
     env:
       POSTGRES_USER: devroost
       POSTGRES_PASSWORD: devroost
@@ -57,7 +57,7 @@ services:
 
   mongodb:
     type: mongodb
-    image: ${MONGO_IMAGE:-ghcr.io/devroost-org/mongo-7.0@sha256:406a4fdca9fc763443268f000218d3849ef8996f66ed9e92ba0b501b446ab822}
+    image: ${MONGO_IMAGE:-ghcr.io/devroost-org/mongo-7.0@sha256:94aea1479556ad4e5aba7a31a6d53eb7b0ae76741950da45a13d5df5cddf1b3b}
     env:
       MONGO_INITDB_ROOT_USERNAME: devroost
       MONGO_INITDB_ROOT_PASSWORD: devroost
@@ -69,7 +69,7 @@ services:
 
   redis:
     type: redis
-    image: ${REDIS_IMAGE:-ghcr.io/devroost-org/redis-7.4@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf}
+    image: ${REDIS_IMAGE:-ghcr.io/devroost-org/redis-7.4@sha256:8da19c7399dca900c6822a1cf30f9d2285585e2c4b457ff4095b0f4500054d3f}
     command: redis-server --appendonly yes
     ports:
       - "6379:6379"
@@ -84,7 +84,7 @@ services:
 
   elasticsearch:
     type: elasticsearch
-    image: ${ELASTICSEARCH_IMAGE:-ghcr.io/devroost-org/elasticsearch-8.19@sha256:e4797708584bd0df7c746b33a6640d243018a0ae8c8b088391c6f4675a3bef52}
+    image: ${ELASTICSEARCH_IMAGE:-ghcr.io/devroost-org/elasticsearch-8.19@sha256:4d0724bb8d78d7a2330693623e26ca4d621079d062ecc8a30b3e1fc180ec14c1}
     env:
       discovery.type: single-node
       xpack.security.enabled: "false"
@@ -97,7 +97,7 @@ services:
 
   sqlite:
     type: sqlite
-    image: ${SQLITE_IMAGE:-ghcr.io/devroost-org/devroost-sqlite-3@sha256:fb5d256f745a6e26fc5a416e2491f33e02eaba00abd4d786f51a5c8e74667f07}
+    image: ${SQLITE_IMAGE:-ghcr.io/devroost-org/devroost-sqlite-3@sha256:98a568db611c27ddaa23a570f5710161d7e1a38f921769ae1b41c2f4a45861fd}
     user: ${HOST_UID:-1000}:${HOST_GID:-1000}
     userns: keep-id
     entrypoint: ""
@@ -108,7 +108,7 @@ services:
 
   mariadb:
     type: mariadb
-    image: ${MARIADB_IMAGE:-ghcr.io/devroost-org/mariadb-11.8@sha256:2439dcd7d14010ecd1ff7a4e1c5abe8e208c34fe35290744deeeaac3569043c3}
+    image: ${MARIADB_IMAGE:-ghcr.io/devroost-org/mariadb-11.8@sha256:c4124d1afa875e47f2892edf26b482fa54f796e2f342d3717a04ca091a22a9bd}
     env:
       MARIADB_ROOT_PASSWORD: devroostroot
       MARIADB_DATABASE: devroost

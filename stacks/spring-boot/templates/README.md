@@ -14,7 +14,7 @@ devroost status
 ## Services
 
 - `app`
-  - Runtime: `${JAVA_IMAGE:-ghcr.io/devroost-org/devroost-java-21@sha256:dd2c87a716b9f86d94cacc5db4b7b44ec3ba864f33ca3d6823461f84522dbe7e}`
+  - Runtime: `${JAVA_IMAGE:-ghcr.io/devroost-org/devroost-java-21@sha256:8f86e4e6ba93af301147df6e2ac3251804cc7999657f5fc1dc6437dfe5003874}`
   - Port: `8080`
   - Purpose: Spring Boot application server with Maven wrapper
 

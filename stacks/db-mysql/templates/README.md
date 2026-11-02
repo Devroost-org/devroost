@@ -14,7 +14,7 @@ devroost status
 ## Service
 
 - `db`
-  - Runtime: `${MYSQL_IMAGE:-ghcr.io/devroost-org/mysql-8.4@sha256:b3b90af2a6552ae30c266fdb7d5dd55f3afb72404bb78d37fe8a23eb857fd3fb}`
+  - Runtime: `${MYSQL_IMAGE:-ghcr.io/devroost-org/mysql-8.4@sha256:221c78806de3686d3fb4569df99af86bdb0f5cf4f7087e1e2d9c4527fa5e681a}`
   - Port: `3306`
 
 ## Route
