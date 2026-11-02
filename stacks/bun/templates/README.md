@@ -5,10 +5,10 @@ This template gives you a Bun-based application workflow as a Node.js alternativ
 ## Quickstart
 
 ```bash
-loom init bun --dir my-bun
+devroost init bun --dir my-bun
 cd my-bun
-loom start
-loom status
+devroost start
+devroost status
 ```
 
 ## Services
@@ -20,7 +20,7 @@ loom status
 
 ## Route
 
-- App: `https://bun.loom.local`
+- App: `https://bun.devroost.local`
 
 ## Image overrides
 

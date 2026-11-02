@@ -5,10 +5,10 @@ This template gives you a Spring Boot application running on Java 21 (Eclipse Te
 ## Quickstart
 
 ```bash
-loom init spring-boot --dir my-app
+devroost init spring-boot --dir my-app
 cd my-app
-loom start
-loom status
+devroost start
+devroost status
 ```
 
 ## Services
@@ -20,7 +20,7 @@ loom status
 
 ## Route
 
-- App: `https://spring-boot.loom.local`
+- App: `https://spring-boot.devroost.local`
 
 ## Image overrides
 

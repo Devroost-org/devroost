@@ -1,6 +1,6 @@
 # @loom/core
 
-Core orchestration layer for Loom.
+Core orchestration layer for Devroost.
 
 - Start/stop/restart orchestration
 - Service/task/backup coordination

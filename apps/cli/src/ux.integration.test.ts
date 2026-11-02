@@ -50,7 +50,7 @@ function runCli(args: string[], options: { input?: string; env?: NodeJS.ProcessE
 
 test("logs reports unknown service with suggestion and available services", async () => {
   const tempRoot = await mkdtemp(join(tmpdir(), "loom-cli-logs-"));
-  const configPath = join(tempRoot, "loom.yaml");
+  const configPath = join(tempRoot, "devroost.yaml");
   await writeFile(
     configPath,
     [
@@ -76,7 +76,7 @@ test("logs reports unknown service with suggestion and available services", asyn
 
 test("exec reports unknown service with suggestion", async () => {
   const tempRoot = await mkdtemp(join(tmpdir(), "loom-cli-exec-"));
-  const configPath = join(tempRoot, "loom.yaml");
+  const configPath = join(tempRoot, "devroost.yaml");
   await writeFile(
     configPath,
     [
@@ -124,7 +124,7 @@ test("doctor CLI emits all ordered checks as JSON and matching human output", as
   const projectRoot = await mkdtemp(join(tmpdir(), "loom-cli-doctor-"));
   const initialized = runCli(["init", "node", "--dir", projectRoot]);
   assert.equal(initialized.status, 0, initialized.stderr);
-  const command = ["doctor", "--config", join(projectRoot, "loom.yaml")];
+  const command = ["doctor", "--config", join(projectRoot, "devroost.yaml")];
 
   const jsonResult = runCli([...command, "--json"]);
   assert.equal(jsonResult.stderr, "");
@@ -151,7 +151,7 @@ test("clean previews exact sorted paths and dry-run never deletes", async () => 
   await mkdir(join(projectRoot, "dist"));
   await writeFile(join(projectRoot, "dist", "app.js"), "build\n");
 
-  const result = runCli(["clean", "--config", join(projectRoot, "loom.yaml"), "--dry-run"]);
+  const result = runCli(["clean", "--config", join(projectRoot, "devroost.yaml"), "--dry-run"]);
   assert.equal(result.status, 0, result.stderr);
   assert.match(result.stdout, / {2}dist \[build\] 6 B\n {2}node_modules \[dependency\] missing\nTotal: 6 B/);
   assert.equal(await readFile(join(projectRoot, "dist", "app.js"), "utf8"), "build\n");
@@ -170,13 +170,13 @@ test("clean refuses non-interactive deletion without force and force removes onl
   await writeFile(join(projectRoot, "dist", "app.js"), "build\n");
   await writeFile(join(projectRoot, "keep.txt"), "keep\n");
 
-  const refused = runCli(["clean", "--config", join(projectRoot, "loom.yaml")]);
+  const refused = runCli(["clean", "--config", join(projectRoot, "devroost.yaml")]);
   assert.equal(refused.status, 1);
   assert.match(refused.stdout, /Generated paths:/);
   assert.match(refused.stderr, /--force/);
   assert.equal(await readFile(join(projectRoot, "dist", "app.js"), "utf8"), "build\n");
 
-  const forced = runCli(["clean", "--config", join(projectRoot, "loom.yaml"), "--force"]);
+  const forced = runCli(["clean", "--config", join(projectRoot, "devroost.yaml"), "--force"]);
   assert.equal(forced.status, 0, forced.stderr);
   assert.match(forced.stdout, /Cleanup complete: 1 removed, 1 missing/);
   await assert.rejects(readFile(join(projectRoot, "dist", "app.js"), "utf8"));
@@ -192,7 +192,7 @@ test("clean rejects an unsafe plan before deleting any generated path", async ()
   await writeFile(join(projectRoot, "dist", "app.js"), "retain\n");
   await symlink(outsideRoot, join(projectRoot, "node_modules"));
 
-  const result = runCli(["clean", "--config", join(projectRoot, "loom.yaml"), "--force"]);
+  const result = runCli(["clean", "--config", join(projectRoot, "devroost.yaml"), "--force"]);
   assert.equal(result.status, 1);
   assert.match(result.stderr, /symlink/i);
   assert.equal(result.stdout, "");
@@ -201,33 +201,33 @@ test("clean rejects an unsafe plan before deleting any generated path", async ()
 
 test("upgrade reports a missing manifest", async () => {
   const projectRoot = await mkdtemp(join(tmpdir(), "loom-cli-upgrade-"));
-  const result = runCli(["upgrade", "--config", join(projectRoot, "loom.yaml")]);
+  const result = runCli(["upgrade", "--config", join(projectRoot, "devroost.yaml")]);
   assert.notEqual(result.status, 0);
-  assert.match(result.stderr, /No Loom project manifest/i);
+  assert.match(result.stderr, /No Devroost project manifest/i);
 });
 
 test("upgrade migrates v1 baselines without replacing project files", async () => {
   const projectRoot = await mkdtemp(join(tmpdir(), "loom-cli-upgrade-"));
-  const loomYaml = "version: 1\nname: retained-name\nservices: {}\n";
-  await mkdir(join(projectRoot, ".loom"), { recursive: true });
-  await writeFile(join(projectRoot, "loom.yaml"), loomYaml);
-  await writeFile(join(projectRoot, ".loom", "manifest.json"), JSON.stringify({
+  const devroostYaml = "version: 1\nname: retained-name\nservices: {}\n";
+  await mkdir(join(projectRoot, ".devroost"), { recursive: true });
+  await writeFile(join(projectRoot, "devroost.yaml"), devroostYaml);
+  await writeFile(join(projectRoot, ".devroost", "manifest.json"), JSON.stringify({
     version: 1,
-    loomVersion: "0.1.0",
+    devroostVersion: "0.1.0",
     stack: { id: "node", scaffoldVersion: "1" },
-    ownedFiles: { "loom.yaml": { sha256: "old" } }
+    ownedFiles: { "devroost.yaml": { sha256: "old" } }
   }));
 
-  const refused = runCli(["upgrade", "--config", join(projectRoot, "loom.yaml")]);
+  const refused = runCli(["upgrade", "--config", join(projectRoot, "devroost.yaml")]);
   assert.notEqual(refused.status, 0);
   assert.match(refused.stderr, /--initialize-baseline/);
-  assert.equal(await readFile(join(projectRoot, "loom.yaml"), "utf8"), loomYaml);
+  assert.equal(await readFile(join(projectRoot, "devroost.yaml"), "utf8"), devroostYaml);
 
-  const migrated = runCli(["upgrade", "--config", join(projectRoot, "loom.yaml"), "--initialize-baseline"]);
+  const migrated = runCli(["upgrade", "--config", join(projectRoot, "devroost.yaml"), "--initialize-baseline"]);
   assert.equal(migrated.status, 0, migrated.stderr);
   assert.match(migrated.stdout, /No project files were replaced/);
-  assert.equal(await readFile(join(projectRoot, "loom.yaml"), "utf8"), loomYaml);
-  const manifest = JSON.parse(await readFile(join(projectRoot, ".loom", "manifest.json"), "utf8")) as {
+  assert.equal(await readFile(join(projectRoot, "devroost.yaml"), "utf8"), devroostYaml);
+  const manifest = JSON.parse(await readFile(join(projectRoot, ".devroost", "manifest.json"), "utf8")) as {
     version: number;
     stack: { definitionVersion: number };
     renderInputs: { projectName: string };
@@ -239,30 +239,30 @@ test("upgrade migrates v1 baselines without replacing project files", async () =
 
 test("upgrade rejects an unknown manifest stack", async () => {
   const projectRoot = await mkdtemp(join(tmpdir(), "loom-cli-upgrade-"));
-  await mkdir(join(projectRoot, ".loom"), { recursive: true });
-  await writeFile(join(projectRoot, ".loom", "manifest.json"), JSON.stringify({
+  await mkdir(join(projectRoot, ".devroost"), { recursive: true });
+  await writeFile(join(projectRoot, ".devroost", "manifest.json"), JSON.stringify({
     version: 1,
-    loomVersion: "0.1.0",
+    devroostVersion: "0.1.0",
     stack: { id: "not-a-stack", scaffoldVersion: "1" },
     ownedFiles: {}
   }));
-  const result = runCli(["upgrade", "--config", join(projectRoot, "loom.yaml")]);
+  const result = runCli(["upgrade", "--config", join(projectRoot, "devroost.yaml")]);
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /Unknown stack 'not-a-stack'/);
 });
 
-test("upgrade skips modified Loom files unless forced and preserves developer files", async () => {
+test("upgrade skips modified Devroost files unless forced and preserves developer files", async () => {
   const projectRoot = await mkdtemp(join(tmpdir(), "loom-cli-upgrade-"));
   const initialized = runCli(["init", "node", "--dir", projectRoot]);
   assert.equal(initialized.status, 0, initialized.stderr);
 
-  const configPath = join(projectRoot, "loom.yaml");
+  const configPath = join(projectRoot, "devroost.yaml");
   const originalLoom = await readFile(configPath, "utf8");
   const current = runCli(["upgrade", "--config", configPath]);
   assert.equal(current.status, 0, current.stderr);
-  assert.match(current.stdout, /unchanged loom\.yaml -> already current/);
+  assert.match(current.stdout, /unchanged devroost\.yaml -> already current/);
 
-  const modifiedLoom = `${originalLoom}\n# local Loom edit\n`;
+  const modifiedLoom = `${originalLoom}\n# local Devroost edit\n`;
   const developerFiles: Record<string, string> = {
     "package.json": '{"private":true}\n',
     "pnpm-lock.yaml": "lockfileVersion: '9.0'\n",
@@ -273,12 +273,12 @@ test("upgrade skips modified Loom files unless forced and preserves developer fi
 
   const refused = runCli(["upgrade", "--config", configPath]);
   assert.notEqual(refused.status, 0);
-  assert.match(refused.stdout, /modified loom\.yaml -> skipped/);
+  assert.match(refused.stdout, /modified devroost\.yaml -> skipped/);
   assert.equal(await readFile(configPath, "utf8"), modifiedLoom);
 
   const forced = runCli(["upgrade", "--config", configPath, "--force-modified"]);
   assert.equal(forced.status, 0, forced.stderr);
-  assert.match(forced.stdout, /modified loom\.yaml -> update available/);
+  assert.match(forced.stdout, /modified devroost\.yaml -> update available/);
   assert.equal(await readFile(configPath, "utf8"), originalLoom);
   for (const [path, contents] of Object.entries(developerFiles)) {
     assert.equal(await readFile(join(projectRoot, path), "utf8"), contents);

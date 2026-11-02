@@ -13,24 +13,24 @@ async function fixture(generatedPaths: readonly StackGeneratedPath[] = [
 ]) {
   const root = await mkdtemp(join(tmpdir(), "loom-clean-"));
   const projectRoot = join(root, "project");
-  await mkdir(join(projectRoot, ".loom", "database"), { recursive: true });
+  await mkdir(join(projectRoot, ".devroost", "database"), { recursive: true });
   await mkdir(join(projectRoot, "src"), { recursive: true });
-  await writeFile(join(projectRoot, ".loom", "database", "data"), "database\n");
+  await writeFile(join(projectRoot, ".devroost", "database", "data"), "database\n");
   await writeFile(join(projectRoot, "src", "app.ts"), "source\n");
-  await writeFile(join(projectRoot, "loom.yaml"), "name: demo\n");
+  await writeFile(join(projectRoot, "devroost.yaml"), "name: demo\n");
   await writeFile(join(projectRoot, ".env"), "SECRET=value\n");
   await writeFile(join(projectRoot, "package.json"), "{}\n");
   await writeFile(join(projectRoot, "pnpm-lock.yaml"), "lockfileVersion: '9.0'\n");
   await writeFile(join(projectRoot, "notes.txt"), "unrelated\n");
   const stack: StackDefinition = {
-    id: "node", assetPath: "node", scaffoldVersion: "1", loomOwnedFiles: ["loom.yaml"],
+    id: "node", assetPath: "node", scaffoldVersion: "1", devroostOwnedFiles: ["devroost.yaml"],
     definitionVersion: 1, legacyScaffoldVersions: [], generator: { kind: "none" }, runtimeImages: [], install: [], start: [], readiness: { kind: "command", value: "true", timeoutSeconds: 1 }, hostWrites: [], verification: [],
     generatedPaths, protectedPaths: ["src"],
     compatibility: { architectures: ["x64"], runtime: "podman-rootless" }
   };
   const manifest: LoomProjectManifestV2 = {
-    version: 2, loomVersion: "0.3.4", stack: { id: "node", scaffoldVersion: "1" },
-    ownedFiles: { "loom.yaml": { sha256: "a".repeat(64), baselinePath: ".loom/baselines/loom" } },
+    version: 2, devroostVersion: "0.3.4", stack: { id: "node", scaffoldVersion: "1" },
+    ownedFiles: { "devroost.yaml": { sha256: "a".repeat(64), baselinePath: ".devroost/baselines/loom" } },
     renderInputs: { projectName: "demo", databases: [], adopted: false }
   };
   return { root, projectRoot, stack, manifest };
@@ -57,17 +57,17 @@ test("planner returns an empty plan for stacks without generated paths", async (
   try {
     assert.deepEqual(await planProjectClean(value), {
       projectRoot: value.projectRoot, items: [], totalBytes: 0,
-      protectedPaths: [".env", "loom.yaml", "package.json", "pnpm-lock.yaml", "src"]
+      protectedPaths: [".env", "devroost.yaml", "package.json", "pnpm-lock.yaml", "src"]
     });
   } finally { await rm(value.root, { recursive: true, force: true }); }
 });
 
 test("planner rejects unsafe and protected declarations before returning a plan", async () => {
-  const cases = ["", ".", "../outside", "/tmp/outside", "bad\\path", ".loom", ".loom/cache", "loom.yaml", ".env", "package.json", "pnpm-lock.yaml", "src", "owned/loom.yaml"];
+  const cases = ["", ".", "../outside", "/tmp/outside", "bad\\path", ".devroost", ".devroost/cache", "devroost.yaml", ".env", "package.json", "pnpm-lock.yaml", "src", "owned/devroost.yaml"];
   for (const path of cases) {
     const value = await fixture([{ path, category: "cache" }]);
     try {
-      value.manifest.ownedFiles["owned/loom.yaml"] = { sha256: "b".repeat(64), baselinePath: ".loom/baselines/owned" };
+      value.manifest.ownedFiles["owned/devroost.yaml"] = { sha256: "b".repeat(64), baselinePath: ".devroost/baselines/owned" };
       await assert.rejects(planProjectClean(value), /unsafe|protected/i, path);
     } finally { await rm(value.root, { recursive: true, force: true }); }
   }
@@ -142,7 +142,7 @@ test("executor removes only planned paths, reports missing paths, and preserves 
   try {
     await mkdir(join(value.projectRoot, "dist"));
     await writeFile(join(value.projectRoot, "dist", "app.js"), "output\n");
-    const preserved = [".loom/database/data", "src/app.ts", "loom.yaml", ".env", "package.json", "pnpm-lock.yaml", "notes.txt"];
+    const preserved = [".devroost/database/data", "src/app.ts", "devroost.yaml", ".env", "package.json", "pnpm-lock.yaml", "notes.txt"];
     const snapshots = new Map(await Promise.all(preserved.map(async (path) => [path, await readFile(join(value.projectRoot, path))] as const)));
     const result = await applyProjectClean(await planProjectClean(value));
     assert.deepEqual(result, { removed: ["dist"], missing: ["node_modules"] });

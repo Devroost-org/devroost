@@ -22,21 +22,21 @@ export const stackDocumentation = {
   astro: application(
     "Astro starter with a Node.js development server.",
     "Choose Astro for content-focused sites that need component islands and a fast local frontend workflow.",
-    "loom init astro --dir astro-site",
+    "devroost init astro --dir astro-site",
     [{ name: "app", purpose: "Astro development server" }],
-    [{ label: "Website", value: "https://astro.loom.local:8443" }, { label: "Direct port", value: "http://localhost:4321" }]
+    [{ label: "Website", value: "https://astro.devroost.local:8443" }, { label: "Direct port", value: "http://localhost:4321" }]
   ),
   bun: application(
     "Small HTTP application running on Bun.",
     "Choose Bun when you want its JavaScript runtime, package manager, and test runner in a minimal starter.",
-    "loom init bun --dir bun-app",
+    "devroost init bun --dir bun-app",
     [{ name: "app", purpose: "Bun application server" }],
-    [{ label: "Application", value: "https://bun.loom.local:8443" }, { label: "Direct port", value: "http://localhost:3004" }]
+    [{ label: "Application", value: "https://bun.devroost.local:8443" }, { label: "Direct port", value: "http://localhost:3004" }]
   ),
   "db-all": database(
     "Combined local environment containing every supported database.",
     "Choose this stack for compatibility testing or data work that genuinely needs several database engines at once.",
-    "loom init db-all --dir local-databases",
+    "devroost init db-all --dir local-databases",
     [
       { name: "mysql", purpose: "MySQL 8.4 server" }, { name: "sqlserver", purpose: "SQL Server 2022" },
       { name: "postgres", purpose: "PostgreSQL 16 server" }, { name: "mongodb", purpose: "MongoDB 7 server" },
@@ -54,49 +54,49 @@ export const stackDocumentation = {
   "db-elasticsearch": database(
     "Standalone Elasticsearch 8.19 node.",
     "Choose this stack for local search, indexing, and Elasticsearch client development without an application template.",
-    "loom init db-elasticsearch --dir elasticsearch-local",
+    "devroost init db-elasticsearch --dir elasticsearch-local",
     [{ name: "db", purpose: "Single-node Elasticsearch server" }],
     [{ label: "HTTP API", value: "http://localhost:9200" }, { label: "Transport port", value: "localhost:9300" }]
   ),
   "db-mariadb": database(
     "Standalone MariaDB 11.8 database.",
-    "Choose this stack for MariaDB-specific SQL development or to connect an application managed outside Loom.",
-    "loom init db-mariadb --dir mariadb-local",
+    "Choose this stack for MariaDB-specific SQL development or to connect an application managed outside Devroost.",
+    "devroost init db-mariadb --dir mariadb-local",
     [{ name: "db", purpose: "MariaDB server" }],
     [{ label: "Database", value: "localhost:3307" }]
   ),
   "db-mongodb": database(
     "Standalone MongoDB 7 database.",
-    "Choose this stack for document-database development or to connect an application managed outside Loom.",
-    "loom init db-mongodb --dir mongodb-local",
+    "Choose this stack for document-database development or to connect an application managed outside Devroost.",
+    "devroost init db-mongodb --dir mongodb-local",
     [{ name: "db", purpose: "MongoDB server" }],
     [{ label: "Database", value: "localhost:27017" }]
   ),
   "db-mysql": database(
     "Standalone MySQL 8.4 database.",
-    "Choose this stack for MySQL-specific SQL development or to connect an application managed outside Loom.",
-    "loom init db-mysql --dir mysql-local",
+    "Choose this stack for MySQL-specific SQL development or to connect an application managed outside Devroost.",
+    "devroost init db-mysql --dir mysql-local",
     [{ name: "db", purpose: "MySQL server" }],
     [{ label: "Database", value: "localhost:3306" }]
   ),
   "db-postgres": database(
     "Standalone PostgreSQL 16 database.",
-    "Choose this stack for PostgreSQL development or to connect an application managed outside Loom.",
-    "loom init db-postgres --dir postgres-local",
+    "Choose this stack for PostgreSQL development or to connect an application managed outside Devroost.",
+    "devroost init db-postgres --dir postgres-local",
     [{ name: "db", purpose: "PostgreSQL server" }],
     [{ label: "Database", value: "localhost:5432" }]
   ),
   "db-redis": database(
     "Standalone Redis 7.4 data store.",
     "Choose this stack for cache, queue, session, and Redis client development without an application template.",
-    "loom init db-redis --dir redis-local",
+    "devroost init db-redis --dir redis-local",
     [{ name: "db", purpose: "Redis server with append-only persistence" }],
     [{ label: "Redis", value: "localhost:6379" }]
   ),
   "db-sqlite": database(
     "Persistent SQLite database with the SQLite CLI.",
     "Choose this stack when you want a simple file-backed database and command-line access without a network server.",
-    "loom init db-sqlite --dir sqlite-local",
+    "devroost init db-sqlite --dir sqlite-local",
     [{ name: "db", purpose: "SQLite CLI container keeping the database file available" }],
     [{ label: "Database file", value: "data/sqlite/loom.db" }],
     ["SQLite does not expose a TCP port; applications use the database file."]
@@ -104,7 +104,7 @@ export const stackDocumentation = {
   "db-sqlserver": database(
     "Standalone Microsoft SQL Server 2022 database.",
     "Choose this stack for SQL Server development and compatibility testing on an x64 host.",
-    "loom init db-sqlserver --dir sqlserver-local",
+    "devroost init db-sqlserver --dir sqlserver-local",
     [{ name: "db", purpose: "Microsoft SQL Server" }],
     [{ label: "Database", value: "localhost:1433" }],
     ["The published SQL Server image supports x64 hosts only."]
@@ -112,143 +112,143 @@ export const stackDocumentation = {
   "django-react": application(
     "Django API with a React frontend.",
     "Choose this stack for a Python backend and modern React client developed as two coordinated services.",
-    "loom init django-react --dir django-react-app",
+    "devroost init django-react --dir django-react-app",
     [{ name: "backend", purpose: "Django API and migrations" }, { name: "web", purpose: "React development server" }],
-    [{ label: "Application", value: "https://django-react.loom.local:8443" }, { label: "Backend health", value: "http://localhost:8001/health" }, { label: "Frontend", value: "http://localhost:5176" }]
+    [{ label: "Application", value: "https://django-react.devroost.local:8443" }, { label: "Backend health", value: "http://localhost:8001/health" }, { label: "Frontend", value: "http://localhost:5176" }]
   ),
   dotnet: application(
     ".NET 8 web application starter.",
     "Choose this stack for ASP.NET Core development using the published .NET SDK image.",
-    "loom init dotnet --dir dotnet-app",
+    "devroost init dotnet --dir dotnet-app",
     [{ name: "app", purpose: "ASP.NET Core development server" }],
-    [{ label: "Application", value: "https://dotnet.loom.local:8443" }, { label: "Direct port", value: "http://localhost:5000" }]
+    [{ label: "Application", value: "https://dotnet.devroost.local:8443" }, { label: "Direct port", value: "http://localhost:5000" }]
   ),
   jamstack: application(
     "Node.js API paired with a frontend development server.",
     "Choose this stack for a decoupled frontend and API that can evolve and deploy independently.",
-    "loom init jamstack --dir jamstack-app",
+    "devroost init jamstack --dir jamstack-app",
     [{ name: "api", purpose: "Node.js JSON API" }, { name: "web", purpose: "Frontend development server" }],
-    [{ label: "Website", value: "https://jamstack.loom.local:8443" }, { label: "API", value: "http://localhost:3006" }, { label: "Frontend", value: "http://localhost:5174" }]
+    [{ label: "Website", value: "https://jamstack.devroost.local:8443" }, { label: "API", value: "http://localhost:3006" }, { label: "Frontend", value: "http://localhost:5174" }]
   ),
   node: application(
     "Minimal Express application on Node.js 24.",
     "Choose this starter for a small Node.js service or as a clear base for an existing JavaScript application.",
-    "loom init node --dir node-app",
+    "devroost init node --dir node-app",
     [{ name: "app", purpose: "Express application server" }],
-    [{ label: "Application", value: "https://node.loom.local:8443" }, { label: "Health endpoint", value: "http://localhost:3000/health" }]
+    [{ label: "Application", value: "https://node.devroost.local:8443" }, { label: "Health endpoint", value: "http://localhost:3000/health" }]
   ),
   "node-mean": application(
     "MongoDB-oriented Express and Angular application.",
     "Choose this stack for a MEAN-style project with separate Node.js API and Angular frontend services.",
-    "loom init node-mean --dir mean-app",
+    "devroost init node-mean --dir mean-app",
     [{ name: "api", purpose: "Express API" }, { name: "web", purpose: "Angular development server" }],
-    [{ label: "Application", value: "https://mean.loom.local:8443" }, { label: "API health", value: "http://localhost:3001/health" }, { label: "Frontend", value: "http://localhost:4200" }]
+    [{ label: "Application", value: "https://mean.devroost.local:8443" }, { label: "API health", value: "http://localhost:3001/health" }, { label: "Frontend", value: "http://localhost:4200" }]
   ),
   "node-mern": application(
     "MongoDB-oriented Express and React application.",
     "Choose this stack for a MERN-style project with separate Node.js API and React frontend services.",
-    "loom init node-mern --dir mern-app",
+    "devroost init node-mern --dir mern-app",
     [{ name: "api", purpose: "Express API" }, { name: "web", purpose: "React development server" }],
-    [{ label: "Application", value: "https://mern.loom.local:8443" }, { label: "API health", value: "http://localhost:3002/health" }, { label: "Frontend", value: "http://localhost:5173" }]
+    [{ label: "Application", value: "https://mern.devroost.local:8443" }, { label: "API health", value: "http://localhost:3002/health" }, { label: "Frontend", value: "http://localhost:5173" }]
   ),
   "node-t3": application(
     "T3-style TypeScript application using pnpm.",
     "Choose this stack for a typed full-stack Node.js project with a single development service.",
-    "loom init node-t3 --dir t3-app",
+    "devroost init node-t3 --dir t3-app",
     [{ name: "app", purpose: "T3 application development server" }],
-    [{ label: "Application", value: "https://t3.loom.local:8443" }, { label: "Direct port", value: "http://localhost:3003" }]
+    [{ label: "Application", value: "https://t3.devroost.local:8443" }, { label: "Direct port", value: "http://localhost:3003" }]
   ),
   php: application(
     "PHP 8.4 application served by Apache.",
     "Choose this starter for a traditional PHP application with Composer and common development extensions available.",
-    "loom init php --dir php-app",
+    "devroost init php --dir php-app",
     [{ name: "app", purpose: "Apache and PHP application server" }],
-    [{ label: "Application", value: "https://php.loom.local:8443" }, { label: "Direct port", value: "http://localhost:8085" }]
+    [{ label: "Application", value: "https://php.devroost.local:8443" }, { label: "Direct port", value: "http://localhost:8085" }]
   ),
   "php-drupal": application(
     "Drupal project served by Apache and PHP 8.4.",
     "Choose this stack for local Drupal module, theme, and site development.",
-    "loom init php-drupal --dir drupal-site --db mysql",
+    "devroost init php-drupal --dir drupal-site --db mysql",
     [{ name: "app", purpose: "Drupal application server" }],
-    [{ label: "Drupal site", value: "https://drupal.loom.local:8443" }, { label: "Direct port", value: "http://localhost:8091" }],
+    [{ label: "Drupal site", value: "https://drupal.devroost.local:8443" }, { label: "Direct port", value: "http://localhost:8091" }],
     ["Add MySQL or MariaDB during initialization for a complete Drupal site."]
   ),
   "php-symfony": application(
     "Symfony application served by Apache and PHP 8.4.",
     "Choose this stack for Symfony web or API development with Composer-managed dependencies.",
-    "loom init php-symfony --dir symfony-app",
+    "devroost init php-symfony --dir symfony-app",
     [{ name: "app", purpose: "Symfony application server" }],
-    [{ label: "Application", value: "https://symfony.loom.local:8443" }, { label: "Direct port", value: "http://localhost:8092" }]
+    [{ label: "Application", value: "https://symfony.devroost.local:8443" }, { label: "Direct port", value: "http://localhost:8092" }]
   ),
   "php-wordpress": application(
     "WordPress 6.8 project served by Apache and PHP 8.4.",
     "Choose this stack for WordPress theme, plugin, and site development with project files on the host.",
-    "loom init php-wordpress --dir wordpress-site --db mysql",
+    "devroost init php-wordpress --dir wordpress-site --db mysql",
     [{ name: "app", purpose: "WordPress application server" }],
-    [{ label: "WordPress site", value: "https://wordpress.loom.local:8443" }, { label: "Direct port", value: "http://localhost:8090" }],
+    [{ label: "WordPress site", value: "https://wordpress.devroost.local:8443" }, { label: "Direct port", value: "http://localhost:8090" }],
     ["A MySQL-compatible database is required for a working WordPress site."]
   ),
   python: application(
     "Minimal Python 3.12 HTTP application.",
     "Choose this starter for a small Python service or as a base for an existing Python project.",
-    "loom init python --dir python-app",
+    "devroost init python --dir python-app",
     [{ name: "app", purpose: "Python HTTP server" }],
-    [{ label: "Application", value: "https://python.loom.local:8443" }, { label: "Direct port", value: "http://localhost:8000" }]
+    [{ label: "Application", value: "https://python.devroost.local:8443" }, { label: "Direct port", value: "http://localhost:8000" }]
   ),
   "python-django": application(
     "Django web application with migrations and tests.",
     "Choose this stack for a server-rendered Django project or Python web API.",
-    "loom init python-django --dir django-app",
+    "devroost init python-django --dir django-app",
     [{ name: "app", purpose: "Django development server" }],
-    [{ label: "Application", value: "https://django.loom.local:8443" }, { label: "Health endpoint", value: "http://localhost:8001/health" }]
+    [{ label: "Application", value: "https://django.devroost.local:8443" }, { label: "Health endpoint", value: "http://localhost:8001/health" }]
   ),
   "python-fastapi": application(
     "FastAPI application running with Uvicorn.",
     "Choose this stack for typed Python APIs with automatic OpenAPI documentation.",
-    "loom init python-fastapi --dir fastapi-app",
+    "devroost init python-fastapi --dir fastapi-app",
     [{ name: "app", purpose: "FastAPI and Uvicorn server" }],
-    [{ label: "Application", value: "https://fastapi.loom.local:8443" }, { label: "Health endpoint", value: "http://localhost:8003/health" }]
+    [{ label: "Application", value: "https://fastapi.devroost.local:8443" }, { label: "Health endpoint", value: "http://localhost:8003/health" }]
   ),
   "python-flask": application(
     "Flask web application on Python 3.12.",
     "Choose this stack for a small Python web application or API with minimal framework structure.",
-    "loom init python-flask --dir flask-app",
+    "devroost init python-flask --dir flask-app",
     [{ name: "app", purpose: "Flask development server" }],
-    [{ label: "Application", value: "https://flask.loom.local:8443" }, { label: "Health endpoint", value: "http://localhost:8002/health" }]
+    [{ label: "Application", value: "https://flask.devroost.local:8443" }, { label: "Health endpoint", value: "http://localhost:8002/health" }]
   ),
   rails7: application(
     "Ruby on Rails 7 application.",
     "Choose this stack for conventional server-rendered Rails development on Ruby 3.3.",
-    "loom init rails7 --dir rails-app",
+    "devroost init rails7 --dir rails-app",
     [{ name: "app", purpose: "Rails development server" }],
-    [{ label: "Application", value: "https://rails7.loom.local:8443" }, { label: "Direct port", value: "http://localhost:3006" }]
+    [{ label: "Application", value: "https://rails7.devroost.local:8443" }, { label: "Direct port", value: "http://localhost:3006" }]
   ),
   "rails7-hotwire": application(
     "Ruby on Rails 7 application prepared for Hotwire.",
     "Choose this stack for Rails development centered on Turbo and Stimulus interactions.",
-    "loom init rails7-hotwire --dir rails-hotwire-app",
+    "devroost init rails7-hotwire --dir rails-hotwire-app",
     [{ name: "app", purpose: "Rails and Hotwire development server" }],
-    [{ label: "Application", value: "https://rails7-hotwire.loom.local:8443" }, { label: "Direct port", value: "http://localhost:3008" }]
+    [{ label: "Application", value: "https://rails7-hotwire.devroost.local:8443" }, { label: "Direct port", value: "http://localhost:3008" }]
   ),
   serverless: application(
     "Local serverless-style Node.js API with a web client.",
     "Choose this stack to develop and invoke function-shaped handlers alongside a browser frontend.",
-    "loom init serverless --dir serverless-app",
+    "devroost init serverless --dir serverless-app",
     [{ name: "api", purpose: "Local function API emulator" }, { name: "web", purpose: "Static web development server" }],
-    [{ label: "Application", value: "https://serverless.loom.local:8443" }, { label: "API health", value: "http://localhost:3007/health" }, { label: "Frontend", value: "http://localhost:3008" }]
+    [{ label: "Application", value: "https://serverless.devroost.local:8443" }, { label: "API health", value: "http://localhost:3007/health" }, { label: "Frontend", value: "http://localhost:3008" }]
   ),
   "spring-boot": application(
     "Spring Boot application on Java 21.",
     "Choose this stack for a Java web service built and run with Maven.",
-    "loom init spring-boot --dir spring-app",
+    "devroost init spring-boot --dir spring-app",
     [{ name: "app", purpose: "Spring Boot application server" }],
-    [{ label: "Application", value: "https://spring-boot.loom.local:8443" }, { label: "Health endpoint", value: "http://localhost:8080/api/health" }]
+    [{ label: "Application", value: "https://spring-boot.devroost.local:8443" }, { label: "Health endpoint", value: "http://localhost:8080/api/health" }]
   ),
   "spring-react": application(
     "Spring Boot API with a React frontend.",
     "Choose this stack for a Java backend and React client developed as coordinated services.",
-    "loom init spring-react --dir spring-react-app",
+    "devroost init spring-react --dir spring-react-app",
     [{ name: "backend", purpose: "Spring Boot API" }, { name: "web", purpose: "React frontend server" }],
-    [{ label: "Application", value: "https://spring-react.loom.local:8443" }, { label: "Backend", value: "http://localhost:8081" }, { label: "Frontend", value: "http://localhost:5175" }]
+    [{ label: "Application", value: "https://spring-react.devroost.local:8443" }, { label: "Backend", value: "http://localhost:8081" }, { label: "Frontend", value: "http://localhost:5175" }]
   )
 } satisfies Readonly<Record<StackId, StackDocumentation>>;

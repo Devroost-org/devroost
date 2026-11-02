@@ -14,6 +14,6 @@ export const phpWordpressStack = defineStack({
   install: [],
   start: ["docker-entrypoint.sh apache2-foreground"], readiness: { kind: "port", value: "127.0.0.1:80", timeoutSeconds: 90 },
   hostWrites: ["wp-content"], verification: [{ service: "app", command: ["php", "-r", "exit((int)!@fsockopen('127.0.0.1', 80));"] }],
-  loomOwnedFiles: [".env.example", "loom.yaml", "wp-config.php"], generatedPaths: [], protectedPaths: ["wp-content"],
+  devroostOwnedFiles: [".env.example", "devroost.yaml", "wp-config.php"], generatedPaths: [], protectedPaths: ["wp-content"],
   compatibility: { architectures: ["arm", "arm64", "x64"], runtime: "podman-rootless" }
 });

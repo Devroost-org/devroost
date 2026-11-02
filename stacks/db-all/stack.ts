@@ -26,6 +26,6 @@ export const dbAllStack = defineStack({
     { service: "elasticsearch", command: ["curl", "--fail", "http://127.0.0.1:9200/_cluster/health"] },
     { service: "sqlite", command: ["sqlite3", "/data/loom.db", "select 1;"] },
     { service: "mariadb", command: ["mariadb", "-h", "127.0.0.1", "-uloom", "-ploom", "loom", "-e", "SELECT 1"] }
-  ], loomOwnedFiles: [".env.example", "loom.yaml"],
+  ], devroostOwnedFiles: [".env.example", "devroost.yaml"],
   generatedPaths: [], protectedPaths: [], compatibility: { architectures: ["x64"], runtime: "podman-rootless" }
 });

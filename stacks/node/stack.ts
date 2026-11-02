@@ -14,7 +14,7 @@ export const nodeStack = defineStack({
   readiness: { kind: "http", value: "http://127.0.0.1:3000/health", timeoutSeconds: 496 },
   hostWrites: ["node_modules"],
   verification: [{ service: "app", command: ["node", "-e", "fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"] }],
-  loomOwnedFiles: [".env.example", "loom.yaml"],
+  devroostOwnedFiles: [".env.example", "devroost.yaml"],
   generatedPaths: [
     { path: "dist", category: "build" },
     { path: "node_modules", category: "dependency" }

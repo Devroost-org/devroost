@@ -113,7 +113,7 @@ test("buildPodmanRunArgs includes labels, env, ports, and shell command", async 
     "-e",
     "NODE_ENV=development",
     "--label",
-    "loom.project=demo",
+    "devroost.project=demo",
     "--label",
     "loom.service-hash=service-hash",
     "docker.io/library/node:20-alpine",
@@ -130,9 +130,9 @@ test("project container lookup uses exact ownership instead of overlapping name 
     const foreign = `${project}-api-web`;
     const containers = await listProjectContainers(project, {
       runPodmanCommand: async (args) => {
-        assert.deepEqual(args, ["ps", "-a", "--filter", `label=loom.project=${project}`, "--format", "{{.Names}}"]);
+        assert.deepEqual(args, ["ps", "-a", "--filter", `label=devroost.project=${project}`, "--format", "{{.Names}}"]);
         // Model Podman's exact label match; a name-prefix query would include foreign.
-        return { ok: true, stdout: args.includes(`label=loom.project=${project}`) ? owned : `${owned}\n${foreign}`, stderr: "", code: 0 };
+        return { ok: true, stdout: args.includes(`label=devroost.project=${project}`) ? owned : `${owned}\n${foreign}`, stderr: "", code: 0 };
       },
       inspectContainerByName: async (name) => ({ name, state: "running", running: true, image: "test" })
     });

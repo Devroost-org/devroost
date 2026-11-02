@@ -68,7 +68,7 @@ test("legacy reference guard permits removed-layout prose but rejects operationa
   const examplesRoot = ["examples", ""].join("/");
   assert.equal(isRemovedLayoutProse("README.md", `The legacy \`${examplesRoot}\` generator layout was removed.`), true);
   for (const line of [
-    `Run \`loom start --config ${examplesRoot}node/loom.yaml\`.`,
+    `Run \`devroost start --config ${examplesRoot}node/devroost.yaml\`.`,
     `Copy assets from \`${examplesRoot}php\`.`,
     `The \`${examplesRoot}\` directory contains generator templates.`,
     `Use the legacy \`${examplesRoot}\` generator layout.`
@@ -77,7 +77,7 @@ test("legacy reference guard permits removed-layout prose but rejects operationa
 });
 
 test("canonical stack packages contain no tracked generated artifacts", async () => {
-  const generatedPath = /(?:^|\/)(?:\.angular|\.loom|\.next|\.pnpm-store|\.pytest_cache|\.turbo|\.venv|__pycache__|bin|build|data|dist|node_modules|obj|target|vendor)(?:\/|$)|(?:\.pyc|\.tsbuildinfo)$/;
+  const generatedPath = /(?:^|\/)(?:\.angular|\.devroost|\.next|\.pnpm-store|\.pytest_cache|\.turbo|\.venv|__pycache__|bin|build|data|dist|node_modules|obj|target|vendor)(?:\/|$)|(?:\.pyc|\.tsbuildinfo)$/;
   const violations = (await repositoryFiles("stacks")).filter((path) => generatedPath.test(path));
 
   assert.deepEqual(violations, []);
@@ -97,10 +97,10 @@ test("generated-stack smoke initializes disposable projects by public ID", () =>
   assert.equal(packageJson.scripts["smoke:generated"], "./scripts/smoke-generated-stacks.sh");
 
   const smoke = readFileSync(resolve(repoDir, "scripts", "smoke-generated-stacks.sh"), "utf8");
-  assert.match(smoke, /run_loom init "\$stack_id" --dir "\$project_dir"/);
-  assert.doesNotMatch(smoke, /stacks\/[^\s]+\/templates\/loom\.yaml/);
+  assert.match(smoke, /run_devroost init "\$stack_id" --dir "\$project_dir"/);
+  assert.doesNotMatch(smoke, /stacks\/[^\s]+\/templates\/devroost\.yaml/);
   const sqliteVerification = smoke.match(/db-sqlite\)([\s\S]*?)\n {6};;/)?.[1] ?? "";
-  const sqliteQuery = sqliteVerification.indexOf("run_loom exec db -- sqlite3 /data/loom.db");
+  const sqliteQuery = sqliteVerification.indexOf("run_devroost exec db -- sqlite3 /data/loom.db");
   const sqliteOwner = sqliteVerification.indexOf("assert_owner data/sqlite/loom.db");
   const sqliteWritable = sqliteVerification.indexOf("assert_writable data/sqlite/loom.db");
   assert.ok(sqliteQuery >= 0 && sqliteQuery < sqliteOwner && sqliteOwner < sqliteWritable);
@@ -118,16 +118,16 @@ test("published-image smoke validates and pulls the generated GHCR digest", () =
   assert.equal(packageJson.scripts["smoke:published-image"], "./scripts/smoke-published-stack-image.sh");
 
   const wrapper = readFileSync(resolve(repoDir, "scripts", "smoke-published-stack-image.sh"), "utf8");
-  assert.match(wrapper, /LOOM_PUBLISHED_IMAGE_PREFLIGHT=1/);
-  assert.match(wrapper, /LOOM_PUBLISHED_SMOKE_KEEP/);
+  assert.match(wrapper, /DEVROOST_PUBLISHED_IMAGE_PREFLIGHT=1/);
+  assert.match(wrapper, /DEVROOST_PUBLISHED_SMOKE_KEEP/);
   assert.match(wrapper, /smoke-generated-stacks\.sh/);
 
   const smoke = readFileSync(resolve(repoDir, "scripts", "smoke-generated-stacks.sh"), "utf8");
   assert.ok(smoke.includes("^ghcr\\.io/loom-development/[^@]+@sha256:[a-f0-9]{64}$"));
   assert.match(smoke, /podman pull/);
-  const init = smoke.indexOf('run_loom init "$stack_id"');
+  const init = smoke.indexOf('run_devroost init "$stack_id"');
   const pull = smoke.indexOf('podman pull "$image_reference"');
-  const start = smoke.indexOf("run_loom start --recreate");
+  const start = smoke.indexOf("run_devroost start --recreate");
   assert.ok(init >= 0 && init < pull && pull < start);
 });
 
@@ -143,7 +143,7 @@ test("generated-stack smoke refuses a pre-existing custom workspace", async () =
       executeFile("sh", [resolve(repoDir, "scripts", "smoke-generated-stacks.sh"), "unsupported-stack"], {
         cwd: repoDir,
         encoding: "utf8",
-        env: { ...process.env, LOOM_GENERATED_SMOKE_DIR: sharedRoot, LOOM_GENERATED_SMOKE_KEEP: "0" }
+        env: { ...process.env, DEVROOST_GENERATED_SMOKE_DIR: sharedRoot, DEVROOST_GENERATED_SMOKE_KEEP: "0" }
       }),
       (error: unknown) => {
         const stderr = String((error as { stderr?: string }).stderr ?? "");

@@ -24,7 +24,7 @@ services:
       retries: 150
       startPeriodSeconds: 10
 routes:
-  - host: rails7-hotwire.loom.local
+  - host: rails7-hotwire.devroost.local
     service: app
     port: 3008
     https: true

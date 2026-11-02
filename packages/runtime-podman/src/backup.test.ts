@@ -251,7 +251,7 @@ test("restoreServiceFromFile rebuilds Redis AOF after staging the snapshot", asy
   );
 
   assert.deepEqual(commands, [
-    ["cp", "/tmp/dump.rdb", "demo-db:/data/.loom-restore.rdb"],
+    ["cp", "/tmp/dump.rdb", "demo-db:/data/.devroost-restore.rdb"],
     ["run", "--rm", "--network", "none", "--volumes-from", "demo-db", "--entrypoint", "sh", "docker.io/library/redis:7", "-c", REDIS_RESTORE_SCRIPT]
   ]);
 });
@@ -290,7 +290,7 @@ test("restoreServiceFromFile rejects unsupported restore service types", async (
           runPodmanCommand: async () => ({ ok: true, stdout: "", stderr: "", code: 0 })
         }
       ),
-    /does not currently support 'loom restore'/i
+    /does not currently support 'devroost restore'/i
   );
 });
 

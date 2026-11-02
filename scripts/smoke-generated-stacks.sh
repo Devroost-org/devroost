@@ -1,8 +1,8 @@
 #!/usr/bin/env sh
 set -eu
 
-LOOM_BIN="${LOOM_BIN:-loom}"
-KEEP_WORK_ROOT="${LOOM_GENERATED_SMOKE_KEEP:-0}"
+DEVROOST_BIN="${DEVROOST_BIN:-devroost}"
+KEEP_WORK_ROOT="${DEVROOST_GENERATED_SMOKE_KEEP:-0}"
 SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 REPO_ROOT="$(dirname "$SCRIPT_DIR")"
 
@@ -13,23 +13,23 @@ require_command() {
   fi
 }
 
-run_loom() {
-  if [ -n "${LOOM_BIN_PATH:-}" ]; then
-    "$LOOM_BIN_PATH" "$@" </dev/null
+run_devroost() {
+  if [ -n "${DEVROOST_BIN_PATH:-}" ]; then
+    "$DEVROOST_BIN_PATH" "$@" </dev/null
   else
-    node "$LOOM_BIN_NODE_ENTRY" "$@" </dev/null
+    node "$DEVROOST_BIN_NODE_ENTRY" "$@" </dev/null
   fi
 }
 
-resolve_loom_bin() {
+resolve_devroost_bin() {
   local_cli_entry="$REPO_ROOT/apps/cli/dist/index.js"
   if [ -f "$local_cli_entry" ]; then
-    LOOM_BIN_NODE_ENTRY="$local_cli_entry"
-    echo "Using local Loom CLI build at $LOOM_BIN_NODE_ENTRY"
-  elif command -v "$LOOM_BIN" >/dev/null 2>&1; then
-    LOOM_BIN_PATH="$(command -v "$LOOM_BIN")"
+    DEVROOST_BIN_NODE_ENTRY="$local_cli_entry"
+    echo "Using local Devroost CLI build at $DEVROOST_BIN_NODE_ENTRY"
+  elif command -v "$DEVROOST_BIN" >/dev/null 2>&1; then
+    DEVROOST_BIN_PATH="$(command -v "$DEVROOST_BIN")"
   else
-    echo "Missing required command: $LOOM_BIN" >&2
+    echo "Missing required command: $DEVROOST_BIN" >&2
     echo "Build the local CLI first with: pnpm --dir apps/cli build" >&2
     exit 1
   fi
@@ -40,8 +40,8 @@ require_command node
 run_id="$(node -e 'process.stdout.write(require("node:crypto").randomUUID().replaceAll("-", ""))')"
 work_root_owner="loom-generated-smoke:$run_id"
 
-if [ -n "${LOOM_GENERATED_SMOKE_DIR:-}" ]; then
-  requested_work_root="$LOOM_GENERATED_SMOKE_DIR"
+if [ -n "${DEVROOST_GENERATED_SMOKE_DIR:-}" ]; then
+  requested_work_root="$DEVROOST_GENERATED_SMOKE_DIR"
   if [ -e "$requested_work_root" ] || [ -L "$requested_work_root" ]; then
     echo "Custom smoke workspace '$requested_work_root' must not already exist; refusing to reuse it." >&2
     exit 1
@@ -56,8 +56,8 @@ else
   work_root="$(mktemp -d "${TMPDIR:-/tmp}/loom-generated-smoke-XXXXXX")"
 fi
 
-work_root_marker="$work_root/.loom-generated-smoke-owner"
-created_projects_file="$work_root/.loom-generated-smoke-projects"
+work_root_marker="$work_root/.devroost-generated-smoke-owner"
+created_projects_file="$work_root/.devroost-generated-smoke-projects"
 printf '%s\n' "$work_root_owner" > "$work_root_marker"
 : > "$created_projects_file"
 chmod 600 "$work_root_marker" "$created_projects_file"
@@ -80,7 +80,7 @@ configure_host_ids() {
 }
 
 project_name() {
-  node -e 'const fs=require("node:fs"); const value=JSON.parse(fs.readFileSync(process.argv[1], "utf8")); process.stdout.write(value.renderInputs.projectName);' "$1/.loom/manifest.json"
+  node -e 'const fs=require("node:fs"); const value=JSON.parse(fs.readFileSync(process.argv[1], "utf8")); process.stdout.write(value.renderInputs.projectName);' "$1/.devroost/manifest.json"
 }
 
 scoped_containers() {
@@ -118,7 +118,7 @@ record_created_project() {
     echo "Unsafe generated smoke project scope: '$project_key' / '$name'" >&2
     return 1
   fi
-  project_owner_marker="$project_dir/.loom/generated-smoke-owner"
+  project_owner_marker="$project_dir/.devroost/generated-smoke-owner"
   printf '%s\n' "$work_root_owner" > "$project_owner_marker"
   chmod 600 "$project_owner_marker"
   printf '%s\t%s\n' "$project_key" "$name" >> "$created_projects_file"
@@ -134,7 +134,7 @@ stop_project() {
   [ -d "$project_dir" ] || return 0
   (
     cd "$project_dir"
-    run_loom stop
+    run_devroost stop
   )
 }
 
@@ -142,7 +142,7 @@ force_cleanup_project() {
   project_dir="$1"
   name="$2"
   [ -d "$project_dir" ] || return 0
-  project_owner_marker="$project_dir/.loom/generated-smoke-owner"
+  project_owner_marker="$project_dir/.devroost/generated-smoke-owner"
   if [ ! -f "$project_owner_marker" ] || [ "$(sed -n '1p' "$project_owner_marker")" != "$work_root_owner" ]; then
     echo "Skipping unowned smoke project during cleanup: $project_dir" >&2
     return 0
@@ -178,7 +178,7 @@ trap cleanup EXIT
 
 require_command podman
 require_command perl
-resolve_loom_bin
+resolve_devroost_bin
 
 uid="$(id -u)"
 gid="$(id -g)"
@@ -189,9 +189,9 @@ developer_digest() {
     const fs = require("node:fs");
     const path = require("node:path");
     const root = process.argv[1];
-    const manifest = JSON.parse(fs.readFileSync(path.join(root, ".loom", "manifest.json"), "utf8"));
+    const manifest = JSON.parse(fs.readFileSync(path.join(root, ".devroost", "manifest.json"), "utf8"));
     const owned = new Set([...Object.keys(manifest.ownedFiles), ".env"]);
-    const generated = new Set([".angular", ".git", ".loom", ".next", ".pnpm-store", ".pytest_cache", ".turbo", ".venv", "__pycache__", "bin", "build", "data", "dist", "node_modules", "obj", "target", "tmp", "vendor"]);
+    const generated = new Set([".angular", ".git", ".devroost", ".next", ".pnpm-store", ".pytest_cache", ".turbo", ".venv", "__pycache__", "bin", "build", "data", "dist", "node_modules", "obj", "target", "tmp", "vendor"]);
     const hash = crypto.createHash("sha256");
     function visit(directory, relative = "") {
       for (const entry of fs.readdirSync(directory, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
@@ -214,7 +214,7 @@ verify_manifest_hashes() {
     const fs = require("node:fs");
     const path = require("node:path");
     const root = process.argv[1];
-    const manifest = JSON.parse(fs.readFileSync(path.join(root, ".loom", "manifest.json"), "utf8"));
+    const manifest = JSON.parse(fs.readFileSync(path.join(root, ".devroost", "manifest.json"), "utf8"));
     for (const [relative, entry] of Object.entries(manifest.ownedFiles)) {
       const bytes = fs.readFileSync(path.join(root, relative));
       const digest = crypto.createHash("sha256").update(bytes).digest("hex");
@@ -245,28 +245,28 @@ init_stack() {
   stack_id="$1"
   project_dir="$2"
   if [ "$stack_id" = "php-wordpress" ]; then
-    run_loom init "$stack_id" --dir "$project_dir" --db mysql
+    run_devroost init "$stack_id" --dir "$project_dir" --db mysql
   else
-    run_loom init "$stack_id" --dir "$project_dir"
+    run_devroost init "$stack_id" --dir "$project_dir"
   fi
 }
 
 published_image_preflight() {
   project_dir="$1"
-  [ "${LOOM_PUBLISHED_IMAGE_PREFLIGHT:-0}" = "1" ] || return 0
+  [ "${DEVROOST_PUBLISHED_IMAGE_PREFLIGHT:-0}" = "1" ] || return 0
   image_references="$(node -e '
     const fs = require("node:fs");
     const yaml = fs.readFileSync(process.argv[1], "utf8");
     const references = [...yaml.matchAll(/image:\s*\$\{[A-Z][A-Z0-9_]*:?-([^}]+)\}/g)].map((match) => match[1]);
     process.stdout.write([...new Set(references)].join("\n"));
-  ' "$project_dir/loom.yaml")"
+  ' "$project_dir/devroost.yaml")"
   [ -n "$image_references" ] || {
-    echo "Generated project has no default image references: $project_dir/loom.yaml" >&2
+    echo "Generated project has no default image references: $project_dir/devroost.yaml" >&2
     return 1
   }
   while IFS= read -r image_reference; do
     if ! printf '%s\n' "$image_reference" | grep -Eq '^ghcr\.io/loom-development/[^@]+@sha256:[a-f0-9]{64}$'; then
-      echo "Generated project image is not an immutable Loom GHCR reference: $image_reference" >&2
+      echo "Generated project image is not an immutable Devroost GHCR reference: $image_reference" >&2
       return 1
     fi
     podman pull "$image_reference" || return 1
@@ -279,30 +279,30 @@ verify_stack() {
   stack_id="$1"
   case "$stack_id" in
     node)
-      run_loom exec app -- node -e "fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))" || return 1
-      run_loom exec app -- sh -c 'printf "host-owned\n" > .loom-smoke-owned' || return 1
-      assert_owner .loom-smoke-owned || return 1
+      run_devroost exec app -- node -e "fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))" || return 1
+      run_devroost exec app -- sh -c 'printf "host-owned\n" > .devroost-smoke-owned' || return 1
+      assert_owner .devroost-smoke-owned || return 1
       assert_owner node_modules || return 1
       ;;
     php)
-      run_loom exec app -- php -r "exit((int)!@fsockopen('127.0.0.1', 80));" || return 1
-      run_loom exec app -- sh -c 'printf "host-owned\n" > .loom-smoke-owned' || return 1
-      assert_owner .loom-smoke-owned || return 1
+      run_devroost exec app -- php -r "exit((int)!@fsockopen('127.0.0.1', 80));" || return 1
+      run_devroost exec app -- sh -c 'printf "host-owned\n" > .devroost-smoke-owned' || return 1
+      assert_owner .devroost-smoke-owned || return 1
       ;;
     python)
-      run_loom exec app -- python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/', timeout=2)" || return 1
-      run_loom exec app -- sh -c 'printf "host-owned\n" > .loom-smoke-owned' || return 1
-      assert_owner .loom-smoke-owned || return 1
+      run_devroost exec app -- python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/', timeout=2)" || return 1
+      run_devroost exec app -- sh -c 'printf "host-owned\n" > .devroost-smoke-owned' || return 1
+      assert_owner .devroost-smoke-owned || return 1
       ;;
     db-sqlite)
-      run_loom exec db -- sqlite3 /data/loom.db "select 1;" || return 1
+      run_devroost exec db -- sqlite3 /data/loom.db "select 1;" || return 1
       assert_owner data/sqlite/loom.db || return 1
       assert_writable data/sqlite/loom.db || return 1
       ;;
     php-wordpress)
-      run_loom exec app -- php -r "exit((int)!@fsockopen('127.0.0.1', 80));" || return 1
-      run_loom exec app -- sh -c 'mkdir -p wp-content/uploads && printf "host-owned\n" > wp-content/uploads/.loom-smoke-owned' || return 1
-      assert_owner wp-content/uploads/.loom-smoke-owned || return 1
+      run_devroost exec app -- php -r "exit((int)!@fsockopen('127.0.0.1', 80));" || return 1
+      run_devroost exec app -- sh -c 'mkdir -p wp-content/uploads && printf "host-owned\n" > wp-content/uploads/.devroost-smoke-owned' || return 1
+      assert_owner wp-content/uploads/.devroost-smoke-owned || return 1
       ;;
     *)
       echo "Unsupported representative smoke stack: $stack_id" >&2
@@ -336,10 +336,10 @@ smoke_stack() {
   if ! (
     cd "$project_dir"
     configure_host_ids "$project_dir" || exit 1
-    assert_owner loom.yaml || exit 1
+    assert_owner devroost.yaml || exit 1
     before="$(developer_digest "$project_dir")"
-    run_loom start --recreate || exit 1
-    run_loom status || exit 1
+    run_devroost start --recreate || exit 1
+    run_devroost status || exit 1
     verify_manifest_hashes "$project_dir" || exit 1
     after="$(developer_digest "$project_dir")"
     [ "$before" = "$after" ] || {

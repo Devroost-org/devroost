@@ -24,7 +24,7 @@ services:
       retries: 120
       startPeriodSeconds: 8
 routes:
-  - host: flask.loom.local
+  - host: flask.devroost.local
     service: app
     port: 8002
     https: true

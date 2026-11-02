@@ -17,13 +17,13 @@ test("stack registry contains unique definitions for every published stack", () 
   assert.deepEqual(listStackIds(), [...ids].sort());
 });
 
-test("stack definitions expose assets, scaffold versions, and initial Loom ownership", () => {
+test("stack definitions expose assets, scaffold versions, and initial Devroost ownership", () => {
   const rails = findStackDefinition("rails7");
   assert.equal(rails?.id, "rails7");
   assert.equal(rails?.assetPath, "rails7/templates");
   assert.equal(rails?.scaffoldVersion, "2");
   assert.deepEqual(rails?.legacyScaffoldVersions, ["2", "rails-7.1.5"]);
-  assert.deepEqual(rails?.loomOwnedFiles, [".env.example", "loom.yaml"]);
+  assert.deepEqual(rails?.devroostOwnedFiles, [".env.example", "devroost.yaml"]);
   assert.equal(findStackDefinition("missing"), undefined);
 
   const node = findStackDefinition("node");
@@ -69,7 +69,7 @@ test("representative stacks expose their exact generated paths", () => {
 
 test("stack validation rejects unsafe, duplicate, unsorted, and overlapping paths", () => {
   const node = findStackDefinition("node")!;
-  const unsafePaths = ["", ".", "/tmp/cache", "../cache", "cache/../dist", ".loom", ".loom/cache"];
+  const unsafePaths = ["", ".", "/tmp/cache", "../cache", "cache/../dist", ".devroost", ".devroost/cache"];
 
   for (const path of unsafePaths) {
     assert.throws(

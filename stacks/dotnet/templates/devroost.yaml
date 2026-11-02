@@ -24,7 +24,7 @@ services:
       retries: 60
       startPeriodSeconds: 30
 routes:
-  - host: dotnet.loom.local
+  - host: dotnet.devroost.local
     service: app
     port: 5000
     https: true

@@ -39,7 +39,7 @@ services:
       retries: 80
       startPeriodSeconds: 6
 routes:
-  - host: serverless.loom.local
+  - host: serverless.devroost.local
     service: web
     port: 3008
     https: true

@@ -46,7 +46,7 @@ export function replaceYamlDefault(source, environment, reference) {
     source,
     new RegExp(`(image:\\s*\\$\\{${name}:-)[^}\\n]+(\\})`, "g"),
     (_match, prefix, suffix) => `${prefix}${reference}${suffix}`,
-    `${environment} default in loom.yaml`
+    `${environment} default in devroost.yaml`
   );
 }
 
@@ -94,7 +94,7 @@ export async function main(args = []) {
   for (const definition of stackDefinitions) {
     const templateRoot = path.join(repositoryRoot, "stacks", definition.id, "templates");
     for (const { env, reference } of definition.runtimeImages) {
-      await updateFile(path.join(templateRoot, "loom.yaml"), (source) => replaceYamlDefault(source, env, reference));
+      await updateFile(path.join(templateRoot, "devroost.yaml"), (source) => replaceYamlDefault(source, env, reference));
       await updateFile(path.join(templateRoot, ".env.example"), (source) => replaceEnvironmentDefault(source, env, reference));
       await updateFile(path.join(templateRoot, "README.md"), (source) => replaceReadmeDefault(source, env, reference));
     }

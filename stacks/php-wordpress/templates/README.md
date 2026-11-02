@@ -5,10 +5,10 @@ This template gives you a local WordPress setup with PHP, served from project fi
 ## Quickstart
 
 ```bash
-loom init php-wordpress --dir my-wordpress --db mysql
+devroost init php-wordpress --dir my-wordpress --db mysql
 cd my-wordpress
-loom start
-loom status
+devroost start
+devroost status
 ```
 
 ## Services
@@ -20,14 +20,14 @@ loom status
 
 ## Route
 
-- App: `https://wordpress.loom.local`
+- App: `https://wordpress.devroost.local`
 
 ## Project structure
 
 ```
 my-wordpress/
 ├── .env              # environment variables (DB settings, HOST_UID/GID)
-├── loom.yaml         # Loom service configuration
+├── devroost.yaml         # Devroost service configuration
 ├── wp-config.php     # reads DB settings from environment variables
 └── wp-content/       # persisted WordPress content
     ├── plugins/      # your custom plugins
@@ -39,10 +39,10 @@ WordPress core files live inside the container image. Only `wp-content/` is bind
 
 ## Database
 
-Pass `--db mysql` during init to add a MySQL database service. Loom generates connection credentials and writes them to `.env`. `wp-config.php` reads those values at runtime via the `loomWordPressEnv()` helper.
+Pass `--db mysql` during init to add a MySQL database service. Devroost generates connection credentials and writes them to `.env`. `wp-config.php` reads those values at runtime via the `devroostWordPressEnv()` helper.
 
 ```bash
-loom init php-wordpress --dir my-site --db mysql
+devroost init php-wordpress --dir my-site --db mysql
 ```
 
 ## Image overrides
@@ -56,10 +56,10 @@ The container starts as `root` and remaps Apache's `www-data` user to `HOST_UID`
 - `HOST_UID` defaults to `1000`
 - `HOST_GID` defaults to `1000`
 
-If your Linux user uses different IDs, update those values in `.env` after `loom init`.
+If your Linux user uses different IDs, update those values in `.env` after `devroost init`.
 
 ## WordPress updates
 
 This template configures WordPress with `FS_METHOD=direct` by default, so plugin, theme, and core updates use direct filesystem writes instead of prompting for FTP credentials.
 
-Loom also skips the Composer-on-start check for this template because WordPress does not need Composer to boot.
+Devroost also skips the Composer-on-start check for this template because WordPress does not need Composer to boot.

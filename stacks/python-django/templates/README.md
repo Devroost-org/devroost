@@ -5,10 +5,10 @@ This template gives you a minimal Django project running from local source files
 ## Quickstart
 
 ```bash
-loom init python-django --dir my-django
+devroost init python-django --dir my-django
 cd my-django
-loom start
-loom status
+devroost start
+devroost status
 ```
 
 ## Services
@@ -20,7 +20,7 @@ loom status
 
 ## Route
 
-- App: `https://django.loom.local`
+- App: `https://django.devroost.local`
 
 ## Image overrides
 

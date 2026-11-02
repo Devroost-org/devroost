@@ -89,7 +89,7 @@ jobs:
           set -euo pipefail
 
           package_version="$(node -p "require('./apps/cli/package.json').version")"
-          package_tarball="dist/release/loomdev-${package_version}.tgz"
+          package_tarball="dist/release/devroost-${package_version}.tgz"
           if [ ! -f "$package_tarball" ]; then
             echo "No packed npm CLI tarball found in dist/release" >&2
             exit 1

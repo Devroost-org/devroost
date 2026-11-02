@@ -5,7 +5,7 @@ import type { StackDefinition } from "./stacks.js";
 
 export interface LoomProjectManifestV1 {
   version: 1;
-  loomVersion: string;
+  devroostVersion: string;
   stack: { id: string; scaffoldVersion: string };
   ownedFiles: Record<string, { sha256: string }>;
 }
@@ -19,7 +19,7 @@ export interface ProjectRenderInputs {
 
 export interface LoomProjectManifestV2 {
   version: 2;
-  loomVersion: string;
+  devroostVersion: string;
   stack: { id: string; scaffoldVersion: string; definitionVersion?: number };
   ownedFiles: Record<string, { sha256: string; baselinePath: string }>;
   renderInputs: ProjectRenderInputs;
@@ -44,21 +44,21 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 function assertSafeRelativePath(path: string, label: string): void {
   const segments = path.split(/[\\/]/);
   if (!path || isAbsolute(path) || /^[A-Za-z]:[\\/]/.test(path) || segments.some((segment) => !segment || segment === ".." || segment === ".")) {
-    throw new Error(`Unsafe ${label} '${path}' in Loom project manifest`);
+    throw new Error(`Unsafe ${label} '${path}' in Devroost project manifest`);
   }
 }
 
 function assertCommonManifest(value: Record<string, unknown>): void {
-  if (typeof value.loomVersion !== "string" || !isRecord(value.stack) ||
+  if (typeof value.devroostVersion !== "string" || !isRecord(value.stack) ||
       typeof value.stack.id !== "string" || typeof value.stack.scaffoldVersion !== "string" ||
-      !isRecord(value.ownedFiles)) throw new Error("Invalid Loom project manifest");
+      !isRecord(value.ownedFiles)) throw new Error("Invalid Devroost project manifest");
 }
 
 function parseV1(value: Record<string, unknown>): LoomProjectManifestV1 {
   assertCommonManifest(value);
   for (const [path, entry] of Object.entries(value.ownedFiles as Record<string, unknown>)) {
     assertSafeRelativePath(path, "owned file path");
-    if (!isRecord(entry) || typeof entry.sha256 !== "string") throw new Error("Invalid Loom project manifest owned file entry");
+    if (!isRecord(entry) || typeof entry.sha256 !== "string") throw new Error("Invalid Devroost project manifest owned file entry");
   }
   return value as unknown as LoomProjectManifestV1;
 }
@@ -67,12 +67,12 @@ function parseV2(value: Record<string, unknown>): LoomProjectManifestV2 {
   assertCommonManifest(value);
   const definitionVersion = (value.stack as Record<string, unknown>).definitionVersion;
   if (definitionVersion !== undefined && (!Number.isInteger(definitionVersion) || (definitionVersion as number) <= 0)) {
-    throw new Error("Invalid Loom project manifest stack definition version");
+    throw new Error("Invalid Devroost project manifest stack definition version");
   }
   for (const [path, entry] of Object.entries(value.ownedFiles as Record<string, unknown>)) {
     assertSafeRelativePath(path, "owned file path");
     if (!isRecord(entry) || typeof entry.sha256 !== "string" || typeof entry.baselinePath !== "string") {
-      throw new Error("Invalid Loom project manifest owned file entry");
+      throw new Error("Invalid Devroost project manifest owned file entry");
     }
     assertSafeRelativePath(entry.baselinePath, "baseline path");
   }
@@ -80,7 +80,7 @@ function parseV2(value: Record<string, unknown>): LoomProjectManifestV2 {
       typeof value.renderInputs.adopted !== "boolean" || !Array.isArray(value.renderInputs.databases) ||
       !value.renderInputs.databases.every((database) => typeof database === "string") ||
       (value.renderInputs.phpDocroot !== undefined && typeof value.renderInputs.phpDocroot !== "string")) {
-    throw new Error("Invalid Loom project manifest render inputs");
+    throw new Error("Invalid Devroost project manifest render inputs");
   }
   return value as unknown as LoomProjectManifestV2;
 }
@@ -123,12 +123,12 @@ async function sha256File(path: string): Promise<string | undefined> {
 }
 
 function getBaselinePath(relativePath: string, sha256: string): string {
-  return `.loom/baselines/${sha256}-${encodeURIComponent(relativePath)}`;
+  return `.devroost/baselines/${sha256}-${encodeURIComponent(relativePath)}`;
 }
 
 export async function buildProjectManifest(
   targetDir: string,
-  loomVersion: string,
+  devroostVersion: string,
   stack: StackDefinition,
   ownedFilePaths: readonly string[],
   renderInputs: ProjectRenderInputs
@@ -141,7 +141,7 @@ export async function buildProjectManifest(
   }
   return {
     version: 2,
-    loomVersion,
+    devroostVersion,
     stack: { id: stack.id, scaffoldVersion: stack.scaffoldVersion, definitionVersion: stack.definitionVersion },
     ownedFiles,
     renderInputs: {
@@ -156,13 +156,13 @@ export async function buildProjectManifest(
 export async function loadProjectManifest(targetDir: string): Promise<LoadedProjectManifest> {
   let contents: string;
   try {
-    contents = await readFile(resolve(targetDir, ".loom", "manifest.json"), "utf8");
+    contents = await readFile(resolve(targetDir, ".devroost", "manifest.json"), "utf8");
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") return { kind: "missing" };
     throw error;
   }
   const value: unknown = JSON.parse(contents);
-  if (!isRecord(value) || typeof value.version !== "number") throw new Error("Invalid Loom project manifest");
+  if (!isRecord(value) || typeof value.version !== "number") throw new Error("Invalid Devroost project manifest");
   if (value.version === 1) return { kind: "migration-required", manifest: parseV1(value) };
   if (value.version === 2) return { kind: "ready", manifest: parseV2(value) };
   throw new Error(`Unsupported manifest version '${value.version}'`);
@@ -170,16 +170,16 @@ export async function loadProjectManifest(targetDir: string): Promise<LoadedProj
 
 export async function writeProjectManifest(
   targetDir: string,
-  loomVersion: string,
+  devroostVersion: string,
   stack: StackDefinition,
   ownedFilePaths: readonly string[],
   renderInputs: ProjectRenderInputs
 ): Promise<string> {
-  const manifest = await buildProjectManifest(targetDir, loomVersion, stack, ownedFilePaths, renderInputs);
-  const loomDir = resolve(targetDir, ".loom");
-  const manifestPath = resolve(loomDir, "manifest.json");
-  const temporaryPath = resolve(loomDir, `manifest.json.tmp-${process.pid}`);
-  await mkdir(resolve(loomDir, "baselines"), { recursive: true });
+  const manifest = await buildProjectManifest(targetDir, devroostVersion, stack, ownedFilePaths, renderInputs);
+  const devroostDir = resolve(targetDir, ".devroost");
+  const manifestPath = resolve(devroostDir, "manifest.json");
+  const temporaryPath = resolve(devroostDir, `manifest.json.tmp-${process.pid}`);
+  await mkdir(resolve(devroostDir, "baselines"), { recursive: true });
   for (const [relativePath, entry] of Object.entries(manifest.ownedFiles)) {
     const destination = resolve(targetDir, entry.baselinePath);
     const temporaryBaseline = `${destination}.tmp-${process.pid}`;

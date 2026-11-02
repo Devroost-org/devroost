@@ -5,10 +5,10 @@ This template models the modern JAMstack idea directly: JavaScript in the fronte
 ## Quickstart
 
 ```bash
-loom init jamstack --dir my-jamstack
+devroost init jamstack --dir my-jamstack
 cd my-jamstack
-loom start
-loom status
+devroost start
+devroost status
 ```
 
 ## Services
@@ -24,11 +24,11 @@ loom status
 
 ## Route
 
-- Frontend: `https://jamstack.loom.local`
+- Frontend: `https://jamstack.devroost.local`
 - API proxy: `/api/content`
 
 ## Image overrides
 
 - `NODE_IMAGE`
 
-After init, edit `.env` or pass `--image NODE_IMAGE=ghcr.io/loom-development/loom-node-24@sha256:5bdb11d871f1cea2d5c20305e35d63ab199d23d9b8be69135fc615425f38420c` during `loom init`.
+After init, edit `.env` or pass `--image NODE_IMAGE=ghcr.io/loom-development/loom-node-24@sha256:5bdb11d871f1cea2d5c20305e35d63ab199d23d9b8be69135fc615425f38420c` during `devroost init`.

@@ -5,10 +5,10 @@ This template includes MongoDB, an Express.js API, a modern Angular frontend, an
 ## Quickstart
 
 ```bash
-loom init node-mean --dir my-mean
+devroost init node-mean --dir my-mean
 cd my-mean
-loom start
-loom status
+devroost start
+devroost status
 ```
 
 ## Services
@@ -26,7 +26,7 @@ loom status
 
 ## Route
 
-- Frontend: `https://mean.loom.local`
+- Frontend: `https://mean.devroost.local`
 
 ## Image overrides
 

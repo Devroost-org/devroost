@@ -5,10 +5,10 @@ This template includes MongoDB, an Express.js API, a React frontend, and the Nod
 ## Quickstart
 
 ```bash
-loom init node-mern --dir my-mern
+devroost init node-mern --dir my-mern
 cd my-mern
-loom start
-loom status
+devroost start
+devroost status
 ```
 
 ## Services
@@ -26,7 +26,7 @@ loom status
 
 ## Route
 
-- Frontend: `https://mern.loom.local`
+- Frontend: `https://mern.devroost.local`
 
 ## Image overrides
 

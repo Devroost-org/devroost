@@ -26,7 +26,7 @@ export function requireRestoreSupport(
   const normalizedType = serviceType.toLowerCase();
   if (normalizedType === "sqlserver" || normalizedType === "mssql") {
     throw new Error(
-      `Service '${serviceName}' has type '${serviceType}', but SQL Server restore is not yet supported by 'loom restore'. The current SQL Server backup format is a live .bak of 'master', which is not safely restorable through the running container flow Loom uses today.`
+      `Service '${serviceName}' has type '${serviceType}', but SQL Server restore is not yet supported by 'devroost restore'. The current SQL Server backup format is a live .bak of 'master', which is not safely restorable through the running container flow Devroost uses today.`
     );
   }
 
@@ -35,7 +35,7 @@ export function requireRestoreSupport(
   }
 
   throw new Error(
-    `Service '${serviceName}' has type '${serviceType}', which is not currently supported by 'loom restore'. Supported types: ${supportedRestoreServiceTypes.join(", ")}.`
+    `Service '${serviceName}' has type '${serviceType}', which is not currently supported by 'devroost restore'. Supported types: ${supportedRestoreServiceTypes.join(", ")}.`
   );
 }
 

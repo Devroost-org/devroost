@@ -82,11 +82,11 @@ async function assertNoSymlinkPath(root: string, relativePath: string, label: st
 }
 
 function baselinePath(path: string, sha256: string): string {
-  return `.loom/baselines/${sha256}-${encodeURIComponent(path)}`;
+  return `.devroost/baselines/${sha256}-${encodeURIComponent(path)}`;
 }
 
-export function renderProjectName(loomYaml: string, projectName: string): string {
-  return loomYaml.replace(/^(name:\s*).+$/m, `$1${projectName}`);
+export function renderProjectName(devroostYaml: string, projectName: string): string {
+  return devroostYaml.replace(/^(name:\s*).+$/m, `$1${projectName}`);
 }
 
 function normalizeDocrootPath(raw: string): string {
@@ -99,29 +99,29 @@ function buildPhpBaseCommand(containerDocroot: string): string {
     "command: |", "      set -eu", '      target_uid="${HOST_UID:-1000}"', '      target_gid="${HOST_GID:-1000}"',
     '      current_gid="$(getent group www-data | cut -d: -f3)"', '      if [ "$current_gid" != "$target_gid" ]; then', '        if getent group "$target_gid" >/dev/null 2>&1; then', '          existing_group="$(getent group "$target_gid" | cut -d: -f1)"', '          usermod -g "$existing_group" www-data', '        else', '          groupmod -o -g "$target_gid" www-data', '        fi', '      fi',
     '      current_uid="$(id -u www-data)"', '      if [ "$current_uid" != "$target_uid" ]; then', '        if getent passwd "$target_uid" >/dev/null 2>&1; then', '          existing_user="$(getent passwd "$target_uid" | cut -d: -f1)"', '          usermod -l loom-www-data -m -d /var/www -s /usr/sbin/nologin "$existing_user" >/dev/null 2>&1 || true', '        fi', '        usermod -o -u "$target_uid" www-data', '      fi',
-    "      cat > /etc/apache2/sites-available/000-default.conf << 'APACHE_CONF'", '      <VirtualHost *:80>', `          DocumentRoot ${containerDocroot}`, `          <Directory ${containerDocroot}>`, '              Options FollowSymLinks', '              AllowOverride All', '              Require all granted', '              FallbackResource /index.php', '          </Directory>', '          ErrorLog /dev/stderr', '          CustomLog /dev/stdout combined', '      </VirtualHost>', '      APACHE_CONF', '      a2enmod rewrite >/dev/null', `      if [ ! -f ${containerDocroot}/index.php ]; then`, `        printf '%s\\n' '<?php echo "Loom PHP example is running.";' > ${containerDocroot}/index.php`, '      fi', '      exec apache2-foreground', "    volumes:"
+    "      cat > /etc/apache2/sites-available/000-default.conf << 'APACHE_CONF'", '      <VirtualHost *:80>', `          DocumentRoot ${containerDocroot}`, `          <Directory ${containerDocroot}>`, '              Options FollowSymLinks', '              AllowOverride All', '              Require all granted', '              FallbackResource /index.php', '          </Directory>', '          ErrorLog /dev/stderr', '          CustomLog /dev/stdout combined', '      </VirtualHost>', '      APACHE_CONF', '      a2enmod rewrite >/dev/null', `      if [ ! -f ${containerDocroot}/index.php ]; then`, `        printf '%s\\n' '<?php echo "Devroost PHP example is running.";' > ${containerDocroot}/index.php`, '      fi', '      exec apache2-foreground', "    volumes:"
   ].join("\n");
 }
 
-export function renderPhpDocroot(loomYaml: string, template: string, phpDocrootRaw?: string): string {
-  if (!phpDocrootRaw || ["php-wordpress", "php-drupal"].includes(template)) return loomYaml;
+export function renderPhpDocroot(devroostYaml: string, template: string, phpDocrootRaw?: string): string {
+  if (!phpDocrootRaw || ["php-wordpress", "php-drupal"].includes(template)) return devroostYaml;
   if (!template.startsWith("php")) throw new Error("--php-docroot can only be used with PHP templates.");
   const phpDocroot = normalizeDocrootPath(phpDocrootRaw);
   if (template === "php") {
     const containerDocroot = phpDocroot === "." ? "/app" : `/app/${phpDocroot}`;
-    return loomYaml.replace(/command:\s*\|[\s\S]*?\n\s*volumes:/m, buildPhpBaseCommand(containerDocroot));
+    return devroostYaml.replace(/command:\s*\|[\s\S]*?\n\s*volumes:/m, buildPhpBaseCommand(containerDocroot));
   }
-  return loomYaml
+  return devroostYaml
     .replace(/(\s+DocumentRoot\s+)\/app\/[^\s]+/, `$1/app/${phpDocroot}`)
     .replace(/(\s+<Directory\s+)\/app\/[^\s>]+(>)/, `$1/app/${phpDocroot}$2`);
 }
 
-export function renderDatabaseService(loomYaml: string, db: DbType): string {
+export function renderDatabaseService(devroostYaml: string, db: DbType): string {
   const { serviceName, serviceYaml } = buildDatabaseServiceBlock(db);
-  if (new RegExp(`^ {2}${serviceName}:`, "m").test(loomYaml)) return loomYaml;
-  const insertion = /^(routes:|tasks:)/m.test(loomYaml)
-    ? loomYaml.replace(/^(routes:|tasks:)/m, `${serviceYaml}\n$1`)
-    : `${loomYaml.trimEnd()}\n${serviceYaml}\n`;
+  if (new RegExp(`^ {2}${serviceName}:`, "m").test(devroostYaml)) return devroostYaml;
+  const insertion = /^(routes:|tasks:)/m.test(devroostYaml)
+    ? devroostYaml.replace(/^(routes:|tasks:)/m, `${serviceYaml}\n$1`)
+    : `${devroostYaml.trimEnd()}\n${serviceYaml}\n`;
   if (/^ {4}dependsOn:/m.test(insertion)) {
     return insertion.replace(/^( {4}dependsOn:(?:\n {6}- [^\n]+)*)/m, `$1\n      - ${serviceName}`);
   }
@@ -131,15 +131,15 @@ export function renderDatabaseService(loomYaml: string, db: DbType): string {
 
 async function renderCandidates(options: PlanProjectUpgradeOptions, candidateRoot: string): Promise<void> {
   const assetRoot = resolveContained(options.stacksRoot, options.stack.assetPath, "stack asset path");
-  for (const path of options.stack.loomOwnedFiles) {
-    const source = resolveContained(assetRoot, path, "Loom-owned asset path");
-    try { await access(source); } catch { throw new Error(`Missing Loom-owned asset '${path}' for stack '${options.stack.id}'`); }
+  for (const path of options.stack.devroostOwnedFiles) {
+    const source = resolveContained(assetRoot, path, "Devroost-owned asset path");
+    try { await access(source); } catch { throw new Error(`Missing Devroost-owned asset '${path}' for stack '${options.stack.id}'`); }
     const destination = resolveContained(candidateRoot, path, "candidate path");
     await mkdir(resolve(destination, ".."), { recursive: true });
     await copyFile(source, destination);
   }
-  if (options.stack.loomOwnedFiles.includes("loom.yaml")) {
-    const path = resolve(candidateRoot, "loom.yaml");
+  if (options.stack.devroostOwnedFiles.includes("devroost.yaml")) {
+    const path = resolve(candidateRoot, "devroost.yaml");
     let content = await readFile(path, "utf8");
     content = renderProjectName(content, options.manifest.renderInputs.projectName);
     content = renderPhpDocroot(content, options.stack.id, options.manifest.renderInputs.phpDocroot);
@@ -156,19 +156,19 @@ export async function planProjectUpgrade(options: PlanProjectUpgradeOptions): Pr
   if (compatibility.kind === "incompatible") {
     throw new Error(`Project manifest is incompatible with stack '${options.stack.id}': ${compatibility.reason}`);
   }
-  await mkdir(resolve(options.projectRoot, ".loom"), { recursive: true });
-  const candidateRoot = await mkdtemp(resolve(options.projectRoot, ".loom", "upgrade-candidate-"));
+  await mkdir(resolve(options.projectRoot, ".devroost"), { recursive: true });
+  const candidateRoot = await mkdtemp(resolve(options.projectRoot, ".devroost", "upgrade-candidate-"));
   try {
     for (const path of Object.keys(options.manifest.ownedFiles)) assertSafeRelativePath(path, "owned file path");
-    for (const path of options.stack.loomOwnedFiles) assertSafeRelativePath(path, "Loom-owned asset path");
+    for (const path of options.stack.devroostOwnedFiles) assertSafeRelativePath(path, "Devroost-owned asset path");
     await renderCandidates(options, candidateRoot);
     const files: ProjectUpgradeFilePlan[] = [];
     for (const path of Object.keys(options.manifest.ownedFiles).sort()) {
-      if (!options.stack.loomOwnedFiles.includes(path)) throw new Error(`Stack '${options.stack.id}' does not declare owned asset '${path}'`);
+      if (!options.stack.devroostOwnedFiles.includes(path)) throw new Error(`Stack '${options.stack.id}' does not declare owned asset '${path}'`);
       const currentSha256 = await sha256File(resolveContained(options.projectRoot, path, "owned file path"));
       const candidatePath = resolveContained(candidateRoot, path, "candidate path");
       const candidateSha256 = await sha256File(candidatePath);
-      if (!candidateSha256) throw new Error(`Missing Loom-owned asset '${path}' for stack '${options.stack.id}'`);
+      if (!candidateSha256) throw new Error(`Missing Devroost-owned asset '${path}' for stack '${options.stack.id}'`);
       const baselineSha256 = options.manifest.ownedFiles[path].sha256;
       files.push({ path, state: currentSha256 === undefined ? "missing" : currentSha256 === baselineSha256 ? "unchanged" : "modified", ...(currentSha256 ? { currentSha256 } : {}), baselineSha256, candidateSha256, candidatePath });
     }
@@ -185,8 +185,8 @@ export async function applyProjectUpgrade(
 ): Promise<{ updated: string[]; skipped: string[] }> {
   const updated = plan.files.filter((file) => file.state !== "modified" || options.forceModified).map((file) => file.path);
   const skipped = plan.files.filter((file) => file.state === "modified" && !options.forceModified).map((file) => file.path);
-  const loomDir = await assertNoSymlinkPath(plan.projectRoot, ".loom", "Loom metadata path");
-  const stageRoot = await mkdtemp(resolve(loomDir, "upgrade-stage-"));
+  const devroostDir = await assertNoSymlinkPath(plan.projectRoot, ".devroost", "Devroost metadata path");
+  const stageRoot = await mkdtemp(resolve(devroostDir, "upgrade-stage-"));
   try {
     for (const file of plan.files.filter((entry) => updated.includes(entry.path))) {
       const staged = resolveContained(stageRoot, file.path, "staged owned file path");
@@ -200,7 +200,7 @@ export async function applyProjectUpgrade(
 
     const nextManifest: LoomProjectManifestV2 = {
       ...plan.manifest,
-      loomVersion: packageJson.version,
+      devroostVersion: packageJson.version,
       stack: {
         id: plan.stack.id,
         scaffoldVersion: plan.stack.scaffoldVersion,
@@ -215,7 +215,7 @@ export async function applyProjectUpgrade(
       await copyFile(file.candidatePath, stagedBaseline);
       nextManifest.ownedFiles[file.path] = { sha256: file.candidateSha256, baselinePath: nextBaselinePath };
     }
-    const stagedManifest = resolve(stageRoot, ".loom", "manifest.json");
+    const stagedManifest = resolve(stageRoot, ".devroost", "manifest.json");
     await mkdir(dirname(stagedManifest), { recursive: true });
     await writeFile(stagedManifest, `${JSON.stringify(nextManifest, null, 2)}\n`, "utf8");
 
@@ -229,7 +229,7 @@ export async function applyProjectUpgrade(
       await mkdir(dirname(target), { recursive: true });
       await rename(resolveContained(stageRoot, path, "staged baseline path"), target);
     }
-    const manifestTarget = await assertNoSymlinkPath(plan.projectRoot, ".loom/manifest.json", "manifest path");
+    const manifestTarget = await assertNoSymlinkPath(plan.projectRoot, ".devroost/manifest.json", "manifest path");
     await rename(stagedManifest, manifestTarget);
     return { updated, skipped };
   } finally {

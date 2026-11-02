@@ -5,13 +5,13 @@ This template gives you a Symfony application served by Apache with PHP from loc
 ## Quickstart
 
 ```bash
-loom init php-symfony --dir my-symfony
+devroost init php-symfony --dir my-symfony
 cd my-symfony
-loom start
-loom status
+devroost start
+devroost status
 ```
 
-`loom init php-symfony` now bootstraps a real Symfony project into an empty directory with a one-shot Podman Composer container. If the target already contains an existing Symfony project, Loom skips bootstrap and only adds or updates the Loom files.
+`devroost init php-symfony` now bootstraps a real Symfony project into an empty directory with a one-shot Podman Composer container. If the target already contains an existing Symfony project, Devroost skips bootstrap and only adds or updates the Devroost files.
 
 ## Services
 
@@ -22,7 +22,7 @@ loom status
 
 ## Route
 
-- App: `https://symfony.loom.local`
+- App: `https://symfony.devroost.local`
 
 ## Image overrides
 

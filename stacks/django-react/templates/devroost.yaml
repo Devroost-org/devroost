@@ -55,7 +55,7 @@ services:
       retries: 120
       startPeriodSeconds: 5
 routes:
-  - host: django-react.loom.local
+  - host: django-react.devroost.local
     service: web
     port: 5176
     https: true

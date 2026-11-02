@@ -100,7 +100,7 @@ export async function waitForServiceReadyWithDependencies(
 
     if (!info.running) {
       throw new Error(
-        `Container '${name}' exited before becoming ready. Check 'loom logs ${serviceName} --no-follow' for the startup failure.`
+        `Container '${name}' exited before becoming ready. Check 'devroost logs ${serviceName} --no-follow' for the startup failure.`
       );
     }
 

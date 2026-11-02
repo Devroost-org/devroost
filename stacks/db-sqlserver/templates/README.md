@@ -5,10 +5,10 @@ This template gives you a standalone SQL Server database environment for local d
 ## Quickstart
 
 ```bash
-loom init db-sqlserver --dir my-sqlserver
+devroost init db-sqlserver --dir my-sqlserver
 cd my-sqlserver
-loom start
-loom status
+devroost start
+devroost status
 ```
 
 ## Service
@@ -28,7 +28,7 @@ loom status
 ## Backup and restore
 
 ```bash
-loom backup db
+devroost backup db
 ```
 
-SQL Server backup is supported. `loom restore` is not yet available for SQL Server because the current backup format is a live `.bak` of `master`, which needs a different restore flow.
+SQL Server backup is supported. `devroost restore` is not yet available for SQL Server because the current backup format is a live `.bak` of `master`, which needs a different restore flow.

@@ -59,7 +59,7 @@ function assertCanonicalStackAssets(paths: readonly string[], stacksPrefix: stri
     "index.js",
     "pins.js",
     "node/stack.js",
-    "node/templates/loom.yaml",
+    "node/templates/devroost.yaml",
     "node-mern/templates/api/server.js",
     "node-t3/templates/apps/web/app/page.tsx"
   ]) {
@@ -79,7 +79,7 @@ function assertCanonicalStackAssets(paths: readonly string[], stacksPrefix: stri
     assert.equal(segments.includes("fixtures"), false, `private fixture was packaged: ${path}`);
     assert.equal(segments.includes("node_modules"), false, `dependency was packaged: ${path}`);
     assert.equal(segments.some((segment) => [
-      ".angular", ".loom", ".next", ".pnpm-store", ".pytest_cache", ".turbo", ".venv",
+      ".angular", ".devroost", ".next", ".pnpm-store", ".pytest_cache", ".turbo", ".venv",
       "__pycache__", "bin", "build", "data", "dist", "obj", "target", "vendor"
     ].includes(segment)), false, `generated or runtime path was packaged: ${path}`);
     assert.equal(/(?:^|\/)[^/]+\.test\.[^/]+$/.test(relativePath), false, `test file was packaged: ${path}`);
@@ -126,20 +126,23 @@ test("npm installs the produced CLI tgz and executes its binary without workspac
       env: { ...process.env, npm_config_cache: npmCache },
       maxBuffer: 10 * 1024 * 1024
     });
-    await executeFile(resolve(installRoot, "node_modules", ".bin", "loom"), ["init", "node", "--dir", targetDir], {
+    await executeFile(resolve(installRoot, "node_modules", ".bin", "devroost"), ["init", "node", "--dir", targetDir], {
       cwd: installRoot,
       encoding: "utf8",
       maxBuffer: 10 * 1024 * 1024
     });
 
-    const installedPackage = JSON.parse(await readFile(resolve(installRoot, "node_modules", "loomdev", "package.json"), "utf8")) as {
+    const installedPackage = JSON.parse(await readFile(resolve(installRoot, "node_modules", "devroost", "package.json"), "utf8")) as {
       name: string;
       dependencies?: Record<string, string>;
     };
-    assert.equal(installedPackage.name, "loomdev");
+    assert.equal(installedPackage.name, "devroost");
+    await assert.rejects(readFile(resolve(installRoot, "node_modules", ".bin", "loom")), { code: "ENOENT" });
+    const help = await executeFile(resolve(installRoot, "node_modules", ".bin", "devroost"), ["--help"], { encoding: "utf8" });
+    assert.match(help.stdout, /devroost/);
     assert.deepEqual(installedPackage.dependencies ?? {}, {});
     assert.match(await readFile(resolve(targetDir, "server.js"), "utf8"), /app\.get\('\/health'/);
-    const manifest = JSON.parse(await readFile(resolve(targetDir, ".loom", "manifest.json"), "utf8")) as {
+    const manifest = JSON.parse(await readFile(resolve(targetDir, ".devroost", "manifest.json"), "utf8")) as {
       stack: { id: string; scaffoldVersion: string; definitionVersion: number };
     };
     assert.deepEqual(manifest.stack, { id: "node", scaffoldVersion: "2", definitionVersion: 2 });
@@ -172,7 +175,7 @@ test("isolated packaged CLI initializes Node from canonical stack assets", async
     });
 
     assert.match(await readFile(resolve(value.targetDir, "server.js"), "utf8"), /app\.get\('\/health'/);
-    const manifest = JSON.parse(await readFile(resolve(value.targetDir, ".loom", "manifest.json"), "utf8")) as {
+    const manifest = JSON.parse(await readFile(resolve(value.targetDir, ".devroost", "manifest.json"), "utf8")) as {
       version: number;
       stack: { id: string; scaffoldVersion: string; definitionVersion: number };
     };
@@ -194,7 +197,7 @@ test("isolated packaged CLI initializes a formerly nested stack ID", async () =>
 
     assert.match(await readFile(resolve(value.targetDir, "api", "server.js"), "utf8"), /stack: "MERN"/);
     assert.match(await readFile(resolve(value.targetDir, "web", "index.html"), "utf8"), /<title>MERN Example<\/title>/);
-    const manifest = JSON.parse(await readFile(resolve(value.targetDir, ".loom", "manifest.json"), "utf8")) as {
+    const manifest = JSON.parse(await readFile(resolve(value.targetDir, ".devroost", "manifest.json"), "utf8")) as {
       version: number;
       stack: { id: string; scaffoldVersion: string; definitionVersion: number };
     };
@@ -214,31 +217,33 @@ test("release archives publish canonical stack assets without legacy examples", 
 
   const releaseDir = resolve(repoDir, "dist", "release");
   for (const archive of [
-    "loom-linux-x64.tar.gz",
-    "loom-linux-arm64.tar.gz",
-    "loom-darwin-x64.tar.gz",
-    "loom-darwin-arm64.tar.gz"
+    "devroost-linux-x64.tar.gz",
+    "devroost-linux-arm64.tar.gz",
+    "devroost-darwin-x64.tar.gz",
+    "devroost-darwin-arm64.tar.gz"
   ]) {
     const { stdout } = await executeFile("tar", ["-tzf", resolve(releaseDir, archive)], {
       encoding: "utf8",
       maxBuffer: 10 * 1024 * 1024
     });
     const paths = stdout.trim().split("\n").map((path) => path.replace(/^\.\//, "")).sort();
-    assert.ok(paths.includes("loom"), `${archive} is missing the Unix launcher`);
-    assert.ok(paths.includes("loom.mjs"), `${archive} is missing the CLI bundle`);
+    assert.ok(paths.includes("devroost"), `${archive} is missing the Devroost launcher`);
+    assert.equal(paths.includes("loom"), false, `${archive} must not include the old command`);
+    assert.ok(paths.includes("devroost.mjs"), `${archive} is missing the CLI bundle`);
     assertCanonicalStackAssets(paths, "stacks/");
     assert.equal(hasLegacyExampleAssets(paths), false);
   }
 
-  for (const archive of ["loom-windows-x64.zip", "loom-windows-arm64.zip"]) {
+  for (const archive of ["devroost-windows-x64.zip", "devroost-windows-arm64.zip"]) {
     const { stdout } = await executeFile("python3", [
       "-c",
       "import json, sys, zipfile; print(json.dumps(zipfile.ZipFile(sys.argv[1]).namelist()))",
       resolve(releaseDir, archive)
     ], { encoding: "utf8", maxBuffer: 10 * 1024 * 1024 });
     const paths = (JSON.parse(stdout) as string[]).sort();
-    assert.ok(paths.includes("loom.cmd"), `${archive} is missing the Windows launcher`);
-    assert.ok(paths.includes("loom.mjs"), `${archive} is missing the CLI bundle`);
+    assert.ok(paths.includes("devroost.cmd"), `${archive} is missing the Devroost launcher`);
+    assert.equal(paths.includes("loom.cmd"), false, `${archive} must not include the old command`);
+    assert.ok(paths.includes("devroost.mjs"), `${archive} is missing the CLI bundle`);
     assertCanonicalStackAssets(paths, "stacks/");
     assert.equal(hasLegacyExampleAssets(paths), false);
   }

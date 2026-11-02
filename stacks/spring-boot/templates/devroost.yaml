@@ -24,7 +24,7 @@ services:
       retries: 60
       startPeriodSeconds: 30
 routes:
-  - host: spring-boot.loom.local
+  - host: spring-boot.devroost.local
     service: app
     port: 8080
     https: true

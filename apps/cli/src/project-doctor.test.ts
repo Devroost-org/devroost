@@ -14,7 +14,7 @@ const nodeImage = findStackDefinition("node")!.runtimeImages[0]!.reference;
 const postgresImage = findStackDefinition("db-postgres")!.runtimeImages[0]!.reference;
 
 const stack: StackDefinition = {
-  id: "node", assetPath: "node", scaffoldVersion: "1", loomOwnedFiles: ["loom.yaml"],
+  id: "node", assetPath: "node", scaffoldVersion: "1", devroostOwnedFiles: ["devroost.yaml"],
   definitionVersion: 1, legacyScaffoldVersions: ["0"], generator: { kind: "none" },
   runtimeImages: [{ env: "NODE_IMAGE", reference: nodeImage }],
   install: [], start: [], readiness: { kind: "command", value: "true", timeoutSeconds: 1 }, hostWrites: [], verification: [],
@@ -22,7 +22,7 @@ const stack: StackDefinition = {
   protectedPaths: ["src"], compatibility: { architectures: ["x64"], runtime: "podman-rootless" }
 };
 const manifestValue: LoomProjectManifestV2 = {
-  version: 2, loomVersion: "0.3.4", stack: { id: "node", scaffoldVersion: "1", definitionVersion: 1 },
+  version: 2, devroostVersion: "0.3.4", stack: { id: "node", scaffoldVersion: "1", definitionVersion: 1 },
   ownedFiles: {}, renderInputs: { projectName: "demo", databases: [], adopted: false }
 };
 const ready: LoadedProjectManifest = { kind: "ready", manifest: manifestValue };
@@ -65,7 +65,7 @@ test("diagnoses manifest lifecycle and scaffold drift", async (t) => {
   const root = await fixture(); t.after(() => rm(root, { recursive: true, force: true }));
   const run = (manifest: LoadedProjectManifest, selected: StackDefinition | undefined = stack) => runProjectDoctor({ projectRoot: root, config, manifest, stack: selected, probes: probes() });
   assert.equal((await run({ kind: "missing" }))[0]!.status, "failure");
-  assert.equal((await run({ kind: "migration-required", manifest: { version: 1, loomVersion: "old", stack: { id: "node", scaffoldVersion: "0" }, ownedFiles: {} } }))[0]!.status, "warning");
+  assert.equal((await run({ kind: "migration-required", manifest: { version: 1, devroostVersion: "old", stack: { id: "node", scaffoldVersion: "0" }, ownedFiles: {} } }))[0]!.status, "warning");
   const legacy = { ...manifestValue, stack: { id: "node", scaffoldVersion: "0" } };
   assert.equal((await run({ kind: "ready", manifest: legacy }))[0]!.status, "warning");
   const drift = { ...manifestValue, stack: { id: "node", scaffoldVersion: "not-declared" } };

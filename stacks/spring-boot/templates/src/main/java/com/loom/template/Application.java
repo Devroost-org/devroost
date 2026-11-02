@@ -28,7 +28,7 @@ public class Application {
     @GetMapping("/api/hello")
     public Map<String, Object> hello() {
       return Map.of(
-        "message", "Hello from Loom Spring Boot template",
+        "message", "Hello from Devroost Spring Boot template",
         "tip", "Start building your API in src/main/java/com/loom/template/"
       );
     }

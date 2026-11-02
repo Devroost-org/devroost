@@ -17,6 +17,6 @@ export const phpSymfonyStack = defineStack({
   install: [],
   start: ["apache2-foreground"], readiness: { kind: "port", value: "127.0.0.1:80", timeoutSeconds: 90 },
   hostWrites: ["var/cache"], verification: [{ service: "app", command: ["php", "bin/console", "about"] }],
-  loomOwnedFiles: [".env.example", "loom.yaml"], generatedPaths: [{ path: "var/cache", category: "cache" }, { path: "vendor", category: "dependency" }],
+  devroostOwnedFiles: [".env.example", "devroost.yaml"], generatedPaths: [{ path: "var/cache", category: "cache" }, { path: "vendor", category: "dependency" }],
   protectedPaths: ["config", "public", "src", "templates"], compatibility: { architectures: ["arm", "arm64", "x64"], runtime: "podman-rootless" }
 });

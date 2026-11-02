@@ -18,23 +18,23 @@
  * @package WordPress
  */
 
-function loomWordPressEnv(string $key, string $default = ''): string {
+function devroostWordPressEnv(string $key, string $default = ''): string {
   $value = getenv($key);
   return ($value !== false && $value !== '') ? $value : $default;
 }
 
 // ** Database settings - You can get this info from your web host ** //
 /** The name of the database for WordPress */
-define('DB_NAME',     loomWordPressEnv('WORDPRESS_DB_NAME',     'wordpress'));
+define('DB_NAME',     devroostWordPressEnv('WORDPRESS_DB_NAME',     'wordpress'));
 
 /** Database username */
-define('DB_USER',     loomWordPressEnv('WORDPRESS_DB_USER',     'wordpress'));
+define('DB_USER',     devroostWordPressEnv('WORDPRESS_DB_USER',     'wordpress'));
 
 /** Database password */
-define('DB_PASSWORD', loomWordPressEnv('WORDPRESS_DB_PASSWORD', 'wordpress'));
+define('DB_PASSWORD', devroostWordPressEnv('WORDPRESS_DB_PASSWORD', 'wordpress'));
 
 /** Database hostname */
-define('DB_HOST',     loomWordPressEnv('WORDPRESS_DB_HOST',     'db:3306'));
+define('DB_HOST',     devroostWordPressEnv('WORDPRESS_DB_HOST',     'db:3306'));
 
 /** Database charset to use in creating database tables. */
 define('DB_CHARSET', 'utf8mb4');
@@ -53,14 +53,14 @@ define('DB_COLLATE', '');
  *
  * @since 2.6.0
  */
-define('AUTH_KEY',         loomWordPressEnv('WORDPRESS_AUTH_KEY',         'put your unique phrase here'));
-define('SECURE_AUTH_KEY',  loomWordPressEnv('WORDPRESS_SECURE_AUTH_KEY',  'put your unique phrase here'));
-define('LOGGED_IN_KEY',    loomWordPressEnv('WORDPRESS_LOGGED_IN_KEY',    'put your unique phrase here'));
-define('NONCE_KEY',        loomWordPressEnv('WORDPRESS_NONCE_KEY',        'put your unique phrase here'));
-define('AUTH_SALT',        loomWordPressEnv('WORDPRESS_AUTH_SALT',        'put your unique phrase here'));
-define('SECURE_AUTH_SALT', loomWordPressEnv('WORDPRESS_SECURE_AUTH_SALT', 'put your unique phrase here'));
-define('LOGGED_IN_SALT',   loomWordPressEnv('WORDPRESS_LOGGED_IN_SALT',   'put your unique phrase here'));
-define('NONCE_SALT',       loomWordPressEnv('WORDPRESS_NONCE_SALT',       'put your unique phrase here'));
+define('AUTH_KEY',         devroostWordPressEnv('WORDPRESS_AUTH_KEY',         'put your unique phrase here'));
+define('SECURE_AUTH_KEY',  devroostWordPressEnv('WORDPRESS_SECURE_AUTH_KEY',  'put your unique phrase here'));
+define('LOGGED_IN_KEY',    devroostWordPressEnv('WORDPRESS_LOGGED_IN_KEY',    'put your unique phrase here'));
+define('NONCE_KEY',        devroostWordPressEnv('WORDPRESS_NONCE_KEY',        'put your unique phrase here'));
+define('AUTH_SALT',        devroostWordPressEnv('WORDPRESS_AUTH_SALT',        'put your unique phrase here'));
+define('SECURE_AUTH_SALT', devroostWordPressEnv('WORDPRESS_SECURE_AUTH_SALT', 'put your unique phrase here'));
+define('LOGGED_IN_SALT',   devroostWordPressEnv('WORDPRESS_LOGGED_IN_SALT',   'put your unique phrase here'));
+define('NONCE_SALT',       devroostWordPressEnv('WORDPRESS_NONCE_SALT',       'put your unique phrase here'));
 
 /**#@-*/
 
@@ -70,7 +70,7 @@ define('NONCE_SALT',       loomWordPressEnv('WORDPRESS_NONCE_SALT',       'put y
  * You can have multiple installations in one database if you give each
  * a unique prefix. Only numbers, letters, and underscores please!
  */
-$table_prefix = loomWordPressEnv('WORDPRESS_TABLE_PREFIX', 'wp_');
+$table_prefix = devroostWordPressEnv('WORDPRESS_TABLE_PREFIX', 'wp_');
 
 /**
  * For developers: WordPress debugging mode.
@@ -84,7 +84,7 @@ $table_prefix = loomWordPressEnv('WORDPRESS_TABLE_PREFIX', 'wp_');
  *
  * @link https://developer.wordpress.org/advanced-administration/debug/debug-wordpress/
  */
-define('WP_DEBUG', (bool) loomWordPressEnv('WORDPRESS_DEBUG', ''));
+define('WP_DEBUG', (bool) devroostWordPressEnv('WORDPRESS_DEBUG', ''));
 
 /* Add any custom values between this line and the "stop editing" line. */
 

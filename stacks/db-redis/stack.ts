@@ -6,6 +6,6 @@ export const dbRedisStack = defineStack({
   generator: { kind: "none" }, runtimeImages: [{ env: "REDIS_IMAGE", reference: runtimeImagePins.redis74Alpine }],
   install: [], start: ["redis-server --appendonly yes"],
   readiness: { kind: "command", value: "redis-cli ping | grep PONG", timeoutSeconds: 92 }, hostWrites: [],
-  verification: [{ service: "db", command: ["redis-cli", "ping"] }], loomOwnedFiles: [".env.example", "loom.yaml"], generatedPaths: [], protectedPaths: [],
+  verification: [{ service: "db", command: ["redis-cli", "ping"] }], devroostOwnedFiles: [".env.example", "devroost.yaml"], generatedPaths: [], protectedPaths: [],
   compatibility: { architectures: ["arm", "arm64", "x64"], runtime: "podman-rootless" }
 });

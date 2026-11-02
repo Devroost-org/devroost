@@ -17,6 +17,6 @@ export const phpDrupalStack = defineStack({
   install: [],
   start: ["apache2-foreground"], readiness: { kind: "port", value: "127.0.0.1:80", timeoutSeconds: 90 },
   hostWrites: ["data/files"], verification: [{ service: "app", command: ["php", "-r", "exit((int)!@fsockopen('127.0.0.1', 80));"] }],
-  loomOwnedFiles: [".env.example", "loom.yaml"], generatedPaths: [{ path: "vendor", category: "dependency" }],
+  devroostOwnedFiles: [".env.example", "devroost.yaml"], generatedPaths: [{ path: "vendor", category: "dependency" }],
   protectedPaths: ["modules", "themes", "web"], compatibility: { architectures: ["arm", "arm64", "x64"], runtime: "podman-rootless" }
 });

@@ -14,14 +14,14 @@ interface MeanItem {
     <main class="page">
       <section class="hero">
         <p class="eyebrow">MongoDB, Express.js, Angular, Node.js</p>
-        <h1>Loom MEAN template</h1>
+        <h1>Devroost MEAN template</h1>
         <p class="lede">A real Angular frontend talking to an Express API over a local proxy.</p>
       </section>
 
       <section class="status-grid">
         <article>
           <p class="label">Route</p>
-          <p>https://mean.loom.local</p>
+          <p>https://mean.devroost.local</p>
         </article>
         <article>
           <p class="label">API status</p>

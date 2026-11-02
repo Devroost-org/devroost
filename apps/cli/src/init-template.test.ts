@@ -37,7 +37,7 @@ test("prepareInitTarget returns config-only result for non-empty generic targets
     }),
     {
       overwriteTemplateFiles: false,
-      templateEntriesToUpdate: ["loom.yaml"],
+      templateEntriesToUpdate: ["devroost.yaml"],
       templateEntriesToCreateIfMissing: [".env.example"]
     }
   );
@@ -77,7 +77,7 @@ test("prepareInitTarget adopts existing Drupal projects and skips bootstrap", as
     }
   }), {
     overwriteTemplateFiles: true,
-    templateEntriesToUpdate: ["loom.yaml"],
+    templateEntriesToUpdate: ["devroost.yaml"],
     templateEntriesToCreateIfMissing: [".env.example"]
   });
 
@@ -128,7 +128,7 @@ test("prepareInitTarget adopts existing WordPress projects and skips bootstrap",
     }
   }), {
     overwriteTemplateFiles: true,
-    templateEntriesToUpdate: ["loom.yaml"],
+    templateEntriesToUpdate: ["devroost.yaml"],
     templateEntriesToCreateIfMissing: [".env.example", "wp-config.php"]
   });
 
@@ -159,7 +159,7 @@ test("prepareInitTarget adopts existing Rails 7 projects and skips bootstrap", a
     }
   }), {
     overwriteTemplateFiles: true,
-    templateEntriesToUpdate: ["loom.yaml"],
+    templateEntriesToUpdate: ["devroost.yaml"],
     templateEntriesToCreateIfMissing: [".env.example"]
   });
 
@@ -200,7 +200,7 @@ test("prepareInitTarget adopts existing Rails 7 + Hotwire projects and skips boo
     }
   }), {
     overwriteTemplateFiles: true,
-    templateEntriesToUpdate: ["loom.yaml"],
+    templateEntriesToUpdate: ["devroost.yaml"],
     templateEntriesToCreateIfMissing: [".env.example"]
   });
 
@@ -227,7 +227,7 @@ test("prepareInitTarget bootstraps Symfony projects in empty targets", async () 
     }
   }), {
     overwriteTemplateFiles: false,
-    templateEntriesToUpdate: ["loom.yaml"],
+    templateEntriesToUpdate: ["devroost.yaml"],
     templateEntriesToCreateIfMissing: [".env.example"]
   });
 
@@ -245,7 +245,7 @@ test("prepareInitTarget adopts existing Symfony projects and skips bootstrap", a
     }
   }), {
     overwriteTemplateFiles: true,
-    templateEntriesToUpdate: ["loom.yaml"],
+    templateEntriesToUpdate: ["devroost.yaml"],
     templateEntriesToCreateIfMissing: [".env.example"]
   });
 

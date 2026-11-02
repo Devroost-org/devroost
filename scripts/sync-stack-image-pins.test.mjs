@@ -36,7 +36,7 @@ test("updates only a declared YAML image default", () => {
   );
   assert.throws(
     () => replaceYamlDefault("    image: ${OTHER_IMAGE:-old}\n", "NODE_IMAGE", reference),
-    /NODE_IMAGE.*loom\.yaml/i
+    /NODE_IMAGE.*devroost\.yaml/i
   );
 });
 

@@ -57,8 +57,8 @@ test("copy stack migration preserves every non-image template byte", async () =>
     const stackRoot = resolve(root, "..", id);
     const templateRoot = resolve(stackRoot, "templates");
     const definition = findStackDefinition(id)!;
-    const fixture = JSON.parse(await readFile(resolve(stackRoot, "fixtures/migration.json"), "utf8")) as { fileCount: number; sourceDigest: string; loomDigest: string };
-    const files = (await filesBelow(templateRoot)).filter((path) => path !== "loom.yaml");
+    const fixture = JSON.parse(await readFile(resolve(stackRoot, "fixtures/migration.json"), "utf8")) as { fileCount: number; sourceDigest: string; devroostDigest: string };
+    const files = (await filesBelow(templateRoot)).filter((path) => path !== "devroost.yaml");
     const digest = createHash("sha256");
     for (const path of files) {
       let bytes = await readFile(resolve(templateRoot, path));
@@ -71,9 +71,9 @@ test("copy stack migration preserves every non-image template byte", async () =>
     }
     assert.equal(files.length, fixture.fileCount, `${id} inventory`);
     assert.equal(digest.digest("hex"), fixture.sourceDigest, `${id} source bytes`);
-    const yaml = await readFile(resolve(templateRoot, "loom.yaml"), "utf8");
+    const yaml = await readFile(resolve(templateRoot, "devroost.yaml"), "utf8");
     const normalizedYaml = normalizeImageDefaults(yaml, definition.runtimeImages.map(({ env }) => env));
-    assert.equal(createHash("sha256").update(normalizedYaml).digest("hex"), fixture.loomDigest, `${id} Loom configuration`);
+    assert.equal(createHash("sha256").update(normalizedYaml).digest("hex"), fixture.devroostDigest, `${id} Devroost configuration`);
   }
 });
 
@@ -81,7 +81,7 @@ test("application templates never install operating-system packages during start
   const forbidden = /\b(?:apt-get|apk\s+add|pecl\s+install|docker-php-ext-(?:install|enable))\b/;
   for (const definition of stackDefinitions) {
     if (definition.id.startsWith("db-")) continue;
-    const yaml = await readFile(resolve(root, "..", definition.assetPath, "loom.yaml"), "utf8");
+    const yaml = await readFile(resolve(root, "..", definition.assetPath, "devroost.yaml"), "utf8");
     assert.doesNotMatch(yaml, forbidden, definition.id);
   }
 });
@@ -89,7 +89,7 @@ test("application templates never install operating-system packages during start
 test("Node-family templates run directly as the host user", async () => {
   for (const id of ["node", "astro", "node-mean", "node-mern", "node-t3"] as const) {
     const definition = findStackDefinition(id)!;
-    const yaml = await readFile(resolve(root, "..", definition.assetPath, "loom.yaml"), "utf8");
+    const yaml = await readFile(resolve(root, "..", definition.assetPath, "devroost.yaml"), "utf8");
     assert.match(yaml, /user:\s*\$\{HOST_UID:-1000\}:\$\{HOST_GID:-1000\}/, id);
     assert.doesNotMatch(yaml, /user:\s*root|execUser:|setpriv|apt-get|apk\s+add/, id);
   }
@@ -98,7 +98,7 @@ test("Node-family templates run directly as the host user", async () => {
 test("Python-family templates run directly as the host user", async () => {
   for (const id of ["python", "python-django", "python-flask", "python-fastapi"] as const) {
     const definition = findStackDefinition(id)!;
-    const yaml = await readFile(resolve(root, "..", definition.assetPath, "loom.yaml"), "utf8");
+    const yaml = await readFile(resolve(root, "..", definition.assetPath, "devroost.yaml"), "utf8");
     assert.match(yaml, /user:\s*\$\{HOST_UID:-1000\}:\$\{HOST_GID:-1000\}/, id);
     assert.doesNotMatch(yaml, /user:\s*root|execUser:|setpriv|apt-get|apk\s+add/, id);
   }
@@ -107,14 +107,14 @@ test("Python-family templates run directly as the host user", async () => {
 test("Rails templates run directly as the host user", async () => {
   for (const id of ["rails7", "rails7-hotwire"] as const) {
     const definition = findStackDefinition(id)!;
-    const yaml = await readFile(resolve(root, "..", definition.assetPath, "loom.yaml"), "utf8");
+    const yaml = await readFile(resolve(root, "..", definition.assetPath, "devroost.yaml"), "utf8");
     assert.match(yaml, /user:\s*\$\{HOST_UID:-1000\}:\$\{HOST_GID:-1000\}/, id);
     assert.doesNotMatch(yaml, /user:\s*root|execUser:|setpriv|apt-get|apk\s+add/, id);
   }
 });
 
 test("migration normalization preserves non-image environment defaults", async () => {
-  const yaml = await readFile(resolve(root, "..", "node-mean/templates/loom.yaml"), "utf8");
+  const yaml = await readFile(resolve(root, "..", "node-mean/templates/devroost.yaml"), "utf8");
   const imageEnvs = findStackDefinition("node-mean")!.runtimeImages.map(({ env }) => env);
   const changed = yaml.replace("${HOST_UID:-1000}", "${HOST_UID:-1001}");
   assert.notEqual(changed, yaml, "fixture must contain a non-image default");
@@ -126,7 +126,7 @@ test("migration normalization preserves non-image environment defaults", async (
 
 test("YAML migration normalization permits declared image pins only", async () => {
   const definition = findStackDefinition("db-mysql")!;
-  const yaml = await readFile(resolve(root, "..", definition.assetPath, "loom.yaml"), "utf8");
+  const yaml = await readFile(resolve(root, "..", definition.assetPath, "devroost.yaml"), "utf8");
   const imageEnvs = definition.runtimeImages.map(({ env }) => env);
   const normalized = normalizeImageDefaults(yaml, imageEnvs);
   assert.equal(normalizeImageDefaults(yaml.replace("mysql:8.4.11", "mysql:8.4.99"), imageEnvs), normalized);
@@ -157,7 +157,7 @@ test("runtime write metadata matches dependency-free Bun and Serverless template
 test("copy stack template image defaults exactly match their definitions", async () => {
   for (const id of ids) {
     const definition = findStackDefinition(id)!;
-    const yaml = await readFile(resolve(root, "..", definition.assetPath, "loom.yaml"), "utf8");
+    const yaml = await readFile(resolve(root, "..", definition.assetPath, "devroost.yaml"), "utf8");
     const defaults = [...yaml.matchAll(/image:\s*\$\{([A-Z][A-Z0-9_]*)[:-]-(.+?)\}/g)].map((match) => ({ env: match[1]!, reference: match[2]! }));
     const imagesByEnv = new Map(definition.runtimeImages.map((image) => [image.env, image.reference]));
     assert.deepEqual([...new Set(defaults.map(({ env }) => env))].sort(), [...imagesByEnv.keys()].sort(), `${id} image environments`);
@@ -259,7 +259,7 @@ test("database data and runtime state are never maintenance targets", () => {
 });
 
 test("copy stack template packages exclude generated state", async () => {
-  const forbidden = /(?:^|\/)(?:\.loom|node_modules|vendor|\.venv|dist|build|target|bin|obj|data|\.next|\.angular|__pycache__)(?:\/|$)|\.pyc$|\.tsbuildinfo$/;
+  const forbidden = /(?:^|\/)(?:\.devroost|node_modules|vendor|\.venv|dist|build|target|bin|obj|data|\.next|\.angular|__pycache__)(?:\/|$)|\.pyc$|\.tsbuildinfo$/;
   for (const id of ids) {
     const files = await filesBelow(resolve(root, "..", id, "templates"));
     assert.deepEqual(files.filter((path) => forbidden.test(path)), [], id);

@@ -26,19 +26,19 @@ const renderInputs = {
 test("buildProjectManifest records v2 render inputs and baseline paths", async () => {
   const targetDir = await mkdtemp(join(tmpdir(), "loom-manifest-"));
   try {
-    await writeFile(join(targetDir, "loom.yaml"), "version: 1\n", "utf8");
+    await writeFile(join(targetDir, "devroost.yaml"), "version: 1\n", "utf8");
 
-    const manifest = await buildProjectManifest(targetDir, "0.3.4", nodeStack, nodeStack.loomOwnedFiles, renderInputs);
+    const manifest = await buildProjectManifest(targetDir, "0.3.4", nodeStack, nodeStack.devroostOwnedFiles, renderInputs);
 
     const sha256 = createHash("sha256").update("version: 1\n").digest("hex");
     assert.deepEqual(manifest, {
       version: 2,
-      loomVersion: "0.3.4",
+      devroostVersion: "0.3.4",
       stack: { id: "node", scaffoldVersion: "2", definitionVersion: 2 },
       ownedFiles: {
-        "loom.yaml": {
+        "devroost.yaml": {
           sha256,
-          baselinePath: `.loom/baselines/${sha256}-loom.yaml`
+          baselinePath: `.devroost/baselines/${sha256}-devroost.yaml`
         }
       },
       renderInputs: {
@@ -55,16 +55,16 @@ test("buildProjectManifest records v2 render inputs and baseline paths", async (
 test("writeProjectManifest atomically replaces deterministic JSON", async () => {
   const targetDir = await mkdtemp(join(tmpdir(), "loom-manifest-"));
   try {
-    await writeFile(join(targetDir, "loom.yaml"), "version: 1\n", "utf8");
+    await writeFile(join(targetDir, "devroost.yaml"), "version: 1\n", "utf8");
     await writeFile(join(targetDir, ".env.example"), "NODE_IMAGE=node:24\n", "utf8");
 
-    const manifestPath = await writeProjectManifest(targetDir, "0.3.4", nodeStack, nodeStack.loomOwnedFiles, renderInputs);
+    const manifestPath = await writeProjectManifest(targetDir, "0.3.4", nodeStack, nodeStack.devroostOwnedFiles, renderInputs);
     const first = await readFile(manifestPath, "utf8");
-    await writeProjectManifest(targetDir, "0.3.4", nodeStack, nodeStack.loomOwnedFiles, renderInputs);
+    await writeProjectManifest(targetDir, "0.3.4", nodeStack, nodeStack.devroostOwnedFiles, renderInputs);
     const second = await readFile(manifestPath, "utf8");
 
     assert.equal(first, second);
-    assert.match(first, /"loomVersion": "0\.3\.4"/);
+    assert.match(first, /"devroostVersion": "0\.3\.4"/);
     assert.match(first, /"\.env\.example"/);
 
     const loaded = await loadProjectManifest(targetDir);
@@ -76,8 +76,8 @@ test("writeProjectManifest atomically replaces deterministic JSON", async () => 
       adopted: false
     });
     assert.equal(
-      await readFile(join(targetDir, loaded.manifest.ownedFiles["loom.yaml"].baselinePath), "utf8"),
-      await readFile(join(targetDir, "loom.yaml"), "utf8")
+      await readFile(join(targetDir, loaded.manifest.ownedFiles["devroost.yaml"].baselinePath), "utf8"),
+      await readFile(join(targetDir, "devroost.yaml"), "utf8")
     );
   } finally {
     await rm(targetDir, { recursive: true, force: true });
@@ -87,21 +87,21 @@ test("writeProjectManifest atomically replaces deterministic JSON", async () => 
 test("a later baseline failure cannot alter content referenced by the previous manifest", async () => {
   const targetDir = await mkdtemp(join(tmpdir(), "loom-manifest-"));
   try {
-    await writeFile(join(targetDir, "loom.yaml"), "old loom\n", "utf8");
+    await writeFile(join(targetDir, "devroost.yaml"), "old loom\n", "utf8");
     await writeFile(join(targetDir, ".env.example"), "OLD_ENV=true\n", "utf8");
-    await writeProjectManifest(targetDir, "0.3.4", nodeStack, nodeStack.loomOwnedFiles, renderInputs);
+    await writeProjectManifest(targetDir, "0.3.4", nodeStack, nodeStack.devroostOwnedFiles, renderInputs);
     const previous = await loadProjectManifest(targetDir);
     assert.equal(previous.kind, "ready");
     if (previous.kind !== "ready") throw new Error("expected ready manifest");
-    const previousBaseline = previous.manifest.ownedFiles["loom.yaml"].baselinePath;
+    const previousBaseline = previous.manifest.ownedFiles["devroost.yaml"].baselinePath;
 
-    await writeFile(join(targetDir, "loom.yaml"), "new loom\n", "utf8");
+    await writeFile(join(targetDir, "devroost.yaml"), "new loom\n", "utf8");
     await writeFile(join(targetDir, ".env.example"), "NEW_ENV=true\n", "utf8");
     const envSha = createHash("sha256").update("NEW_ENV=true\n").digest("hex");
-    await mkdir(join(targetDir, ".loom", "baselines", `${envSha}-.env.example.tmp-${process.pid}`));
+    await mkdir(join(targetDir, ".devroost", "baselines", `${envSha}-.env.example.tmp-${process.pid}`));
 
     await assert.rejects(
-      writeProjectManifest(targetDir, "0.3.5", nodeStack, nodeStack.loomOwnedFiles, renderInputs)
+      writeProjectManifest(targetDir, "0.3.5", nodeStack, nodeStack.devroostOwnedFiles, renderInputs)
     );
     assert.equal(await readFile(join(targetDir, previousBaseline), "utf8"), "old loom\n");
     assert.deepEqual(await loadProjectManifest(targetDir), previous);
@@ -113,12 +113,12 @@ test("a later baseline failure cannot alter content referenced by the previous m
 test("buildProjectManifest can record only files created during adoption", async () => {
   const targetDir = await mkdtemp(join(tmpdir(), "loom-manifest-"));
   try {
-    await writeFile(join(targetDir, "loom.yaml"), "version: 1\n", "utf8");
+    await writeFile(join(targetDir, "devroost.yaml"), "version: 1\n", "utf8");
     await writeFile(join(targetDir, ".env.example"), "USER_OWNED=true\n", "utf8");
 
-    const manifest = await buildProjectManifest(targetDir, "0.3.4", nodeStack, ["loom.yaml"], renderInputs);
+    const manifest = await buildProjectManifest(targetDir, "0.3.4", nodeStack, ["devroost.yaml"], renderInputs);
 
-    assert.deepEqual(Object.keys(manifest.ownedFiles), ["loom.yaml"]);
+    assert.deepEqual(Object.keys(manifest.ownedFiles), ["devroost.yaml"]);
   } finally {
     await rm(targetDir, { recursive: true, force: true });
   }
@@ -128,14 +128,14 @@ test("loadProjectManifest reports missing and v1 manifests distinctly", async ()
   const targetDir = await mkdtemp(join(tmpdir(), "loom-manifest-"));
   try {
     assert.deepEqual(await loadProjectManifest(targetDir), { kind: "missing" });
-    await mkdir(join(targetDir, ".loom"), { recursive: true });
+    await mkdir(join(targetDir, ".devroost"), { recursive: true });
     const v1 = {
       version: 1,
-      loomVersion: "0.3.4",
+      devroostVersion: "0.3.4",
       stack: { id: "node", scaffoldVersion: "1" },
-      ownedFiles: { "loom.yaml": { sha256: "a".repeat(64) } }
+      ownedFiles: { "devroost.yaml": { sha256: "a".repeat(64) } }
     };
-    await writeFile(join(targetDir, ".loom", "manifest.json"), JSON.stringify(v1), "utf8");
+    await writeFile(join(targetDir, ".devroost", "manifest.json"), JSON.stringify(v1), "utf8");
     assert.deepEqual(await loadProjectManifest(targetDir), { kind: "migration-required", manifest: v1 });
   } finally {
     await rm(targetDir, { recursive: true, force: true });
@@ -145,11 +145,11 @@ test("loadProjectManifest reports missing and v1 manifests distinctly", async ()
 test("v2 definition metadata distinguishes current, explicit legacy, and incompatible manifests", async () => {
   const targetDir = await mkdtemp(join(tmpdir(), "loom-manifest-"));
   try {
-    await mkdir(join(targetDir, ".loom"), { recursive: true });
-    const manifestPath = join(targetDir, ".loom", "manifest.json");
+    await mkdir(join(targetDir, ".devroost"), { recursive: true });
+    const manifestPath = join(targetDir, ".devroost", "manifest.json");
     const base = {
       version: 2,
-      loomVersion: "0.3.4",
+      devroostVersion: "0.3.4",
       stack: { id: "node", scaffoldVersion: "2" },
       ownedFiles: {},
       renderInputs: { projectName: "loom-demo", databases: [], adopted: false }
@@ -185,28 +185,28 @@ test("v2 definition metadata distinguishes current, explicit legacy, and incompa
 test("loadProjectManifest rejects unknown versions and unsafe owned paths", async () => {
   const targetDir = await mkdtemp(join(tmpdir(), "loom-manifest-"));
   try {
-    await mkdir(join(targetDir, ".loom"), { recursive: true });
-    const manifestPath = join(targetDir, ".loom", "manifest.json");
+    await mkdir(join(targetDir, ".devroost"), { recursive: true });
+    const manifestPath = join(targetDir, ".devroost", "manifest.json");
     await writeFile(manifestPath, JSON.stringify({ version: 3 }), "utf8");
     await assert.rejects(loadProjectManifest(targetDir), /unsupported manifest version/i);
 
     await writeFile(manifestPath, JSON.stringify({
       version: 2,
-      loomVersion: "0.3.4",
+      devroostVersion: "0.3.4",
       stack: { id: "node", scaffoldVersion: "1" },
-      ownedFiles: { "../outside": { sha256: "a".repeat(64), baselinePath: ".loom/baselines/outside" } },
+      ownedFiles: { "../outside": { sha256: "a".repeat(64), baselinePath: ".devroost/baselines/outside" } },
       renderInputs: { projectName: "loom-demo", databases: [], adopted: false }
     }), "utf8");
     await assert.rejects(loadProjectManifest(targetDir), /unsafe owned file path/i);
 
     await writeFile(manifestPath, JSON.stringify({
       version: 2,
-      loomVersion: "0.3.4",
+      devroostVersion: "0.3.4",
       stack: { id: "node", scaffoldVersion: "2", definitionVersion: 2.5 },
       ownedFiles: {},
       renderInputs: { projectName: "loom-demo", databases: [], adopted: false }
     }), "utf8");
-    await assert.rejects(loadProjectManifest(targetDir), /invalid Loom project manifest/i);
+    await assert.rejects(loadProjectManifest(targetDir), /invalid Devroost project manifest/i);
   } finally {
     await rm(targetDir, { recursive: true, force: true });
   }

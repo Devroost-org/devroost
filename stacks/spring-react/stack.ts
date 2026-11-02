@@ -15,7 +15,7 @@ export const springReactStack = defineStack({
   readiness: { kind: "http", value: "http://127.0.0.1:5175", timeoutSeconds: 410 },
   hostWrites: ["backend/target", "frontend/dist", "frontend/node_modules"],
   verification: [{ service: "web", command: ["node", "-e", "fetch('http://127.0.0.1:5175').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"] }],
-  loomOwnedFiles: [".env.example", "loom.yaml"],
+  devroostOwnedFiles: [".env.example", "devroost.yaml"],
   generatedPaths: [{ path: "backend/target", category: "build" }, { path: "frontend/dist", category: "build" }, { path: "frontend/node_modules", category: "dependency" }],
   protectedPaths: ["backend/src", "frontend/src"], compatibility: { architectures: ["arm", "arm64", "x64"], runtime: "podman-rootless" }
 });

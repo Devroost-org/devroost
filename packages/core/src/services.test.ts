@@ -38,6 +38,6 @@ test("buildServiceNotFoundError includes suggestions and running services", asyn
 test("requireConfiguredService rejects with a service-not-found error", async () => {
   await assert.rejects(
     () => requireConfiguredService(config, "worker", async () => []),
-    /Service 'worker' is not defined in loom.yaml/i
+    /Service 'worker' is not defined in devroost.yaml/i
   );
 });

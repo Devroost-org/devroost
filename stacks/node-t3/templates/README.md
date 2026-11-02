@@ -5,10 +5,10 @@ This template gives you a T3-style full-stack setup with Next.js, TypeScript, an
 ## Quickstart
 
 ```bash
-loom init node-t3 --dir my-t3
+devroost init node-t3 --dir my-t3
 cd my-t3
-loom start
-loom status
+devroost start
+devroost status
 ```
 
 ## Services
@@ -22,7 +22,7 @@ loom status
 
 ## Route
 
-- App: `https://t3.loom.local`
+- App: `https://t3.devroost.local`
 
 ## Image overrides
 

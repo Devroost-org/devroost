@@ -211,6 +211,6 @@ test("waitForServiceReady points to logs when the container exits", async () => 
           now: () => 0
         }
       ),
-    /Container 'demo-app' exited before becoming ready\. Check 'loom logs app --no-follow' for the startup failure\./i
+    /Container 'demo-app' exited before becoming ready\. Check 'devroost logs app --no-follow' for the startup failure\./i
   );
 });

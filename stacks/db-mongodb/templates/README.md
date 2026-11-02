@@ -5,10 +5,10 @@ This template gives you a standalone MongoDB database environment.
 ## Quickstart
 
 ```bash
-loom init db-mongodb --dir my-mongodb
+devroost init db-mongodb --dir my-mongodb
 cd my-mongodb
-loom start
-loom status
+devroost start
+devroost status
 ```
 
 ## Service
@@ -28,6 +28,6 @@ loom status
 ## Backup and restore
 
 ```bash
-loom backup db
-loom restore db ./backup.archive.gz
+devroost backup db
+devroost restore db ./backup.archive.gz
 ```

@@ -25,7 +25,7 @@ services:
       retries: 60
       startPeriodSeconds: 10
 routes:
-  - host: bun.loom.local
+  - host: bun.devroost.local
     service: app
     port: 3004
     https: true

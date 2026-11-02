@@ -24,7 +24,7 @@ services:
       retries: 120
       startPeriodSeconds: 8
 routes:
-  - host: django.loom.local
+  - host: django.devroost.local
     service: app
     port: 8001
     https: true

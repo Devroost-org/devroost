@@ -11,12 +11,12 @@ Stack definitions and generator assets belong under `stacks/`. To try a
 published stack, generate a disposable or local project first:
 
 ```bash
-loom init <stack-id> --dir my-project
+devroost init <stack-id> --dir my-project
 cd my-project
-loom start
+devroost start
 ```
 
-Install the `loomdev` npm package globally to use `loom`, or replace `loom` in
+Install the `loomdev` npm package globally to use `loom`, or replace `devroost` in
 these commands with `npx loomdev@latest` to run without a global installation.
 See the [installation guide](https://github.com/Loom-development/Loom#install)
 for requirements and update instructions.

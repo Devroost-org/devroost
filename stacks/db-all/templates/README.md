@@ -5,10 +5,10 @@ This template gives you a single local project with multiple database services a
 ## Quickstart
 
 ```bash
-loom init db-all --dir my-databases
+devroost init db-all --dir my-databases
 cd my-databases
-loom start
-loom status
+devroost start
+devroost status
 ```
 
 ## Services
@@ -42,10 +42,10 @@ loom status
 Use the service name you want to target:
 
 ```bash
-loom backup postgres
-loom backup redis
-loom restore postgres ./backup.sql
-loom restore redis ./dump.rdb
+devroost backup postgres
+devroost backup redis
+devroost restore postgres ./backup.sql
+devroost restore redis ./dump.rdb
 ```
 
 Supported restore services in this stack are `mysql`, `postgres`, `mongodb`, `redis`, `sqlite`, and `mariadb`. `sqlserver` backup is supported, but restore is not yet available.

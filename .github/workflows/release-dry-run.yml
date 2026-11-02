@@ -57,11 +57,11 @@ jobs:
         with:
           name: loom-release-assets-${{ github.sha }}
           path: |
-            dist/release/loom-linux-x64.tar.gz
-            dist/release/loom-linux-arm64.tar.gz
-            dist/release/loom-darwin-x64.tar.gz
-            dist/release/loom-darwin-arm64.tar.gz
-            dist/release/loom-windows-x64.zip
-            dist/release/loom-windows-arm64.zip
-            dist/release/loomdev-*.tgz
+            dist/release/devroost-linux-x64.tar.gz
+            dist/release/devroost-linux-arm64.tar.gz
+            dist/release/devroost-darwin-x64.tar.gz
+            dist/release/devroost-darwin-arm64.tar.gz
+            dist/release/devroost-windows-x64.zip
+            dist/release/devroost-windows-arm64.zip
+            dist/release/devroost-*.tgz
           if-no-files-found: error

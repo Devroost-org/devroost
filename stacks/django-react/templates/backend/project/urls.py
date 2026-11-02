@@ -12,7 +12,7 @@ def todos(_request):
             "items": [
                 {"id": 1, "title": "Django API", "completed": True},
                 {"id": 2, "title": "React frontend", "completed": True},
-                {"id": 3, "title": "Loom local workflow", "completed": False},
+                {"id": 3, "title": "Devroost local workflow", "completed": False},
             ]
         }
     )

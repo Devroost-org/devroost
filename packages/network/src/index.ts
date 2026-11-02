@@ -189,7 +189,7 @@ export interface ProxyDependencies {
 }
 
 function proxyStateDir(dependencies: ProxyDependencies): string {
-  return dependencies.stateDir ?? resolve(homedir(), ".loom", "network");
+  return dependencies.stateDir ?? resolve(homedir(), ".devroost", "network");
 }
 
 async function reloadProxy(run: typeof runPodman): Promise<void> {

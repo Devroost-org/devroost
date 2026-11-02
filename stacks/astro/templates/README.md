@@ -5,10 +5,10 @@ This template gives you an Astro site running on Node.js, served from local proj
 ## Quickstart
 
 ```bash
-loom init astro --dir my-site
+devroost init astro --dir my-site
 cd my-site
-loom start
-loom status
+devroost start
+devroost status
 ```
 
 ## Services
@@ -20,7 +20,7 @@ loom status
 
 ## Route
 
-- App: `https://astro.loom.local`
+- App: `https://astro.devroost.local`
 
 ## Image overrides
 

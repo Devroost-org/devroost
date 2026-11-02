@@ -63,7 +63,7 @@ test("resolveBackupOutputPath uses explicit and generated output paths", () => {
   );
 
   assert.equal(explicit, "/workspace/tmp/backup.sql");
-  assert.equal(generated, "/workspace/.loom/backups/demo-db-2026-03-11T10-20-30.000Z.sql");
+  assert.equal(generated, "/workspace/.devroost/backups/demo-db-2026-03-11T10-20-30.000Z.sql");
 });
 
 test("backupConfiguredService validates the service and writes to the resolved path", async () => {

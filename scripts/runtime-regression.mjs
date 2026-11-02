@@ -17,8 +17,8 @@ const sqlite=containerName(prefix,"sqlite"), writer=containerName(prefix,"writer
 const root=await mkdtemp(join(tmpdir(),'loom-review-live-'));
 try {
  await podman('volume','create',volume);
- await podman('run','-d','--name',redis,'--label',`loom.project=${prefix}`,'--network','none','-v',`${volume}:/data`,'docker.io/library/redis:7','redis-server','--appendonly','yes');
- await podman('create','--name',foreign,'--label',`loom.project=${prefix}-extra`,'--network','none','docker.io/library/alpine:3','true');
+ await podman('run','-d','--name',redis,'--label',`devroost.project=${prefix}`,'--network','none','-v',`${volume}:/data`,'docker.io/library/redis:7','redis-server','--appendonly','yes');
+ await podman('create','--name',foreign,'--label',`devroost.project=${prefix}-extra`,'--network','none','docker.io/library/alpine:3','true');
  assert.deepEqual((await listProjectContainers(prefix)).map(({name})=>name),[redis]);
  console.log('PASS ownership: overlapping project names are excluded');
  for(let i=0;i<50;i++){try{await podman('exec',redis,'redis-cli','ping');break;}catch{await new Promise(r=>setTimeout(r,100));}}
@@ -39,7 +39,7 @@ try {
  await assert.rejects(restoreServiceFromFileWithDependencies(prefix,'pg',{type:'postgres',image:'postgres:16'},sql),/does not exist/);
  console.log('PASS PostgreSQL: invalid SQL causes restore rejection');
  await podman('volume','create',sqliteVolume);
- await podman('run','-d','--name',sqlite,'--label',`loom.project=${prefix}`,'--network','none','-v',`${sqliteVolume}:/data`,'--entrypoint','sh','docker.io/keinos/sqlite3:3.46.1','-c','tail -f /dev/null');
+ await podman('run','-d','--name',sqlite,'--label',`devroost.project=${prefix}`,'--network','none','-v',`${sqliteVolume}:/data`,'--entrypoint','sh','docker.io/keinos/sqlite3:3.46.1','-c','tail -f /dev/null');
  const python = 'import sqlite3,time; db=sqlite3.connect("/data/loom.db"); db.execute("PRAGMA journal_mode=WAL"); db.execute("CREATE TABLE important(value TEXT)"); db.execute("INSERT INTO important VALUES (42)"); db.commit(); open("/data/writer-ready","w").close(); time.sleep(120)';
  await podman('run','-d','--name',writer,'--network','none','--volumes-from',sqlite,'docker.io/library/python:3.13-slim-trixie','python','-c',python);
  let writerReady=false;

@@ -1,7 +1,7 @@
 {
   "name": "@loom/runtime-podman",
   "version": "0.1.1",
-  "description": "Podman runtime adapter for Loom service lifecycle and backups.",
+  "description": "Podman runtime adapter for Devroost service lifecycle and backups.",
   "keywords": [
     "loom",
     "podman",

@@ -9,7 +9,7 @@ export const pythonDjangoStack = defineStack({
   readiness: { kind: "http", value: "http://127.0.0.1:8001/health", timeoutSeconds: 488 },
   hostWrites: ["db.sqlite3", "project/__pycache__"],
   verification: [{ service: "app", command: ["python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/health', timeout=2)"] }],
-  loomOwnedFiles: [".env.example", "loom.yaml"], generatedPaths: [
+  devroostOwnedFiles: [".env.example", "devroost.yaml"], generatedPaths: [
     { path: ".pytest_cache", category: "cache" }, { path: ".venv", category: "dependency" },
     { path: "__pycache__", category: "cache" }
   ],

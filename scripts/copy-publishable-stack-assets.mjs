@@ -6,7 +6,7 @@ const ignoredStackAssetEntries = new Set([
   "node_modules",
   ".pnpm-store",
   ".turbo",
-  ".loom",
+  ".devroost",
   "data",
   "dist",
   ".next",

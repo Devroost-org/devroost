@@ -34,7 +34,7 @@ function run(command: string, args: string[]): Promise<void> {
 }
 
 export async function ensureLocalCertificates(projectName: string, hosts: string[]): Promise<CertificatePaths> {
-  const certDir = resolve(process.cwd(), ".loom", "certs");
+  const certDir = resolve(process.cwd(), ".devroost", "certs");
   await mkdir(certDir, { recursive: true });
 
   const certPath = resolve(certDir, `${projectName}.crt`);
@@ -52,7 +52,7 @@ export async function ensureLocalCertificates(projectName: string, hosts: string
     return { certPath, keyPath };
   } catch {
     const configPath = resolve(certDir, `${projectName}.openssl.cnf`);
-    const uniqueHosts = Array.from(new Set(hosts.length ? hosts : [`${projectName}.loom.local`]));
+    const uniqueHosts = Array.from(new Set(hosts.length ? hosts : [`${projectName}.devroost.local`]));
     const sanEntries = uniqueHosts.map((host, index) => `DNS.${index + 1} = ${host}`).join("\n");
 
     const opensslConfig = `[req]
@@ -63,7 +63,7 @@ x509_extensions = v3_req
 distinguished_name = dn
 
 [dn]
-CN = ${projectName}.loom.local
+CN = ${projectName}.devroost.local
 
 [v3_req]
 subjectAltName = @alt_names

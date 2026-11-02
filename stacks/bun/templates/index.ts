@@ -21,7 +21,7 @@ function renderPage(): string {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Loom Bun Template</title>
+    <title>Devroost Bun Template</title>
     <style>
       :root { color-scheme: light; }
       body {
@@ -53,7 +53,7 @@ function renderPage(): string {
   <body>
     <main>
       <section class="hero">
-        <p class="eyebrow">Bun + Loom</p>
+        <p class="eyebrow">Bun + Devroost</p>
         <h1>Bun template, updated for real use.</h1>
         <p class="lede">This example uses Bun's built-in HTTP server and serves both HTML and JSON from one fast runtime.</p>
       </section>

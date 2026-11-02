@@ -5,10 +5,10 @@ This template gives you a standalone Redis environment with persistence enabled.
 ## Quickstart
 
 ```bash
-loom init db-redis --dir my-redis
+devroost init db-redis --dir my-redis
 cd my-redis
-loom start
-loom status
+devroost start
+devroost status
 ```
 
 ## Service
@@ -28,8 +28,8 @@ loom status
 ## Backup and restore
 
 ```bash
-loom backup db
-loom restore db ./dump.rdb
+devroost backup db
+devroost restore db ./dump.rdb
 ```
 
-`loom restore` stops Redis, replaces `dump.rdb`, and starts the service again automatically.
+`devroost restore` stops Redis, replaces `dump.rdb`, and starts the service again automatically.

@@ -1,7 +1,7 @@
 {
   "name": "@loom/core",
   "version": "0.1.1",
-  "description": "Core orchestration layer for Loom lifecycle and service management.",
+  "description": "Core orchestration layer for Devroost lifecycle and service management.",
   "keywords": [
     "loom",
     "orchestration",

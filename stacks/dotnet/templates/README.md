@@ -5,10 +5,10 @@ This template gives you a small .NET application served from local project files
 ## Quickstart
 
 ```bash
-loom init dotnet --dir my-dotnet
+devroost init dotnet --dir my-dotnet
 cd my-dotnet
-loom start
-loom status
+devroost start
+devroost status
 ```
 
 ## Services
@@ -20,7 +20,7 @@ loom status
 
 ## Route
 
-- App: `https://dotnet.loom.local`
+- App: `https://dotnet.devroost.local`
 
 ## Image overrides
 
@@ -28,4 +28,4 @@ loom status
 
 ## File permissions
 
-This template keeps the simpler `userns: keep-id` startup model because `dotnet restore` and `dotnet run` do not require privileged package installation during startup, but `loom exec` and task runs now use a host-aligned UID:GID by default through `execUser`.
+This template keeps the simpler `userns: keep-id` startup model because `dotnet restore` and `dotnet run` do not require privileged package installation during startup, but `devroost exec` and task runs now use a host-aligned UID:GID by default through `execUser`.

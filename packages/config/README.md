@@ -1,8 +1,8 @@
 # @loom/config
 
-Configuration loading and validation for Loom projects.
+Configuration loading and validation for Devroost projects.
 
-- Parses `loom.yaml`
+- Parses `devroost.yaml`
 - Loads project `.env` values
 - Expands `${VAR}` and `${VAR:-default}` placeholders inside config strings
 - Validates schema/types

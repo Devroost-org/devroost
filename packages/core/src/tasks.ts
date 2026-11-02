@@ -13,7 +13,7 @@ export function requireConfiguredTask(
 ): LoomTask {
   const task = getConfiguredTask(config, taskName);
   if (!task) {
-    throw new Error(`Task '${taskName}' is not defined in loom.yaml.`);
+    throw new Error(`Task '${taskName}' is not defined in devroost.yaml.`);
   }
 
   return task;

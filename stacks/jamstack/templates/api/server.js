@@ -26,7 +26,7 @@ app.get("/health", (_req, res) => {
 
 app.get("/api/content", (_req, res) => {
   res.json({
-    title: "Loom JAMstack template",
+    title: "Devroost JAMstack template",
     subtitle: "JavaScript, APIs, Markup for a modern static-first workflow.",
     updatedFor: "2026",
     features

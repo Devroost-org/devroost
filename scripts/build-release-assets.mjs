@@ -8,29 +8,29 @@ const rootDir = process.cwd();
 const releaseDir = resolve(rootDir, "dist", "release");
 const stageDir = resolve(releaseDir, ".stage");
 const windowsStageDir = resolve(stageDir, "windows");
-const bundledCliPath = resolve(releaseDir, "loom.mjs");
+const bundledCliPath = resolve(releaseDir, "devroost.mjs");
 const releaseStacksDir = resolve(releaseDir, "stacks");
-const unixWrapperPath = resolve(releaseDir, "loom");
+const unixWrapperPath = resolve(releaseDir, "devroost");
 
 const unixWrapper = `#!/usr/bin/env sh
 set -eu
 SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
-exec node "$SCRIPT_DIR/loom.mjs" "$@"
+exec node "$SCRIPT_DIR/devroost.mjs" "$@"
 `;
 
 const windowsWrapper = `@echo off
 set SCRIPT_DIR=%~dp0
-node "%SCRIPT_DIR%loom.mjs" %*
+node "%SCRIPT_DIR%devroost.mjs" %*
 `;
 
 const unixAssets = [
-  "loom-linux-x64.tar.gz",
-  "loom-linux-arm64.tar.gz",
-  "loom-darwin-x64.tar.gz",
-  "loom-darwin-arm64.tar.gz"
+  "devroost-linux-x64.tar.gz",
+  "devroost-linux-arm64.tar.gz",
+  "devroost-darwin-x64.tar.gz",
+  "devroost-darwin-arm64.tar.gz"
 ];
 
-const windowsAssets = ["loom-windows-x64.zip", "loom-windows-arm64.zip"];
+const windowsAssets = ["devroost-windows-x64.zip", "devroost-windows-arm64.zip"];
 
 function run(command, args) {
   execFileSync(command, args, { stdio: "inherit" });
@@ -53,7 +53,7 @@ run("pnpm", [
 ]);
 
 await writeFile(unixWrapperPath, unixWrapper, "utf8");
-await writeFile(resolve(windowsStageDir, "loom.cmd"), windowsWrapper, "utf8");
+await writeFile(resolve(windowsStageDir, "devroost.cmd"), windowsWrapper, "utf8");
 run("chmod", ["0755", unixWrapperPath]);
 
 for (const asset of unixAssets) {
@@ -62,19 +62,19 @@ for (const asset of unixAssets) {
     resolve(releaseDir, asset),
     "-C",
     releaseDir,
-    "loom.mjs",
+    "devroost.mjs",
     "stacks",
-    "loom"
+    "devroost"
   ]);
 }
 
 for (const asset of windowsAssets) {
   run("python3", [
     "-c",
-    "import pathlib, sys, zipfile; z=zipfile.ZipFile(sys.argv[1], 'w', compression=zipfile.ZIP_DEFLATED); z.write(sys.argv[2], 'loom.mjs'); z.write(sys.argv[3], 'loom.cmd'); base=pathlib.Path(sys.argv[4]); [z.write(path, path.relative_to(base.parent).as_posix()) for path in sorted(base.rglob('*')) if path.is_file()]; z.close()",
+    "import pathlib, sys, zipfile; z=zipfile.ZipFile(sys.argv[1], 'w', compression=zipfile.ZIP_DEFLATED); z.write(sys.argv[2], 'devroost.mjs'); z.write(sys.argv[3], 'devroost.cmd'); base=pathlib.Path(sys.argv[4]); [z.write(path, path.relative_to(base.parent).as_posix()) for path in sorted(base.rglob('*')) if path.is_file()]; z.close()",
     resolve(releaseDir, asset),
-    resolve(releaseDir, "loom.mjs"),
-    resolve(windowsStageDir, "loom.cmd"),
+    resolve(releaseDir, "devroost.mjs"),
+    resolve(windowsStageDir, "devroost.cmd"),
     releaseStacksDir
   ]);
 }

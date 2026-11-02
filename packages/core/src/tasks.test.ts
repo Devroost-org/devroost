@@ -30,6 +30,6 @@ test("getConfiguredTask returns a configured task when present", () => {
 test("requireConfiguredTask throws when the task is missing", () => {
   assert.throws(
     () => requireConfiguredTask(config, "missing"),
-    /Task 'missing' is not defined in loom.yaml/i
+    /Task 'missing' is not defined in devroost.yaml/i
   );
 });

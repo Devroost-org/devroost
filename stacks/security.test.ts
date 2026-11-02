@@ -70,7 +70,7 @@ test("serverless proxy refuses origin overrides while preserving normal API requ
 
 test("Elasticsearch development ports are explicitly restricted to loopback", async () => {
   for (const stack of ["db-elasticsearch", "db-all"]) {
-    const yaml = await readFile(path.join(stacksRoot, stack, "templates/loom.yaml"), "utf8");
+    const yaml = await readFile(path.join(stacksRoot, stack, "templates/devroost.yaml"), "utf8");
     for (const port of [9200, 9300]) {
       assert.ok(yaml.includes(`"127.0.0.1:${port}:${port}"`));
       assert.ok(!yaml.includes(`"${port}:${port}"`));

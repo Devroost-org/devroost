@@ -5,10 +5,10 @@ This template gives you a minimal Flask application running from local source fi
 ## Quickstart
 
 ```bash
-loom init python-flask --dir my-flask
+devroost init python-flask --dir my-flask
 cd my-flask
-loom start
-loom status
+devroost start
+devroost status
 ```
 
 ## Services
@@ -20,7 +20,7 @@ loom status
 
 ## Route
 
-- App: `https://flask.loom.local`
+- App: `https://flask.devroost.local`
 
 ## Image overrides
 

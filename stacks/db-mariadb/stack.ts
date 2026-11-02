@@ -7,6 +7,6 @@ export const dbMariadbStack = defineStack({
   install: [], start: [],
   readiness: { kind: "command", value: "mariadb-admin ping -h 127.0.0.1 -uroot -ploomroot", timeoutSeconds: 100 },
   hostWrites: [], verification: [{ service: "db", command: ["mariadb", "-h", "127.0.0.1", "-uloom", "-ploom", "loom", "-e", "SELECT 1"] }],
-  loomOwnedFiles: [".env.example", "loom.yaml"], generatedPaths: [], protectedPaths: [],
+  devroostOwnedFiles: [".env.example", "devroost.yaml"], generatedPaths: [], protectedPaths: [],
   compatibility: { architectures: ["arm64", "x64"], runtime: "podman-rootless" }
 });

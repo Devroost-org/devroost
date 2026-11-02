@@ -5,10 +5,10 @@ This template gives you a standalone MySQL database environment.
 ## Quickstart
 
 ```bash
-loom init db-mysql --dir my-mysql
+devroost init db-mysql --dir my-mysql
 cd my-mysql
-loom start
-loom status
+devroost start
+devroost status
 ```
 
 ## Service
@@ -28,6 +28,6 @@ loom status
 ## Backup and restore
 
 ```bash
-loom backup db
-loom restore db ./backup.sql
+devroost backup db
+devroost restore db ./backup.sql
 ```

@@ -59,7 +59,7 @@ export interface StackDefinition {
   readiness: { kind: "command" | "http" | "port"; value: string; timeoutSeconds: number };
   hostWrites: readonly string[];
   verification: readonly StackVerificationCheck[];
-  loomOwnedFiles: readonly string[];
+  devroostOwnedFiles: readonly string[];
   generatedPaths: readonly StackGeneratedPath[];
   protectedPaths: readonly string[];
   compatibility: StackCompatibility;
@@ -106,8 +106,8 @@ export function validateStackDocumentation(id: StackId, documentation: StackDocu
   if (!documentation.summary.trim() || !documentation.useCase.trim()) {
     throw new Error(`${id} documentation requires a summary and use case`);
   }
-  if (!documentation.initCommand.startsWith(`loom init ${id} `)) {
-    throw new Error(`${id} documentation init command must start with 'loom init ${id}'`);
+  if (!documentation.initCommand.startsWith(`devroost init ${id} `)) {
+    throw new Error(`${id} documentation init command must start with 'devroost init ${id}'`);
   }
   if (id.startsWith("db-") && documentation.supportsOptionalDatabases) {
     throw new Error(`${id} database stack cannot support optional databases`);
@@ -161,8 +161,8 @@ export function validateStackDefinition(definition: StackDefinition): void {
 
   const generatedPaths = definition.generatedPaths.map(({ path }) => path);
   const protectedPaths = [...definition.protectedPaths];
-  for (const [kind, paths] of [["generated path", generatedPaths], ["protected path", protectedPaths], ["Loom-owned path", definition.loomOwnedFiles], ["host-write path", definition.hostWrites]] as const) {
-    for (const path of paths) if (!safeRelative(path) || path === ".loom" || path.startsWith(".loom/")) throw new Error(`Unsafe ${kind}: ${path}`);
+  for (const [kind, paths] of [["generated path", generatedPaths], ["protected path", protectedPaths], ["Devroost-owned path", definition.devroostOwnedFiles], ["host-write path", definition.hostWrites]] as const) {
+    for (const path of paths) if (!safeRelative(path) || path === ".devroost" || path.startsWith(".devroost/")) throw new Error(`Unsafe ${kind}: ${path}`);
     assertSortedUnique(paths, `${kind}s`);
   }
   for (const generatedPath of generatedPaths) {

@@ -24,7 +24,7 @@ services:
       retries: 120
       startPeriodSeconds: 8
 routes:
-  - host: fastapi.loom.local
+  - host: fastapi.devroost.local
     service: app
     port: 8003
     https: true

@@ -1,7 +1,7 @@
 {
   "name": "@loom/config",
   "version": "0.1.1",
-  "description": "Configuration loading and schema validation for Loom projects.",
+  "description": "Configuration loading and schema validation for Devroost projects.",
   "keywords": [
     "loom",
     "podman",

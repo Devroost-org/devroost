@@ -163,7 +163,7 @@ export async function chooseInitTemplate(
 }
 
 export function describeInitTemplate(template: string): string {
-  return initTemplateDescriptions[template as (typeof initTemplateChoices)[number]] ?? "Loom project template.";
+  return initTemplateDescriptions[template as (typeof initTemplateChoices)[number]] ?? "Devroost project template.";
 }
 
 export async function chooseInitImageOverrides(

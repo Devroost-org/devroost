@@ -30,7 +30,7 @@ import { runProjectDoctor } from "./project-doctor.js";
 import { applyProjectUpgrade, planProjectUpgrade, renderPhpDocroot, renderProjectName } from "./project-upgrade.js";
 import { findStackDefinition, listStackIds, type StackDefinition } from "./stacks.js";
 
-const cli = cac("loom");
+const cli = cac("devroost");
 
 function resolveStacksRoot(): string {
   const candidates = [
@@ -44,7 +44,7 @@ function resolveStacksRoot(): string {
     }
   }
 
-  throw new Error("Loom stack assets directory not found. Ensure the 'stacks/' directory exists and is readable.");
+  throw new Error("Devroost stack assets directory not found. Ensure the 'stacks/' directory exists and is readable.");
 }
 
 const stacksRoot = resolveStacksRoot();
@@ -56,14 +56,14 @@ function resolveStackSourceDir(stack: StackDefinition): string {
     throw new Error(`Unsafe stack asset path '${stack.assetPath}' for '${stack.id}'.`);
   }
   if (existsSync(sourceDir)) return sourceDir;
-  throw new Error(`Loom stack assets for '${stack.id}' were not found.`);
+  throw new Error(`Devroost stack assets for '${stack.id}' were not found.`);
 }
 
 const ignoredTemplateEntries = new Set([
   "node_modules",
   ".pnpm-store",
   ".turbo",
-  ".loom"
+  ".devroost"
 ]);
 
 const topLevelIgnoredTemplateEntries = new Set([
@@ -226,17 +226,17 @@ function normalizeProjectToken(raw: string): string {
 
 function deriveProjectName(targetDir: string): string {
   const targetName = basename(targetDir) === "db" ? basename(resolve(targetDir, "..")) : basename(targetDir);
-  return `loom-${normalizeProjectToken(targetName)}`;
+  return `devroost-${normalizeProjectToken(targetName)}`;
 }
 
 async function applyProjectName(targetDir: string): Promise<void> {
-  const loomPath = resolve(targetDir, "loom.yaml");
+  const devroostPath = resolve(targetDir, "devroost.yaml");
   const projectName = deriveProjectName(targetDir);
-  const loomYaml = await readFile(loomPath, "utf8");
-  const updatedLoomYaml = renderProjectName(loomYaml, projectName);
+  const devroostYaml = await readFile(devroostPath, "utf8");
+  const updatedLoomYaml = renderProjectName(devroostYaml, projectName);
 
-  if (updatedLoomYaml !== loomYaml) {
-    await writeFile(loomPath, updatedLoomYaml, "utf8");
+  if (updatedLoomYaml !== devroostYaml) {
+    await writeFile(devroostPath, updatedLoomYaml, "utf8");
   }
 }
 
@@ -312,12 +312,12 @@ async function applyPhpDocroot(targetDir: string, template: string, phpDocrootRa
     return;
   }
 
-  const loomPath = resolve(targetDir, "loom.yaml");
-  const loomYaml = renderPhpDocroot(await readFile(loomPath, "utf8"), template, phpDocrootRaw);
+  const devroostPath = resolve(targetDir, "devroost.yaml");
+  const devroostYaml = renderPhpDocroot(await readFile(devroostPath, "utf8"), template, phpDocrootRaw);
   const displayedDocroot = phpDocrootRaw.replace(/\\/g, "/").replace(/^\/+|\/+$/g, "") || ".";
 
-  await writeFile(loomPath, loomYaml, "utf8");
-  process.stdout.write(`Set PHP docroot to '${displayedDocroot}' in ${loomPath}\n`);
+  await writeFile(devroostPath, devroostYaml, "utf8");
+  process.stdout.write(`Set PHP docroot to '${displayedDocroot}' in ${devroostPath}\n`);
 }
 
 function replaceYamlEnvVariable(content: string, key: string, value: string): string {
@@ -325,8 +325,8 @@ function replaceYamlEnvVariable(content: string, key: string, value: string): st
   return content.replace(pattern, (_match, group) => `${group}${value}`);
 }
 
-function serviceNameForDbType(loomYaml: string, dbType: string): string {
-  const lines = loomYaml.split("\n");
+function serviceNameForDbType(devroostYaml: string, dbType: string): string {
+  const lines = devroostYaml.split("\n");
   let currentService: string | null = null;
   for (const line of lines) {
     const serviceMatch = /^ {2}([\w-]+):/.exec(line);
@@ -343,14 +343,14 @@ function serviceNameForDbType(loomYaml: string, dbType: string): string {
 
 async function customizeDbTemplateCredentials(targetDir: string): Promise<void> {
   const envPath = resolve(targetDir, ".env");
-  const loomConfigPath = resolve(targetDir, "loom.yaml");
+  const devroostConfigPath = resolve(targetDir, "devroost.yaml");
 
   let envContent: string;
-  let loomYamlContent: string;
+  let devroostYamlContent: string;
 
   try {
     envContent = await readFile(envPath, "utf8");
-    loomYamlContent = await readFile(loomConfigPath, "utf8");
+    devroostYamlContent = await readFile(devroostConfigPath, "utf8");
   } catch {
     return;
   }
@@ -361,9 +361,9 @@ async function customizeDbTemplateCredentials(targetDir: string): Promise<void> 
 
   const appUser = `loom_${token}_${suffix}`.slice(0, 30);
   const appDb = `loom_${token}`.slice(0, 30);
-  const appPassword = `Loom!${suffix}9aA`;
+  const appPassword = `Devroost!${suffix}9aA`;
   const rootPassword = `Root!${suffix}9aA`;
-  const mssqlPassword = `Loom${suffix}!9aA`;
+  const mssqlPassword = `Devroost${suffix}!9aA`;
 
   const replacements: Record<string, string> = {
     MYSQL_ROOT_PASSWORD: rootPassword,
@@ -385,24 +385,24 @@ async function customizeDbTemplateCredentials(targetDir: string): Promise<void> 
 
   for (const [key, value] of Object.entries(replacements)) {
     envContent = replaceEnvVariable(envContent, key, value);
-    loomYamlContent = replaceYamlEnvVariable(loomYamlContent, key, value);
+    devroostYamlContent = replaceYamlEnvVariable(devroostYamlContent, key, value);
   }
 
-  // WordPress reads its own env vars from .env via loomWordPressEnv() in wp-config.php
+  // WordPress reads its own env vars from .env via devroostWordPressEnv() in wp-config.php
   if (hasEnvVariable(envContent, "WORDPRESS_DB_HOST")) {
     envContent = replaceEnvVariable(envContent, "WORDPRESS_DB_NAME", appDb);
     envContent = replaceEnvVariable(envContent, "WORDPRESS_DB_USER", appUser);
     envContent = replaceEnvVariable(envContent, "WORDPRESS_DB_PASSWORD", appPassword);
 
-    const wpDbHost = serviceNameForDbType(loomYamlContent, "mysql") || "db";
+    const wpDbHost = serviceNameForDbType(devroostYamlContent, "mysql") || "db";
     envContent = replaceEnvVariable(envContent, "WORDPRESS_DB_HOST", `${wpDbHost}:3306`);
   }
 
-  const mysqlHost = serviceNameForDbType(loomYamlContent, "mysql");
-  const mariadbHost = serviceNameForDbType(loomYamlContent, "mariadb");
-  const postgresHost = serviceNameForDbType(loomYamlContent, "postgres");
-  const mongoHost = serviceNameForDbType(loomYamlContent, "mongodb");
-  const mssqlHost = serviceNameForDbType(loomYamlContent, "sqlserver");
+  const mysqlHost = serviceNameForDbType(devroostYamlContent, "mysql");
+  const mariadbHost = serviceNameForDbType(devroostYamlContent, "mariadb");
+  const postgresHost = serviceNameForDbType(devroostYamlContent, "postgres");
+  const mongoHost = serviceNameForDbType(devroostYamlContent, "mongodb");
+  const mssqlHost = serviceNameForDbType(devroostYamlContent, "sqlserver");
 
   const appUserEnc = encodeURIComponent(appUser);
   const appPasswordEnc = encodeURIComponent(appPassword);
@@ -435,7 +435,7 @@ async function customizeDbTemplateCredentials(targetDir: string): Promise<void> 
   envContent = replaceEnvVariable(envContent, "MSSQL_URL", mssqlUrl);
 
   await writeFile(envPath, envContent, "utf8");
-  await writeFile(loomConfigPath, loomYamlContent, "utf8");
+  await writeFile(devroostConfigPath, devroostYamlContent, "utf8");
   process.stdout.write(`Generated project-specific DB credentials in ${envPath}\n`);
 }
 
@@ -479,42 +479,42 @@ async function applyRuntimeImageSelections(
 }
 
 async function applyDatabaseService(targetDir: string, db: DbType): Promise<void> {
-  const loomPath = resolve(targetDir, "loom.yaml");
-  let loomYaml: string;
+  const devroostPath = resolve(targetDir, "devroost.yaml");
+  let devroostYaml: string;
   try {
-    loomYaml = await readFile(loomPath, "utf8");
+    devroostYaml = await readFile(devroostPath, "utf8");
   } catch {
-    throw new Error(`No loom.yaml found in '${targetDir}'. Run 'loom init' first.`);
+    throw new Error(`No devroost.yaml found in '${targetDir}'. Run 'devroost init' first.`);
   }
 
   const { serviceName, serviceYaml, envVars } = buildDatabaseServiceBlock(db);
 
-  const serviceAlreadyExists = new RegExp(`^ {2}${serviceName}:`, "m").test(loomYaml);
+  const serviceAlreadyExists = new RegExp(`^ {2}${serviceName}:`, "m").test(devroostYaml);
   if (serviceAlreadyExists) {
-    process.stdout.write(`Service '${serviceName}' already exists in loom.yaml — skipping.\n`);
+    process.stdout.write(`Service '${serviceName}' already exists in devroost.yaml — skipping.\n`);
     return;
   }
 
   // Inject db service block at the end of the services section (before routes/tasks/end)
   const servicesInsertPattern = /^(routes:|tasks:)/m;
-  if (servicesInsertPattern.test(loomYaml)) {
-    loomYaml = loomYaml.replace(servicesInsertPattern, `${serviceYaml}\n$1`);
+  if (servicesInsertPattern.test(devroostYaml)) {
+    devroostYaml = devroostYaml.replace(servicesInsertPattern, `${serviceYaml}\n$1`);
   } else {
-    loomYaml = loomYaml.trimEnd() + `\n${serviceYaml}\n`;
+    devroostYaml = devroostYaml.trimEnd() + `\n${serviceYaml}\n`;
   }
 
   // Add serviceName to dependsOn, extending an existing block or inserting a new one
-  if (/^ {4}dependsOn:/m.test(loomYaml)) {
-    loomYaml = loomYaml.replace(/^( {4}dependsOn:(?:\n {6}- [^\n]+)*)(?!\n {6}- ${serviceName})/m, `$1\n      - ${serviceName}`);
+  if (/^ {4}dependsOn:/m.test(devroostYaml)) {
+    devroostYaml = devroostYaml.replace(/^( {4}dependsOn:(?:\n {6}- [^\n]+)*)(?!\n {6}- ${serviceName})/m, `$1\n      - ${serviceName}`);
   } else {
-    const portsIdx = loomYaml.indexOf('\n    ports:');
+    const portsIdx = devroostYaml.indexOf('\n    ports:');
     if (portsIdx !== -1) {
-      loomYaml = loomYaml.slice(0, portsIdx) + `\n    dependsOn:\n      - ${serviceName}` + loomYaml.slice(portsIdx);
+      devroostYaml = devroostYaml.slice(0, portsIdx) + `\n    dependsOn:\n      - ${serviceName}` + devroostYaml.slice(portsIdx);
     }
   }
 
-  await writeFile(loomPath, loomYaml, "utf8");
-  process.stdout.write(`Added '${serviceName}' database service to ${loomPath}\n`);
+  await writeFile(devroostPath, devroostYaml, "utf8");
+  process.stdout.write(`Added '${serviceName}' database service to ${devroostPath}\n`);
 
   // Append env vars to .env if present
   const envPath = resolve(targetDir, ".env");
@@ -609,7 +609,7 @@ cli
       if (dbsToAdd.length > 0 || selectedTemplate.startsWith("db-")) {
         await customizeDbTemplateCredentials(targetDir);
       }
-      await writeProjectManifest(targetDir, packageJson.version, stack, stack.loomOwnedFiles, {
+      await writeProjectManifest(targetDir, packageJson.version, stack, stack.devroostOwnedFiles, {
         projectName: deriveProjectName(targetDir),
         ...(effectivePhpDocroot === undefined ? {} : { phpDocroot: effectivePhpDocroot }),
         databases: [...dbsToAdd].sort(),
@@ -617,7 +617,7 @@ cli
       });
       process.stdout.write(`Initialized '${selectedTemplate}' in ${targetDir}\n`);
       process.stdout.write(formatStartupNotice());
-      process.stdout.write(`Next: cd ${targetDir} && loom start\n`);
+      process.stdout.write(`Next: cd ${targetDir} && devroost start\n`);
     })
   );
 
@@ -630,7 +630,7 @@ cli
       const selectedStack = requestedStack ?? await detectInitTemplateSuggestion(targetDir);
 
       if (!selectedStack) {
-        throw new Error("Unable to detect a stack for this project. Retry with 'loom adopt <stack>'.");
+        throw new Error("Unable to detect a stack for this project. Retry with 'devroost adopt <stack>'.");
       }
 
       const stack = findStackDefinition(selectedStack);
@@ -638,14 +638,14 @@ cli
         throw new Error(`Unknown stack '${selectedStack}'. Available stacks: ${listStackIds().join(", ")}`);
       }
 
-      const loomConfigPath = resolve(targetDir, "loom.yaml");
-      if (await fileExists(loomConfigPath)) {
-        throw new Error(`Project already contains '${loomConfigPath}'. Adoption will not overwrite Loom configuration.`);
+      const devroostConfigPath = resolve(targetDir, "devroost.yaml");
+      if (await fileExists(devroostConfigPath)) {
+        throw new Error(`Project already contains '${devroostConfigPath}'. Adoption will not overwrite Devroost configuration.`);
       }
 
       const sourceDir = resolveStackSourceDir(stack);
-      const ownedFiles = ["loom.yaml"];
-      await copyFile(resolve(sourceDir, "loom.yaml"), loomConfigPath);
+      const ownedFiles = ["devroost.yaml"];
+      await copyFile(resolve(sourceDir, "devroost.yaml"), devroostConfigPath);
 
       const sourceEnvExample = resolve(sourceDir, ".env.example");
       const targetEnvExample = resolve(targetDir, ".env.example");
@@ -662,29 +662,29 @@ cli
       });
 
       process.stdout.write(`Adopted '${selectedStack}' in ${targetDir}\n`);
-      process.stdout.write(`Next: cd ${targetDir} && loom start\n`);
+      process.stdout.write(`Next: cd ${targetDir} && devroost start\n`);
     })
   );
 
 cli
-  .command("upgrade", "Update only Loom-owned project files")
-  .option("--config <path>", "Path to loom config", { default: "loom.yaml" })
-  .option("--force-modified", "Replace locally modified Loom-owned files", { default: false })
-  .option("--initialize-baseline", "Migrate a v1 manifest using current Loom-owned files", { default: false })
+  .command("upgrade", "Update only Devroost-owned project files")
+  .option("--config <path>", "Path to Devroost config", { default: "devroost.yaml" })
+  .option("--force-modified", "Replace locally modified Devroost-owned files", { default: false })
+  .option("--initialize-baseline", "Migrate a v1 manifest using current Devroost-owned files", { default: false })
   .action(
     withErrorHandling(async (options: { config?: string; forceModified?: boolean; initializeBaseline?: boolean }) => {
-      const configPath = resolve(process.cwd(), options.config ?? "loom.yaml");
+      const configPath = resolve(process.cwd(), options.config ?? "devroost.yaml");
       const projectRoot = dirname(configPath);
       const loaded = await loadProjectManifest(projectRoot);
 
       if (loaded.kind === "missing") {
-        throw new Error(`No Loom project manifest found in '${projectRoot}'. Run 'loom init' or 'loom adopt' first.`);
+        throw new Error(`No Devroost project manifest found in '${projectRoot}'. Run 'devroost init' or 'devroost adopt' first.`);
       }
 
       const stackId = loaded.manifest.stack.id;
       const stack = findStackDefinition(stackId);
       if (!stack) {
-        throw new Error(`Unknown stack '${stackId}' in Loom project manifest. Available stacks: ${listStackIds().join(", ")}`);
+        throw new Error(`Unknown stack '${stackId}' in Devroost project manifest. Available stacks: ${listStackIds().join(", ")}`);
       }
       const compatibility = classifyProjectManifestStack(loaded.manifest, stack);
       if (compatibility.kind === "incompatible") {
@@ -693,10 +693,10 @@ cli
 
       if (loaded.kind === "migration-required") {
         if (!options.initializeBaseline) {
-          throw new Error("This project uses a v1 Loom manifest. Run 'loom upgrade --initialize-baseline' before upgrading files.");
+          throw new Error("This project uses a v1 Devroost manifest. Run 'devroost upgrade --initialize-baseline' before upgrading files.");
         }
-        const loomYaml = await readFile(configPath, "utf8");
-        const projectName = /^name:\s*(.+)$/m.exec(loomYaml)?.[1]?.trim() || deriveProjectName(projectRoot);
+        const devroostYaml = await readFile(configPath, "utf8");
+        const projectName = /^name:\s*(.+)$/m.exec(devroostYaml)?.[1]?.trim() || deriveProjectName(projectRoot);
         await writeProjectManifest(projectRoot, packageJson.version, stack, Object.keys(loaded.manifest.ownedFiles), {
           projectName,
           databases: [],
@@ -729,11 +729,11 @@ cli
 
 cli
   .command("doctor", "Diagnose project and host compatibility")
-  .option("--config <path>", "Path to loom config", { default: "loom.yaml" })
+  .option("--config <path>", "Path to Devroost config", { default: "devroost.yaml" })
   .option("--json", "Print structured JSON results", { default: false })
   .action(
     withErrorHandling(async (options: { config?: string; json?: boolean }) => {
-      const configPath = resolve(process.cwd(), options.config ?? "loom.yaml");
+      const configPath = resolve(process.cwd(), options.config ?? "devroost.yaml");
       const project = await loadLoomProject(configPath);
       const manifest = await loadProjectManifest(project.projectRoot);
       const stack = manifest.kind === "missing" ? undefined : findStackDefinition(manifest.manifest.stack.id);
@@ -752,23 +752,23 @@ cli
 
 cli
   .command("clean", "Remove stack-declared generated paths")
-  .option("--config <path>", "Path to loom config", { default: "loom.yaml" })
+  .option("--config <path>", "Path to Devroost config", { default: "devroost.yaml" })
   .option("--force", "Run without interactive confirmation", { default: false })
   .option("--dry-run", "Preview without removing paths", { default: false })
   .action(
     withErrorHandling(async (options: { config?: string; force?: boolean; dryRun?: boolean }) => {
-      const configPath = resolve(process.cwd(), options.config ?? "loom.yaml");
+      const configPath = resolve(process.cwd(), options.config ?? "devroost.yaml");
       const project = await loadLoomProject(configPath);
       const loaded = await loadProjectManifest(project.projectRoot);
       if (loaded.kind === "missing") {
-        throw new Error(`No Loom project manifest found in '${project.projectRoot}'. Run 'loom init' or 'loom adopt' first.`);
+        throw new Error(`No Devroost project manifest found in '${project.projectRoot}'. Run 'devroost init' or 'devroost adopt' first.`);
       }
       if (loaded.kind === "migration-required") {
-        throw new Error("This project uses a v1 Loom manifest. Run 'loom upgrade --initialize-baseline' before cleaning.");
+        throw new Error("This project uses a v1 Devroost manifest. Run 'devroost upgrade --initialize-baseline' before cleaning.");
       }
       const stack = findStackDefinition(loaded.manifest.stack.id);
       if (!stack) {
-        throw new Error(`Unknown stack '${loaded.manifest.stack.id}' in Loom project manifest. Available stacks: ${listStackIds().join(", ")}`);
+        throw new Error(`Unknown stack '${loaded.manifest.stack.id}' in Devroost project manifest. Available stacks: ${listStackIds().join(", ")}`);
       }
 
       const plan = await planProjectClean({ projectRoot: project.projectRoot, stack, manifest: loaded.manifest });
@@ -787,8 +787,8 @@ cli
   );
 
 cli
-  .command("start", "Start Loom project services")
-  .option("--config <path>", "Path to loom config", { default: "loom.yaml" })
+  .command("start", "Start Devroost project services")
+  .option("--config <path>", "Path to Devroost config", { default: "devroost.yaml" })
   .option("--recreate", "Remove existing project containers before starting", { default: false })
   .action(
     withErrorHandling(async (options: { config?: string; recreate?: boolean }) => {
@@ -798,8 +798,8 @@ cli
   );
 
 cli
-  .command("stop", "Stop Loom project services")
-  .option("--config <path>", "Path to loom config", { default: "loom.yaml" })
+  .command("stop", "Stop Devroost project services")
+  .option("--config <path>", "Path to Devroost config", { default: "devroost.yaml" })
   .action(
     withErrorHandling(async (options: { config?: string }) => {
       const orchestrator = await bootstrapProject(options.config);
@@ -808,8 +808,8 @@ cli
   );
 
 cli
-  .command("restart", "Restart Loom project services")
-  .option("--config <path>", "Path to loom config", { default: "loom.yaml" })
+  .command("restart", "Restart Devroost project services")
+  .option("--config <path>", "Path to Devroost config", { default: "devroost.yaml" })
   .option("--recreate", "Remove existing project containers before starting again", { default: false })
   .action(
     withErrorHandling(async (options: { config?: string; recreate?: boolean }) => {
@@ -820,7 +820,7 @@ cli
 
 cli
   .command("status", "Show project and runtime status")
-  .option("--config <path>", "Path to loom config", { default: "loom.yaml" })
+  .option("--config <path>", "Path to Devroost config", { default: "devroost.yaml" })
   .action(
     withErrorHandling(async (options: { config?: string }) => {
       const orchestrator = await bootstrapProject(options.config);
@@ -831,7 +831,7 @@ cli
 
 cli
   .command("ps", "List project containers")
-  .option("--config <path>", "Path to loom config", { default: "loom.yaml" })
+  .option("--config <path>", "Path to Devroost config", { default: "devroost.yaml" })
   .action(
     withErrorHandling(async (options: { config?: string }) => {
       const orchestrator = await bootstrapProject(options.config);
@@ -841,8 +841,8 @@ cli
   );
 
 cli
-  .command("test", "Run test task from loom config")
-  .option("--config <path>", "Path to loom config", { default: "loom.yaml" })
+  .command("test", "Run test task from Devroost config")
+  .option("--config <path>", "Path to Devroost config", { default: "devroost.yaml" })
   .option("--task <name>", "Task name", { default: "test" })
   .action(
     withErrorHandling(async (options: { config?: string; task?: string }) => {
@@ -854,7 +854,7 @@ cli
 
 cli
   .command("logs <service>", "Show service logs")
-  .option("--config <path>", "Path to loom config", { default: "loom.yaml" })
+  .option("--config <path>", "Path to Devroost config", { default: "devroost.yaml" })
   .option("--follow", "Follow logs", { default: true })
   .action(
     withErrorHandling(async (service: string, options: { config?: string; follow?: boolean }) => {
@@ -865,7 +865,7 @@ cli
 
 cli
   .command("exec <service> [...cmd]", "Exec command in service container")
-  .option("--config <path>", "Path to loom config", { default: "loom.yaml" })
+  .option("--config <path>", "Path to Devroost config", { default: "devroost.yaml" })
   .action(
     withErrorHandling(async (service: string, cmd: string[], options: { config?: string }) => {
       const orchestrator = await bootstrapProject(options.config);
@@ -877,9 +877,9 @@ cli
 
 cli
   .command("backup [service]", "Create backup file(s) for database services")
-  .option("--config <path>", "Path to loom config", { default: "loom.yaml" })
-  .option("--all", "Backup all supported database services in loom.yaml", { default: false })
-  .option("--output <path>", "Output file path (defaults to .loom/backups/<project>-<service>-<timestamp>.*)")
+  .option("--config <path>", "Path to Devroost config", { default: "devroost.yaml" })
+  .option("--all", "Backup all supported database services in devroost.yaml", { default: false })
+  .option("--output <path>", "Output file path (defaults to .devroost/backups/<project>-<service>-<timestamp>.*)")
   .action(
     withErrorHandling(async (service: string | undefined, options: { config?: string; output?: string; all?: boolean }) => {
       const orchestrator = await bootstrapProject(options.config);
@@ -902,7 +902,7 @@ cli
 
 cli
   .command("restore <service> <input>", "Restore a backup file into a supported database service")
-  .option("--config <path>", "Path to loom config", { default: "loom.yaml" })
+  .option("--config <path>", "Path to Devroost config", { default: "devroost.yaml" })
   .action(
     withErrorHandling(async (service: string, input: string, options: { config?: string }) => {
       const orchestrator = await bootstrapProject(options.config);

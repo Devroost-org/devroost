@@ -5,10 +5,10 @@ This template gives you a minimal FastAPI application running from local source 
 ## Quickstart
 
 ```bash
-loom init python-fastapi --dir my-fastapi
+devroost init python-fastapi --dir my-fastapi
 cd my-fastapi
-loom start
-loom status
+devroost start
+devroost status
 ```
 
 ## Services
@@ -20,7 +20,7 @@ loom status
 
 ## Route
 
-- App: `https://fastapi.loom.local`
+- App: `https://fastapi.devroost.local`
 
 ## Image overrides
 

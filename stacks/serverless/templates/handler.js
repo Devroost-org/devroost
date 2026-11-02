@@ -43,7 +43,7 @@ module.exports.health = async () =>
 
 module.exports.feed = async () =>
   json(200, {
-    title: "Loom FaaS + SPA template",
+    title: "Devroost FaaS + SPA template",
     subtitle: "A 2026 local workflow for function endpoints, webhook ingestion, and static frontend delivery.",
     endpoints: ["GET /api/health", "GET /api/feed", "POST /api/webhooks/content"],
     features,

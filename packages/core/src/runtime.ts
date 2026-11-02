@@ -39,7 +39,7 @@ function assertLinuxRootlessRuntimeReady(
 
   throw new Error(
     `Rootless Podman requires a writable user runtime directory, but '${runtimeDir}' does not exist. ` +
-      `Log in with a real user session or enable lingering with 'loginctl enable-linger ${uid}', then retry 'loom start'.`
+      `Log in with a real user session or enable lingering with 'loginctl enable-linger ${uid}', then retry 'devroost start'.`
   );
 }
 
@@ -52,10 +52,10 @@ export async function ensureRuntimeReady(
   const capabilities = await dependencies.detectPodmanCapabilities();
 
   if (!capabilities.available) {
-    throw new Error("Podman is unavailable. Install Podman and retry `loom start`.");
+    throw new Error("Podman is unavailable. Install Podman and retry `devroost start`.");
   }
 
   if (config.runtime.rootless && !capabilities.rootless) {
-    throw new Error("Loom config requires rootless Podman, but Podman is running rootful.");
+    throw new Error("Devroost config requires rootless Podman, but Podman is running rootful.");
   }
 }

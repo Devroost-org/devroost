@@ -6,6 +6,6 @@ export const dbElasticsearchStack = defineStack({
   generator: { kind: "none" }, runtimeImages: [{ env: "ELASTICSEARCH_IMAGE", reference: runtimeImagePins.elasticsearch819 }],
   install: [], start: [], readiness: { kind: "http", value: "http://127.0.0.1:9200/_cluster/health", timeoutSeconds: 300 },
   hostWrites: [], verification: [{ service: "db", command: ["curl", "--fail", "http://127.0.0.1:9200/_cluster/health"] }],
-  loomOwnedFiles: [".env.example", "loom.yaml"], generatedPaths: [], protectedPaths: [],
+  devroostOwnedFiles: [".env.example", "devroost.yaml"], generatedPaths: [], protectedPaths: [],
   compatibility: { architectures: ["arm64", "x64"], runtime: "podman-rootless" }
 });

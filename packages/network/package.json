@@ -1,7 +1,7 @@
 {
   "name": "@loom/network",
   "version": "0.1.1",
-  "description": "Route and proxy networking helpers for Loom projects.",
+  "description": "Route and proxy networking helpers for Devroost projects.",
   "keywords": [
     "loom",
     "network",

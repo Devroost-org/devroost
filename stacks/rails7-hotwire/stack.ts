@@ -13,6 +13,6 @@ export const rails7HotwireStack = defineStack({
   runtimeImages: [{ env: "RUBY_IMAGE", reference: runtimeImagePins.ruby3312 }], install: ["bundle install"],
   start: ["bin/rails server -b 0.0.0.0 -p 3008"], readiness: { kind: "port", value: "127.0.0.1:3008", timeoutSeconds: 610 },
   hostWrites: ["log", "tmp", "vendor/bundle"], verification: [{ service: "app", command: ["ruby", "-rsocket", "-e", "TCPSocket.new('127.0.0.1', 3008).close"] }],
-  loomOwnedFiles: [".env.example", "loom.yaml"], generatedPaths: [{ path: "log", category: "cache" }, { path: "tmp", category: "cache" }, { path: "vendor/bundle", category: "dependency" }],
+  devroostOwnedFiles: [".env.example", "devroost.yaml"], generatedPaths: [{ path: "log", category: "cache" }, { path: "tmp", category: "cache" }, { path: "vendor/bundle", category: "dependency" }],
   protectedPaths: ["app", "config", "db", "lib"], compatibility: { architectures: ["arm", "arm64", "x64"], runtime: "podman-rootless" }
 });

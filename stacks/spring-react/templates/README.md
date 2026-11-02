@@ -5,10 +5,10 @@ This template combines a Spring Boot backend with a React frontend for a classic
 ## Quickstart
 
 ```bash
-loom init spring-react --dir my-spring-react
+devroost init spring-react --dir my-spring-react
 cd my-spring-react
-loom start
-loom status
+devroost start
+devroost status
 ```
 
 ## Services
@@ -30,7 +30,7 @@ loom status
 
 ## Route
 
-- Frontend: `https://spring-react.loom.local`
+- Frontend: `https://spring-react.devroost.local`
 
 ## Image overrides
 
@@ -39,6 +39,6 @@ loom status
 
 ## File permissions
 
-This template keeps the existing `userns: keep-id` startup model because it does not need privileged package installation during `loom start`, but `loom exec` and task runs now use a host-aligned UID:GID by default through `execUser`. That keeps ad-hoc writes under the bind-mounted project tree aligned with the host user on Linux rootless Podman.
+This template keeps the existing `userns: keep-id` startup model because it does not need privileged package installation during `devroost start`, but `devroost exec` and task runs now use a host-aligned UID:GID by default through `execUser`. That keeps ad-hoc writes under the bind-mounted project tree aligned with the host user on Linux rootless Podman.
 
-The backend exposes JSON endpoints and the frontend renders live data from Spring Boot instead of showing a static placeholder. Loom serves the built React app through a small local Node server, which is more stable in-container than running the Vite dev server directly.
+The backend exposes JSON endpoints and the frontend renders live data from Spring Boot instead of showing a static placeholder. Devroost serves the built React app through a small local Node server, which is more stable in-container than running the Vite dev server directly.

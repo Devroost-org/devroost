@@ -21,7 +21,7 @@ export function requireBackupExtension(
   const extension = backupExtensionForServiceType(serviceType);
   if (!extension) {
     throw new Error(
-      `Service '${serviceName}' has type '${serviceType}', which is not currently supported by 'loom backup'. Supported types: ${supportedBackupServiceTypes.join(", ")}.`
+      `Service '${serviceName}' has type '${serviceType}', which is not currently supported by 'devroost backup'. Supported types: ${supportedBackupServiceTypes.join(", ")}.`
     );
   }
 
@@ -43,7 +43,7 @@ export function resolveBackupOutputPath(
   const timestamp = now.toISOString().replace(/[:]/g, "-");
   return resolve(
     projectRoot,
-    ".loom",
+    ".devroost",
     "backups",
     `${projectName}-${serviceName}-${timestamp}.${extension}`
   );
@@ -96,7 +96,7 @@ export async function backupAllConfiguredServices(
 
   if (supported.length === 0) {
     throw new Error(
-      `No backup-supported services found in loom.yaml. Supported types: ${dependencies.supportedBackupServiceTypes.join(", ")}.`
+      `No backup-supported services found in devroost.yaml. Supported types: ${dependencies.supportedBackupServiceTypes.join(", ")}.`
     );
   }
 

@@ -31,8 +31,8 @@ interface BackupChildProcess {
 // Load the snapshot without the old AOF, then let Redis regenerate its own AOF.
 // The primary container stays stopped until this helper completes successfully.
 export const REDIS_RESTORE_SCRIPT = `set -eu
-redis-check-rdb /data/.loom-restore.rdb
-mv /data/.loom-restore.rdb /data/dump.rdb
+redis-check-rdb /data/.devroost-restore.rdb
+mv /data/.devroost-restore.rdb /data/dump.rdb
 restore_dir=$(mktemp -d)
 socket="$restore_dir/redis.sock"
 redis_pid=""
@@ -267,19 +267,19 @@ async function prepareRestoreInputForService(serviceType: string, inputPath: str
 
   if (format === "xz") {
     throw new Error(
-      `Restore input '${inputPath}' appears to be xz-compressed. Loom restore currently supports plain SQL dumps and gzip-compressed SQL dumps for ${serviceType}. Decompress the file first.`
+      `Restore input '${inputPath}' appears to be xz-compressed. Devroost restore currently supports plain SQL dumps and gzip-compressed SQL dumps for ${serviceType}. Decompress the file first.`
     );
   }
 
   if (format === "zip") {
     throw new Error(
-      `Restore input '${inputPath}' appears to be a zip archive. Loom restore currently supports plain SQL dumps and gzip-compressed SQL dumps for ${serviceType}. Extract the SQL file first.`
+      `Restore input '${inputPath}' appears to be a zip archive. Devroost restore currently supports plain SQL dumps and gzip-compressed SQL dumps for ${serviceType}. Extract the SQL file first.`
     );
   }
 
   if (format === "binary") {
     throw new Error(
-      `Restore input '${inputPath}' does not look like a plain SQL dump. Loom restore currently supports plain SQL dumps and gzip-compressed SQL dumps for ${serviceType}.`
+      `Restore input '${inputPath}' does not look like a plain SQL dump. Devroost restore currently supports plain SQL dumps and gzip-compressed SQL dumps for ${serviceType}.`
     );
   }
 
@@ -335,7 +335,7 @@ export function databaseRestoreStrategy(serviceType: string): RestoreStrategy | 
 
   if (normalized === "redis") {
     return {
-      destinationPath: "/data/.loom-restore.rdb"
+      destinationPath: "/data/.devroost-restore.rdb"
     };
   }
 
@@ -372,7 +372,7 @@ export async function backupServiceToFileWithDependencies(
   const strategy = databaseBackupStrategy(service.type);
   if (!strategy) {
     throw new Error(
-      `Service type '${service.type}' does not currently support 'loom backup'. Supported types: mysql, mariadb, postgres, mongodb, redis, sqlite, sqlserver.`
+      `Service type '${service.type}' does not currently support 'devroost backup'. Supported types: mysql, mariadb, postgres, mongodb, redis, sqlite, sqlserver.`
     );
   }
 
@@ -479,7 +479,7 @@ export async function restoreServiceFromFileWithDependencies(
   const strategy = databaseRestoreStrategy(service.type);
   if (!strategy) {
     throw new Error(
-      `Service type '${service.type}' does not currently support 'loom restore'. Supported types: ${SUPPORTED_RESTORE_SERVICE_TYPES.join(", ")}.`
+      `Service type '${service.type}' does not currently support 'devroost restore'. Supported types: ${SUPPORTED_RESTORE_SERVICE_TYPES.join(", ")}.`
     );
   }
 

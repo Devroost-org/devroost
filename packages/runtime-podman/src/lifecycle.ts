@@ -88,7 +88,7 @@ export function buildExecArgs(
   workdir?: string
 ): string[] {
   if (command.length === 0) {
-    throw new Error("Command required for loom exec.");
+    throw new Error("Command required for devroost exec.");
   }
 
   const ttyArgs = interactiveTerminal ? ["-it"] : [];
@@ -127,7 +127,7 @@ export async function ensureServiceStartedWithDependencies(
 
   const legacyName = `${projectName}-${serviceName}`;
   if (legacyName !== name && !(await containerExistsByName(name)) && await containerExistsByName(legacyName)) {
-    const owner = await inspectContainerLabelByName(legacyName, "loom.project");
+    const owner = await inspectContainerLabelByName(legacyName, "devroost.project");
     if (owner === projectName) {
       // Rename the owned legacy container instead of dropping its writable layer.
       const stop = await runPodmanCommand(["stop", legacyName]);
@@ -236,7 +236,7 @@ function formatStoppedComposerContainerError(
 ): Error {
   const stateDetail = state ? ` (state: ${state})` : "";
   return new Error(
-    `Container '${name}' is not running${stateDetail}, so Composer could not be ensured. Check 'loom logs ${serviceName} --no-follow' for the startup failure.`
+    `Container '${name}' is not running${stateDetail}, so Composer could not be ensured. Check 'devroost logs ${serviceName} --no-follow' for the startup failure.`
   );
 }
 

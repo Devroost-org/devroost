@@ -43,7 +43,7 @@ services:
       retries: 80
       startPeriodSeconds: 5
 routes:
-  - host: mern.loom.local
+  - host: mern.devroost.local
     service: web
     port: 5173
     https: true

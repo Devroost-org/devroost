@@ -1,5 +1,5 @@
 version: 1
-name: node-example
+name: astro-example
 runtime:
   engine: podman
   rootless: true
@@ -12,23 +12,23 @@ services:
     user: ${HOST_UID:-1000}:${HOST_GID:-1000}
     userns: keep-id
     workdir: /workspace
-    command: sh -c 'mkdir -p /tmp/loom-home && HOME=/tmp/loom-home npm install && HOME=/tmp/loom-home exec npm start'
+    command: sh -c 'mkdir -p /tmp/loom-home && HOME=/tmp/loom-home npm install && HOME=/tmp/loom-home exec npx astro dev --host 0.0.0.0 --port 4321'
     ports:
-      - "3000:3000"
+      - "4321:4321"
     volumes:
       - ./:/workspace
     healthcheck:
-      command: node -e "fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      command: node -e "fetch('http://127.0.0.1:4321').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
       intervalSeconds: 4
       timeoutSeconds: 4
       retries: 120
-      startPeriodSeconds: 8
+      startPeriodSeconds: 15
 routes:
-  - host: node.loom.local
+  - host: astro.devroost.local
     service: app
-    port: 3000
+    port: 4321
     https: true
 tasks:
   test:
     service: app
-    command: node -e "console.log('node example ok')"
+    command: npx astro check

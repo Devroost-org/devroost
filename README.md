@@ -1,29 +1,38 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Loom-development/Loom/main/assets/branding/loom-dev-logo.png" alt="Loom dev — connected infinity-loop wordmark" width="800">
+  <img src="https://raw.githubusercontent.com/Loom-development/Loom/main/assets/branding/devroost-logo.png" alt="Devroost — connected infinity-loop wordmark" width="800">
 </p>
 
-# Loom — local development CLI
+# Devroost — local development CLI
 
-Loom (`loomdev` on npm) creates and runs full-stack dev environments with Podman.
+Devroost (`devroost` on npm) creates and runs full-stack dev environments with Podman.
 Choose a development stack, start it, and work with the source files in your
-normal editor. Loom handles application runtimes, databases, startup order,
+normal editor. Devroost handles application runtimes, databases, startup order,
 health checks, and local HTTPS.
 
-Install the `loomdev` package and use the `loom` command, or run it with
-`npx loomdev@latest`. Build Node.js, Python, PHP, Ruby, Java, and .NET projects
+Install the `devroost` package and use the `devroost` command, or run it with
+`npx devroost@latest`. Build Node.js, Python, PHP, Ruby, Java, and .NET projects
 without Docker Desktop or hand-written container setup.
 
-## What Loom gives you
+## What Devroost gives you
 
 - Ready-to-use stacks for Node.js, Python, PHP, Ruby, Java, .NET, databases, and more.
 - Project files stored on your computer, where your editor and Git can see them.
 - Optional databases configured alongside your application.
-- Local HTTPS addresses such as `https://node.loom.local:8443` when a stack provides a route.
+- Local HTTPS addresses such as `https://node.devroost.local:8443` when a stack provides a route.
 - Startup checks that wait until services are actually ready.
 - Safer file ownership when containers write into your project.
 - Commands for logs, tests, backups, updates, diagnostics, and cleanup.
 
-Loom is designed for local development. It is not a production deployment tool.
+Devroost is designed for local development. It is not a production deployment tool.
+
+Projects use `devroost.yaml` for configuration and `.devroost/` for local state.
+The GitHub repository and published container registry keep their existing
+addresses.
+
+This rename changes project configuration and local-state paths. Existing
+projects are not automatically migrated; stop their services with the previous
+CLI before moving them to the new format. New projects are generated with the
+Devroost names.
 
 ## Requirements
 
@@ -32,10 +41,10 @@ Loom is designed for local development. It is not a production deployment tool.
 - [Podman](https://podman.io/).
 - OpenSSL when you use a stack with a local HTTPS route.
 
-On macOS and Windows, Podman uses a small virtual machine. Loom starts that
+On macOS and Windows, Podman uses a small virtual machine. Devroost starts that
 machine automatically when needed.
 
-On Linux and WSL, Podman bridge networks require IPv4 forwarding. Loom checks
+On Linux and WSL, Podman bridge networks require IPv4 forwarding. Devroost checks
 this before starting a project and prints a remediation command if forwarding is
 disabled. See [Linux or WSL containers cannot access the internet](#linux-or-wsl-containers-cannot-access-the-internet)
 for the one-time host setup and Podman networking recovery steps.
@@ -44,51 +53,51 @@ for the one-time host setup and Podman networking recovery steps.
 
 ### From npm
 
-The npm package is named `loomdev`; its installed command is `loom`. Both options
+The npm package is named `devroost`; its installed command is `devroost`. Both options
 below run the same CLI and require Node.js 24 or newer and Podman.
 
 **For regular use, install globally:**
 
 ```bash
-npm install --global loomdev
-loom --version
-loom --help
+npm install --global devroost
+devroost --version
+devroost --help
 ```
 
-This installs the `loom` command for use from any project directory. Update it
+This installs the `devroost` command for use from any project directory. Update it
 when you want a newer release:
 
 ```bash
-npm install --global loomdev@latest
+npm install --global devroost@latest
 ```
 
-**To try Loom without a global install, use npx:**
+**To try Devroost without a global install, use npx:**
 
 ```bash
-npx loomdev@latest --help
+npx devroost@latest --help
 ```
 
 `npx` downloads the package if needed and stores it in npm's cache. It may ask
-before downloading. Use `npx loomdev@latest` in place of `loom` in the examples
+before downloading. Use `npx devroost@latest` in place of `devroost` in the examples
 throughout this documentation. The `@latest` suffix explicitly requests npm's
-latest published release; use a specific version, such as `loomdev@0.3.7`, when
+latest published release; use a specific version, such as `devroost@0.3.8`, when
 you need repeatable runs. See the [npm npx documentation](https://docs.npmjs.com/cli/v11/commands/npx/)
 for package selection and caching details.
 
 Internet access is needed to download or update the CLI. Project startup may
 also need internet access to pull container images and install application
-dependencies, regardless of how you run Loom.
+dependencies, regardless of how you run Devroost.
 
 **Migrating from the previous package name:**
 
-If you installed `@loomdev/cli` globally, replace it with `loomdev`:
+If you installed `@loomdev/cli` globally, replace it with `devroost`:
 
 ```bash
 npm uninstall --global @loomdev/cli
-npm install --global loomdev
+npm install --global devroost
 ```
 
-Your project files stay in place, and the command remains `loom`.
+Your project files stay in place, and the command remains `devroost`.
 
 ### From a GitHub Release
 
@@ -107,78 +116,78 @@ irm https://raw.githubusercontent.com/Loom-development/Loom/main/scripts/install
 Check the installation:
 
 ```bash
-loom --version
-loom --help
+devroost --version
+devroost --help
 ```
 
 ## Create your first project
 
 ```bash
-loom init node --dir my-app
+devroost init node --dir my-app
 cd my-app
-loom start
-loom status
+devroost start
+devroost status
 ```
 
 If you chose `npx`, use this equivalent workflow instead:
 
 ```bash
-npx loomdev@latest init node --dir my-app
+npx devroost@latest init node --dir my-app
 cd my-app
-npx loomdev@latest start
-npx loomdev@latest status
+npx devroost@latest start
+npx devroost@latest status
 ```
 
-If Loom asks whether to add a database, choose one or continue without one. When
-startup finishes, Loom prints the addresses it prepared. The Node starter normally
-uses `https://node.loom.local:8443`.
+If Devroost asks whether to add a database, choose one or continue without one. When
+startup finishes, Devroost prints the addresses it prepared. The Node starter normally
+uses `https://node.devroost.local:8443`.
 
-Loom may ask for permission to add the local hostname. If it cannot, it prints the
+Devroost may ask for permission to add the local hostname. If it cannot, it prints the
 entry you can add yourself. Because the HTTPS certificate is created locally, your
 browser may ask you to trust it.
 
 When you are done:
 
 ```bash
-loom stop
+devroost stop
 ```
 
-With `npx`, stop the project with `npx loomdev@latest stop`.
+With `npx`, stop the project with `npx devroost@latest stop`.
 
 The first start can take a few minutes because Podman may need to download images
 and the project may need to install dependencies. Later starts are usually faster.
 
-New projects default to immutable Loom runtime and database images published at
-`ghcr.io/loom-development`. The exact digest is written into `loom.yaml`, so the
+New projects default to immutable Devroost runtime and database images published at
+`ghcr.io/loom-development`. The exact digest is written into `devroost.yaml`, so the
 same project uses the same image on every machine. Existing projects are not
 rewritten automatically. To choose another compatible image, set the matching
 `*_IMAGE` value in the project's `.env` file.
 
 ## Your files stay local
 
-Loom keeps application source, tests, package files, lockfiles, and environment
+Devroost keeps application source, tests, package files, lockfiles, and environment
 files in the project directory on your computer. Containers provide the language
 runtime and supporting services, then use your local project directory.
 
 This means you can edit, search, test, and commit the project with your usual tools.
-Loom's project records, certificates, and backups are kept under `.loom/`. Database
+Devroost's project records, certificates, and backups are kept under `.devroost/`. Database
 files and other persistent service data may live under `data/`. Keep these runtime
 directories out of application commits; add them to the project's `.gitignore` if
 the chosen stack does not already do so.
 
 ```gitignore
-.loom/
+.devroost/
 data/
 ```
 
 ## Choose a stack
 
-Run `loom init` without a stack name to choose interactively, or pass one directly:
+Run `devroost init` without a stack name to choose interactively, or pass one directly:
 
 ```bash
-loom init python-django --dir my-site
-loom init php-wordpress --dir my-blog --db mysql
-loom init node-mern --dir my-app
+devroost init python-django --dir my-site
+devroost init php-wordpress --dir my-blog --db mysql
+devroost init node-mern --dir my-app
 ```
 
 ### Starter applications
@@ -202,103 +211,103 @@ loom init node-mern --dir my-app
 Use `--db` while creating an application. Repeat the option to add more than one:
 
 ```bash
-loom init node --dir my-app --db postgres
-loom init python --dir my-api --db mongodb --db redis
+devroost init node --dir my-app --db postgres
+devroost init python --dir my-api --db mongodb --db redis
 ```
 
 Optional database choices are `postgres`, `mysql`, `mariadb`, `mongodb`, and
-`redis`. Loom adds the services and connection settings to the generated project.
+`redis`. Devroost adds the services and connection settings to the generated project.
 
-## Use Loom with an existing project
+## Use Devroost with an existing project
 
-Go to the project directory and let Loom detect the stack:
+Go to the project directory and let Devroost detect the stack:
 
 ```bash
 cd my-existing-project
-loom adopt
-loom start
+devroost adopt
+devroost start
 ```
 
 You can provide the stack when detection is not enough:
 
 ```bash
-loom adopt node
+devroost adopt node
 ```
 
-Adoption adds Loom configuration without replacing your application source,
+Adoption adds Devroost configuration without replacing your application source,
 package files, lockfiles, or existing environment example.
 
 ## Common commands
 
 | Command | What it does |
 | --- | --- |
-| `loom start` | Start the application and its services |
-| `loom stop` | Stop this project's services |
-| `loom restart` | Stop and start the project |
-| `loom start --recreate` | Replace the project's containers and start again |
-| `loom status` | Show service and route status |
-| `loom ps` | List this project's containers |
-| `loom logs app` | Follow logs for the `app` service |
-| `loom exec app -- sh` | Open a shell in the `app` service |
-| `loom test` | Run the test task defined by the stack |
-| `loom doctor` | Check the project and local setup for problems |
-| `loom clean --dry-run` | Preview removable dependencies, caches, and builds |
-| `loom upgrade` | Update safe files managed by Loom |
-| `loom backup <service>` | Back up a database service |
-| `loom restore <service> <file>` | Restore a supported database backup |
+| `devroost start` | Start the application and its services |
+| `devroost stop` | Stop this project's services |
+| `devroost restart` | Stop and start the project |
+| `devroost start --recreate` | Replace the project's containers and start again |
+| `devroost status` | Show service and route status |
+| `devroost ps` | List this project's containers |
+| `devroost logs app` | Follow logs for the `app` service |
+| `devroost exec app -- sh` | Open a shell in the `app` service |
+| `devroost test` | Run the test task defined by the stack |
+| `devroost doctor` | Check the project and local setup for problems |
+| `devroost clean --dry-run` | Preview removable dependencies, caches, and builds |
+| `devroost upgrade` | Update safe files managed by Devroost |
+| `devroost backup <service>` | Back up a database service |
+| `devroost restore <service> <file>` | Restore a supported database backup |
 
-Run `loom <command> --help` to see all options for a command.
+Run `devroost <command> --help` to see all options for a command.
 
 ## Safe project updates
 
-Loom records which generated files it owns. `loom upgrade` updates only those
+Devroost records which generated files it owns. `devroost upgrade` updates only those
 files when they are unchanged or missing. It does not update application source,
 package files, lockfiles, `.env`, or other files that belong to you.
 
 ```bash
-loom upgrade
+devroost upgrade
 ```
 
-If you edited a Loom-owned file, the command skips it and explains why. Use
+If you edited a Devroost-owned file, the command skips it and explains why. Use
 `--force-modified` only when you deliberately want to replace those edits.
 
-Projects created by older Loom releases may need a one-time baseline before their
+Projects created by older Devroost releases may need a one-time baseline before their
 first upgrade:
 
 ```bash
-loom upgrade --initialize-baseline
-loom upgrade
+devroost upgrade --initialize-baseline
+devroost upgrade
 ```
 
 ## Diagnose problems
 
 ```bash
-loom doctor
+devroost doctor
 ```
 
 Doctor checks the project, Podman, service images, file ownership, ports, routes,
 and local host setup. A warning explains something that may need attention; a
-failure identifies something that prevents Loom from working correctly.
+failure identifies something that prevents Devroost from working correctly.
 
 Useful first checks:
 
 ```bash
 podman info
-loom doctor
-loom status
-loom logs app
+devroost doctor
+devroost status
+devroost logs app
 ```
 
 If the configuration changed but old containers are still present:
 
 ```bash
-loom start --recreate
+devroost start --recreate
 ```
 
 ### Linux or WSL containers cannot access the internet
 
 If `npm install`, Composer, `pip`, or another dependency download hangs inside a
-Loom service, first check IPv4 forwarding:
+Devroost service, first check IPv4 forwarding:
 
 ```bash
 sysctl net.ipv4.ip_forward
@@ -337,7 +346,7 @@ Windows PowerShell, then reopen the Linux terminal:
 wsl --shutdown
 ```
 
-Loom does not change these system-wide settings automatically. They are one-time
+Devroost does not change these system-wide settings automatically. They are one-time
 host maintenance steps and are not required on macOS or Windows installations
 that use Podman Machine.
 
@@ -346,22 +355,22 @@ that use Podman Machine.
 Preview cleanup before removing anything:
 
 ```bash
-loom clean --dry-run
-loom clean
+devroost clean --dry-run
+devroost clean
 ```
 
 Cleanup is limited to dependency, cache, and build paths declared by the chosen
-stack. It does not remove application source, `loom.yaml`, `.env`, lockfiles,
-Loom's project records, or database data.
+stack. It does not remove application source, `devroost.yaml`, `.env`, lockfiles,
+Devroost's project records, or database data.
 
 ## Back up a database
 
 ```bash
-loom status                   # find the database service name
-loom backup postgres          # example: app with PostgreSQL
-loom backup db                # example: standalone database stack
-loom backup --all
-loom restore postgres ./.loom/backups/my-backup.sql
+devroost status                   # find the database service name
+devroost backup postgres          # example: app with PostgreSQL
+devroost backup db                # example: standalone database stack
+devroost backup --all
+devroost restore postgres ./.devroost/backups/my-backup.sql
 ```
 
 Backup supports MySQL, MariaDB, PostgreSQL, MongoDB, Redis, SQLite, and SQL
@@ -372,16 +381,16 @@ service before creating or restoring a backup.
 
 Generated projects use tested default image versions. To choose another version,
 edit the matching `*_IMAGE` value in the project's `.env` file. Keeping the
-choice in `.env` avoids changing `loom.yaml` directly.
+choice in `.env` avoids changing `devroost.yaml` directly.
 
 ## Get help
 
-- Run `loom --help` or `loom <command> --help`.
-- Use `loom doctor` inside a project.
+- Run `devroost --help` or `devroost <command> --help`.
+- Use `devroost doctor` inside a project.
 - Report bugs or request features in [GitHub Issues](https://github.com/Loom-development/Loom/issues).
 
 ## License
 
-Loom is available under the [Elastic License 2.0](LICENSE). You may use, copy,
-modify, and redistribute Loom, but the license does not allow offering Loom itself
+Devroost is available under the [Elastic License 2.0](LICENSE). You may use, copy,
+modify, and redistribute Devroost, but the license does not allow offering Devroost itself
 to others as a hosted or managed service.

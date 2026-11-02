@@ -37,7 +37,7 @@ services:
       retries: 80
       startPeriodSeconds: 10
 routes:
-  - host: spring-react.loom.local
+  - host: spring-react.devroost.local
     service: web
     port: 5175
     https: true

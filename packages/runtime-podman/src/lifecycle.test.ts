@@ -18,7 +18,7 @@ test("ensureServiceStarted starts an existing matching container", async () => {
     isContainerRunningByName: async () => false,
     containerExistsByName: async () => true,
     inspectContainerImageByName: async () => "docker.io/library/node:20-alpine",
-    inspectContainerLabelByName: async (_name, label) => label === "loom.project" ? "demo" : serviceConfigHash(service),
+    inspectContainerLabelByName: async (_name, label) => label === "devroost.project" ? "demo" : serviceConfigHash(service),
     startContainerByName: async (name) => {
       started.push(name);
     },
@@ -42,7 +42,7 @@ test("ensureServiceStarted recreates a container when config drift is detected",
     isContainerRunningByName: async () => false,
     containerExistsByName: async () => true,
     inspectContainerImageByName: async () => "docker.io/library/node:18-alpine",
-    inspectContainerLabelByName: async (_name, label) => label === "loom.project" ? "demo" : "old-hash",
+    inspectContainerLabelByName: async (_name, label) => label === "devroost.project" ? "demo" : "old-hash",
     removeContainerByName: async (name) => {
       events.push(`remove:${name}`);
     },
@@ -70,7 +70,7 @@ test("ensureServiceStarted recreates a matching container when its bind mount so
     isContainerRunningByName: async () => false,
     containerExistsByName: async () => true,
     inspectContainerImageByName: async () => "docker.io/library/node:20-alpine",
-    inspectContainerLabelByName: async (_name, label) => label === "loom.project" ? "demo" : serviceConfigHash(service),
+    inspectContainerLabelByName: async (_name, label) => label === "devroost.project" ? "demo" : serviceConfigHash(service),
     startContainerByName: async () => {
       throw new Error(
         "Failed to start existing container 'demo-app': Error: unable to start container 'abc': crun: cannot stat `/tmp/loom-release-smoke/demo/data/mysql`: No such file or directory: OCI runtime attempted to invoke a command that was not found"
@@ -149,7 +149,7 @@ test("ensureComposerAvailable reports stopped containers clearly before exec", a
           stderr: ""
         })
       }),
-    /Container 'demo-app' is not running \(state: exited\), so Composer could not be ensured\. Check 'loom logs app --no-follow'/i
+    /Container 'demo-app' is not running \(state: exited\), so Composer could not be ensured\. Check 'devroost logs app --no-follow'/i
   );
 });
 
@@ -176,7 +176,7 @@ test("ensureComposerAvailable rewrites exec-session errors when the container ex
           stderr: "Error: can only create exec sessions on running containers: container state improper"
         })
       }),
-    /Container 'demo-app' is not running \(state: exited\), so Composer could not be ensured\. Check 'loom logs app --no-follow'/i
+    /Container 'demo-app' is not running \(state: exited\), so Composer could not be ensured\. Check 'devroost logs app --no-follow'/i
   );
 });
 test("startup refuses a running container owned by another project", async () => {
@@ -195,7 +195,7 @@ test("startup renames an owned legacy container without deleting its writable la
   await ensureServiceStartedWithDependencies("shop-api", "web", service, "shop-net", {
     containerExistsByName: async (name) => names.has(name),
     isContainerRunningByName: async () => false,
-    inspectContainerLabelByName: async (_name, label) => label === "loom.project" ? "shop-api" : serviceConfigHash(service),
+    inspectContainerLabelByName: async (_name, label) => label === "devroost.project" ? "shop-api" : serviceConfigHash(service),
     inspectContainerImageByName: async () => "docker.io/library/node:20-alpine",
     runPodmanCommand: async (args) => {
       events.push(args.join(" "));

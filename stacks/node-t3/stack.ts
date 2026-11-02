@@ -7,6 +7,6 @@ export const nodeT3Stack = defineStack({
   install: ["corepack enable && pnpm install"], start: ["pnpm dev"],
   readiness: { kind: "http", value: "http://127.0.0.1:3003", timeoutSeconds: 486 }, hostWrites: ["node_modules"],
   verification: [{ service: "app", command: ["node", "-e", "fetch('http://127.0.0.1:3003').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"] }],
-  loomOwnedFiles: [".env.example", "loom.yaml"], generatedPaths: [{ path: ".next", category: "build" }, { path: "node_modules", category: "dependency" }],
+  devroostOwnedFiles: [".env.example", "devroost.yaml"], generatedPaths: [{ path: ".next", category: "build" }, { path: "node_modules", category: "dependency" }],
   protectedPaths: ["apps", "packages"], compatibility: { architectures: ["arm", "arm64", "x64"], runtime: "podman-rootless" }
 });

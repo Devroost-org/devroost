@@ -73,7 +73,7 @@ function compatibilityDefinition(id: Exclude<StackId, "node">): StackDefinition 
   const scaffoldVersion = "1";
   return defineStack({ id, definitionVersion: 1, legacyScaffoldVersions: [], assetPath: `${id}/templates`, scaffoldVersion,
     generator: { kind: "none" }, runtimeImages: [], install: [], start: [], readiness: { kind: "command", value: "true", timeoutSeconds: 1 },
-    hostWrites: [], verification: [], loomOwnedFiles: [".env.example", "loom.yaml"], generatedPaths: generatedPathsByStack[id],
+    hostWrites: [], verification: [], devroostOwnedFiles: [".env.example", "devroost.yaml"], generatedPaths: generatedPathsByStack[id],
     protectedPaths: protectedPathsByStack[id], compatibility });
 }
 const migratedDefinitions = new Map<StackId, StackDefinition>([

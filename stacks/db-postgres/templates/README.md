@@ -5,10 +5,10 @@ This template gives you a standalone PostgreSQL database environment.
 ## Quickstart
 
 ```bash
-loom init db-postgres --dir my-postgres
+devroost init db-postgres --dir my-postgres
 cd my-postgres
-loom start
-loom status
+devroost start
+devroost status
 ```
 
 ## Service
@@ -28,6 +28,6 @@ loom status
 ## Backup and restore
 
 ```bash
-loom backup db
-loom restore db ./backup.sql
+devroost backup db
+devroost restore db ./backup.sql
 ```

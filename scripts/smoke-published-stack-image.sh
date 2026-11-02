@@ -7,7 +7,7 @@ if [ "$#" -gt 1 ]; then
 fi
 
 SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
-export LOOM_PUBLISHED_IMAGE_PREFLIGHT=1
-export LOOM_GENERATED_SMOKE_KEEP="${LOOM_PUBLISHED_SMOKE_KEEP:-0}"
+export DEVROOST_PUBLISHED_IMAGE_PREFLIGHT=1
+export DEVROOST_GENERATED_SMOKE_KEEP="${DEVROOST_PUBLISHED_SMOKE_KEEP:-0}"
 
 exec "$SCRIPT_DIR/smoke-generated-stacks.sh" "${1:-node}"

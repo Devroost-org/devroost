@@ -5,10 +5,10 @@ This template gives you a local Drupal setup served by Apache with PHP from proj
 ## Quickstart
 
 ```bash
-loom init php-drupal --dir my-drupal --db mysql
+devroost init php-drupal --dir my-drupal --db mysql
 cd my-drupal
-loom start
-loom status
+devroost start
+devroost status
 ```
 
 ## Services
@@ -20,7 +20,7 @@ loom status
 
 ## Route
 
-- App: `https://drupal.loom.local`
+- App: `https://drupal.devroost.local`
 
 ## Image overrides
 
@@ -30,4 +30,4 @@ loom status
 
 The container starts as `root` and remaps Apache's `www-data` user to `HOST_UID` and `HOST_GID` before startup. That keeps writes under the bind-mounted project directory and `sites/default/files` aligned with the host user on Linux rootless Podman.
 
-`loom exec app -- ...` uses the same host-aligned UID:GID by default.
+`devroost exec app -- ...` uses the same host-aligned UID:GID by default.

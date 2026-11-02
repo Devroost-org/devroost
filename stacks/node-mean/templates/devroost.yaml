@@ -43,7 +43,7 @@ services:
       retries: 80
       startPeriodSeconds: 5
 routes:
-  - host: mean.loom.local
+  - host: mean.devroost.local
     service: web
     port: 4200
     https: true

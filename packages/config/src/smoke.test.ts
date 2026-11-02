@@ -15,7 +15,7 @@ test("loadLoomProject resolves config from parent directories", async () => {
   const nested = join(root, "a", "b");
   await mkdir(nested, { recursive: true });
 
-  const configPath = join(root, "loom.yaml");
+  const configPath = join(root, "devroost.yaml");
   await writeFile(
     configPath,
     [
@@ -45,7 +45,7 @@ test("loadLoomProject resolves config from parent directories", async () => {
 
 test("loadLoomProject rejects unsafe service names", async () => {
   const root = await mkdtemp(join(tmpdir(), "loom-config-invalid-service-"));
-  const configPath = join(root, "loom.yaml");
+  const configPath = join(root, "devroost.yaml");
 
   await writeFile(
     configPath,
@@ -67,7 +67,7 @@ test("loadLoomProject rejects unsafe service names", async () => {
 
 test("loadLoomProject rejects invalid route host", async () => {
   const root = await mkdtemp(join(tmpdir(), "loom-config-invalid-host-"));
-  const configPath = join(root, "loom.yaml");
+  const configPath = join(root, "devroost.yaml");
 
   await writeFile(
     configPath,
@@ -93,7 +93,7 @@ test("loadLoomProject rejects invalid route host", async () => {
 
 test("loadLoomProject interpolates image strings from .env with defaults", async () => {
   const root = await mkdtemp(join(tmpdir(), "loom-config-env-"));
-  const configPath = join(root, "loom.yaml");
+  const configPath = join(root, "devroost.yaml");
   const envPath = join(root, ".env");
 
   await writeFile(envPath, ["APP_IMAGE=node:22-alpine"].join("\n"), "utf8");
@@ -123,7 +123,7 @@ test("loadLoomProject interpolates image strings from .env with defaults", async
 
 test("loadLoomProject interpolates service user fields from .env", async () => {
   const root = await mkdtemp(join(tmpdir(), "loom-config-user-env-"));
-  const configPath = join(root, "loom.yaml");
+  const configPath = join(root, "devroost.yaml");
   const envPath = join(root, ".env");
 
   await writeFile(envPath, ["HOST_UID=1001", "HOST_GID=1002"].join("\n"), "utf8");
@@ -154,7 +154,7 @@ test("loadLoomProject interpolates service user fields from .env", async () => {
 
 test("loadLoomProject reads optional php composer startup toggle", async () => {
   const root = await mkdtemp(join(tmpdir(), "loom-config-composer-"));
-  const configPath = join(root, "loom.yaml");
+  const configPath = join(root, "devroost.yaml");
 
   await writeFile(
     configPath,
@@ -179,7 +179,7 @@ test("loadLoomProject reads optional php composer startup toggle", async () => {
 
 test("loadLoomProject throws when an interpolated variable is missing and has no default", async () => {
   const root = await mkdtemp(join(tmpdir(), "loom-config-missing-env-"));
-  const configPath = join(root, "loom.yaml");
+  const configPath = join(root, "devroost.yaml");
 
   await writeFile(
     configPath,

@@ -1,7 +1,7 @@
 param(
-  [string]$Repo = $(if ($env:LOOM_REPO) { $env:LOOM_REPO } else { "Loom-development/Loom" }),
-  [string]$Version = $(if ($env:LOOM_VERSION) { $env:LOOM_VERSION } else { "latest" }),
-  [string]$InstallDir = $(if ($env:LOOM_INSTALL_DIR) { $env:LOOM_INSTALL_DIR } else { "$HOME\\.loom\\bin" })
+  [string]$Repo = $(if ($env:DEVROOST_REPO) { $env:DEVROOST_REPO } else { "Loom-development/Loom" }),
+  [string]$Version = $(if ($env:DEVROOST_VERSION) { $env:DEVROOST_VERSION } else { "latest" }),
+  [string]$InstallDir = $(if ($env:DEVROOST_INSTALL_DIR) { $env:DEVROOST_INSTALL_DIR } else { "$HOME\\.devroost\\bin" })
 )
 
 if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
@@ -22,7 +22,7 @@ try {
   & podman info *> $null
 } catch {
   Write-Warning "Podman is installed but not currently reachable."
-  Write-Warning "Run 'loom start' after installation; Loom will auto-start Podman Machine on macOS/Windows."
+  Write-Warning "Run 'devroost start' after installation; Devroost will auto-start Podman Machine on macOS/Windows."
 }
 
 $arch = switch ($env:PROCESSOR_ARCHITECTURE) {
@@ -31,21 +31,21 @@ $arch = switch ($env:PROCESSOR_ARCHITECTURE) {
   default { throw "Unsupported architecture: $env:PROCESSOR_ARCHITECTURE" }
 }
 
-$asset = "loom-windows-$arch.zip"
+$asset = "devroost-windows-$arch.zip"
 if ($Version -eq "latest") {
   $url = "https://github.com/$Repo/releases/latest/download/$asset"
 } else {
   $url = "https://github.com/$Repo/releases/download/$Version/$asset"
 }
 
-$tmp = Join-Path ([System.IO.Path]::GetTempPath()) ("loom-install-" + [guid]::NewGuid().ToString("N"))
+$tmp = Join-Path ([System.IO.Path]::GetTempPath()) ("devroost-install-" + [guid]::NewGuid().ToString("N"))
 $stagedStacks = $null
 
 try {
   New-Item -ItemType Directory -Path $tmp | Out-Null
   New-Item -ItemType Directory -Path $InstallDir -Force | Out-Null
 
-  $zip = Join-Path $tmp "loom.zip"
+  $zip = Join-Path $tmp "devroost.zip"
   Write-Host "Downloading $url"
   Invoke-WebRequest -Uri $url -OutFile $zip
   Expand-Archive -Path $zip -DestinationPath $tmp -Force
@@ -54,10 +54,10 @@ try {
     throw "Release archive is missing required stack assets"
   }
 
-  $stagedStacks = Join-Path $InstallDir (".loom-stacks-new-" + [guid]::NewGuid().ToString("N"))
+  $stagedStacks = Join-Path $InstallDir (".devroost-stacks-new-" + [guid]::NewGuid().ToString("N"))
   Copy-Item -Path $archiveStacks -Destination $stagedStacks -Recurse
-  Copy-Item -Path (Join-Path $tmp "loom.cmd") -Destination (Join-Path $InstallDir "loom.cmd") -Force
-  Copy-Item -Path (Join-Path $tmp "loom.mjs") -Destination (Join-Path $InstallDir "loom.mjs") -Force
+  Copy-Item -Path (Join-Path $tmp "devroost.cmd") -Destination (Join-Path $InstallDir "devroost.cmd") -Force
+  Copy-Item -Path (Join-Path $tmp "devroost.mjs") -Destination (Join-Path $InstallDir "devroost.mjs") -Force
   $installedStacks = Join-Path $InstallDir "stacks"
   if (Test-Path $installedStacks) {
     Remove-Item -Path $installedStacks -Recurse -Force
@@ -75,8 +75,8 @@ try {
     Write-Host "Added $InstallDir to user PATH"
   }
 
-  Write-Host "Installed loom to $InstallDir\\loom.cmd"
-  Write-Host "Open a new terminal and run: loom --help"
+  Write-Host "Installed Devroost to $InstallDir\\devroost.cmd"
+  Write-Host "Open a new terminal and run: devroost --help"
 }
 finally {
   if ($stagedStacks -and (Test-Path $stagedStacks)) {

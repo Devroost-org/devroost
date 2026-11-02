@@ -29,7 +29,7 @@ public class Application {
     @GetMapping("/api/hello")
     public Map<String, Object> hello() {
       return Map.of(
-        "title", "Loom Spring + React template",
+        "title", "Devroost Spring + React template",
         "subtitle", "A Spring Boot API with a React frontend wired through a local /api proxy.",
         "features", List.of(
           "Spring Boot backend on Java 21",

@@ -26,7 +26,7 @@ services:
       retries: 120
       startPeriodSeconds: 6
 routes:
-  - host: t3.loom.local
+  - host: t3.devroost.local
     service: app
     port: 3003
     https: true

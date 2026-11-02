@@ -1,8 +1,8 @@
 #!/usr/bin/env sh
 set -eu
 
-LOOM_BIN="${LOOM_BIN:-loom}"
-KEEP_WORK_ROOT="${LOOM_RELEASE_SMOKE_KEEP:-0}"
+DEVROOST_BIN="${DEVROOST_BIN:-devroost}"
+KEEP_WORK_ROOT="${DEVROOST_RELEASE_SMOKE_KEEP:-0}"
 SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 REPO_ROOT="$(dirname "$SCRIPT_DIR")"
 
@@ -13,37 +13,37 @@ require_command() {
   fi
 }
 
-run_loom() {
-  if [ -n "${LOOM_BIN_PATH:-}" ]; then
-    "$LOOM_BIN_PATH" "$@" </dev/null
+run_devroost() {
+  if [ -n "${DEVROOST_BIN_PATH:-}" ]; then
+    "$DEVROOST_BIN_PATH" "$@" </dev/null
     return
   fi
 
-  if [ -n "${LOOM_BIN_NODE_ENTRY:-}" ]; then
-    node "$LOOM_BIN_NODE_ENTRY" "$@" </dev/null
+  if [ -n "${DEVROOST_BIN_NODE_ENTRY:-}" ]; then
+    node "$DEVROOST_BIN_NODE_ENTRY" "$@" </dev/null
     return
   fi
 
-  echo "Unable to resolve Loom CLI executable." >&2
+  echo "Unable to resolve Devroost CLI executable." >&2
   exit 1
 }
 
-resolve_loom_bin() {
+resolve_devroost_bin() {
   local_cli_entry="$REPO_ROOT/apps/cli/dist/index.js"
   if [ -f "$local_cli_entry" ]; then
     require_command node
-    LOOM_BIN_NODE_ENTRY="$local_cli_entry"
-    echo "Using local Loom CLI build at $LOOM_BIN_NODE_ENTRY"
+    DEVROOST_BIN_NODE_ENTRY="$local_cli_entry"
+    echo "Using local Devroost CLI build at $DEVROOST_BIN_NODE_ENTRY"
     return
   fi
 
-  if command -v "$LOOM_BIN" >/dev/null 2>&1; then
-    LOOM_BIN_PATH="$(command -v "$LOOM_BIN")"
+  if command -v "$DEVROOST_BIN" >/dev/null 2>&1; then
+    DEVROOST_BIN_PATH="$(command -v "$DEVROOST_BIN")"
     return
   fi
 
-  if [ "$LOOM_BIN" != "loom" ]; then
-    echo "Missing required command: $LOOM_BIN" >&2
+  if [ "$DEVROOST_BIN" != "loom" ]; then
+    echo "Missing required command: $DEVROOST_BIN" >&2
     exit 1
   fi
 
@@ -52,7 +52,7 @@ resolve_loom_bin() {
   exit 1
 }
 
-resolve_loom_bin
+resolve_devroost_bin
 require_command podman
 require_command perl
 require_command stat
@@ -62,8 +62,8 @@ require_command grep
 uid="$(id -u)"
 gid="$(id -g)"
 
-if [ -n "${LOOM_RELEASE_SMOKE_DIR:-}" ]; then
-  work_root="$LOOM_RELEASE_SMOKE_DIR"
+if [ -n "${DEVROOST_RELEASE_SMOKE_DIR:-}" ]; then
+  work_root="$DEVROOST_RELEASE_SMOKE_DIR"
   mkdir -p "$work_root"
   KEEP_WORK_ROOT=1
 else
@@ -97,7 +97,7 @@ stop_project() {
   if [ -d "$project_dir" ]; then
     (
       cd "$project_dir"
-      run_loom stop >/dev/null 2>&1 || true
+      run_devroost stop >/dev/null 2>&1 || true
     )
     project_name="$(basename "$project_dir" | tr '-' '_')"
     podman rm -f "loom-${project_name}-proxy" 2>/dev/null || true
@@ -143,7 +143,7 @@ smoke_stack() {
 
   echo "===== RELEASE SMOKE: $label ====="
 
-  if ! run_loom init "$template" --dir "$project_dir" --image "$image_override" $extra_args; then
+  if ! run_devroost init "$template" --dir "$project_dir" --image "$image_override" $extra_args; then
     echo "init failed for $label" >&2
     fail=$((fail + 1))
     KEEP_WORK_ROOT=1
@@ -154,64 +154,64 @@ smoke_stack() {
   if (
     cd "$project_dir"
     configure_host_ids .env
-    run_loom start --recreate || exit 1
+    run_devroost start --recreate || exit 1
 
     case "$label" in
       node)
-        run_loom exec app -- sh -c 'id && pwd && printf "node-write\n" > owned-by-host.txt && ls -ld node_modules' || exit 1
+        run_devroost exec app -- sh -c 'id && pwd && printf "node-write\n" > owned-by-host.txt && ls -ld node_modules' || exit 1
         assert_owner owned-by-host.txt "$uid:$gid" || exit 1
         assert_owner node_modules "$uid:$gid" || exit 1
         ;;
       python)
-        run_loom exec app -- sh -c 'id && pwd && printf "python-write\n" > owned-by-host.txt && ls -l index.html' || exit 1
+        run_devroost exec app -- sh -c 'id && pwd && printf "python-write\n" > owned-by-host.txt && ls -l index.html' || exit 1
         assert_owner owned-by-host.txt "$uid:$gid" || exit 1
         assert_owner index.html "$uid:$gid" || exit 1
         ;;
       rails7)
-        run_loom exec app -- sh -c 'id && pwd && mkdir -p tmp && printf "rails-write\n" > tmp/owned-by-host.txt && ls -ld tmp tmp/owned-by-host.txt' || exit 1
+        run_devroost exec app -- sh -c 'id && pwd && mkdir -p tmp && printf "rails-write\n" > tmp/owned-by-host.txt && ls -ld tmp tmp/owned-by-host.txt' || exit 1
         assert_owner tmp/owned-by-host.txt "$uid:$gid" || exit 1
         ;;
       wordpress)
-        run_loom exec app -- sh -c 'id && pwd && mkdir -p wp-content/uploads && printf "wordpress-write\n" > wp-content/uploads/owned-by-host.txt && ls -ld wp-content/uploads wp-content/uploads/owned-by-host.txt' || exit 1
+        run_devroost exec app -- sh -c 'id && pwd && mkdir -p wp-content/uploads && printf "wordpress-write\n" > wp-content/uploads/owned-by-host.txt && ls -ld wp-content/uploads wp-content/uploads/owned-by-host.txt' || exit 1
         assert_owner wp-content/uploads/owned-by-host.txt "$uid:$gid" || exit 1
         ;;
       django-react)
-        run_loom exec backend -- sh -c 'id && pwd && printf "django-react-write\n" > owned-by-host.txt && ls -l db.sqlite3' || exit 1
+        run_devroost exec backend -- sh -c 'id && pwd && printf "django-react-write\n" > owned-by-host.txt && ls -l db.sqlite3' || exit 1
         assert_owner backend/owned-by-host.txt "$uid:$gid" || exit 1
         assert_owner backend/db.sqlite3 "$uid:$gid" || exit 1
         assert_owner frontend/node_modules "$uid:$gid" || exit 1
         ;;
       python-flask)
-        run_loom exec app -- sh -c 'id && pwd && printf "flask-write\n" > owned-by-host.txt && ls -l app.py requirements.txt' || exit 1
+        run_devroost exec app -- sh -c 'id && pwd && printf "flask-write\n" > owned-by-host.txt && ls -l app.py requirements.txt' || exit 1
         assert_owner owned-by-host.txt "$uid:$gid" || exit 1
         assert_owner app.py "$uid:$gid" || exit 1
         ;;
       python-fastapi)
-        run_loom exec app -- sh -c 'id && pwd && printf "fastapi-write\n" > owned-by-host.txt && ls -l app/main.py requirements.txt' || exit 1
+        run_devroost exec app -- sh -c 'id && pwd && printf "fastapi-write\n" > owned-by-host.txt && ls -l app/main.py requirements.txt' || exit 1
         assert_owner owned-by-host.txt "$uid:$gid" || exit 1
         assert_owner app/main.py "$uid:$gid" || exit 1
         ;;
       php)
-        run_loom exec app -- sh -c 'id && pwd && printf "php-write\n" > owned-by-host.txt && ls -l index.php' || exit 1
+        run_devroost exec app -- sh -c 'id && pwd && printf "php-write\n" > owned-by-host.txt && ls -l index.php' || exit 1
         assert_owner owned-by-host.txt "$uid:$gid" || exit 1
         assert_owner index.php "$uid:$gid" || exit 1
         ;;
       dotnet)
-        run_loom exec app -- sh -c 'id && cd /workspace && printf "dotnet-write\n" > owned-by-host.txt && ls -ld src/obj src/bin src' || exit 1
+        run_devroost exec app -- sh -c 'id && cd /workspace && printf "dotnet-write\n" > owned-by-host.txt && ls -ld src/obj src/bin src' || exit 1
         assert_owner owned-by-host.txt "$uid:$gid" || exit 1
         assert_owner src/obj "$uid:$gid" || exit 1
         ;;
       rails7-hotwire)
-        run_loom exec app -- sh -c 'id && pwd && mkdir -p tmp && printf "rails-hotwire-write\n" > tmp/owned-by-host.txt && ls -ld tmp' || exit 1
+        run_devroost exec app -- sh -c 'id && pwd && mkdir -p tmp && printf "rails-hotwire-write\n" > tmp/owned-by-host.txt && ls -ld tmp' || exit 1
         assert_owner tmp/owned-by-host.txt "$uid:$gid" || exit 1
         ;;
       astro)
-        run_loom exec app -- sh -c 'id && pwd && printf "astro-write\n" > owned-by-host.txt && ls -ld node_modules' || exit 1
+        run_devroost exec app -- sh -c 'id && pwd && printf "astro-write\n" > owned-by-host.txt && ls -ld node_modules' || exit 1
         assert_owner owned-by-host.txt "$uid:$gid" || exit 1
         assert_owner node_modules "$uid:$gid" || exit 1
         ;;
       spring-boot)
-        run_loom exec app -- sh -c 'id && pwd && printf "spring-boot-write\n" > owned-by-host.txt && ls -ld target pom.xml' || exit 1
+        run_devroost exec app -- sh -c 'id && pwd && printf "spring-boot-write\n" > owned-by-host.txt && ls -ld target pom.xml' || exit 1
         assert_owner owned-by-host.txt "$uid:$gid" || exit 1
         assert_owner target "$uid:$gid" || exit 1
         ;;
@@ -234,10 +234,10 @@ smoke_stack() {
   echo
 }
 
-echo "===== Checking for running Loom proxies ====="
+echo "===== Checking for running Devroost proxies ====="
 running_proxies="$(podman ps --filter name=-proxy --format '{{.Names}} {{.Status}}' 2>/dev/null || true)"
 if [ -n "$running_proxies" ]; then
-  echo "Stopping existing Loom proxy containers before smoke tests:"
+  echo "Stopping existing Devroost proxy containers before smoke tests:"
   while read -r name status; do
     echo "  - ${name} (${status})"
     podman rm -f "$name" 2>/dev/null || true

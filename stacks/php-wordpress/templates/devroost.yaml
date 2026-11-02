@@ -44,7 +44,7 @@ services:
       retries: 20
       startPeriodSeconds: 30
 routes:
-  - host: wordpress.loom.local
+  - host: wordpress.devroost.local
     service: app
     port: 80
     https: true

@@ -21,7 +21,7 @@ test("requireRestoreSupport accepts supported service types", () => {
 test("requireRestoreSupport rejects unsupported service types", () => {
   assert.throws(
     () => requireRestoreSupport("cache", "redis", ["postgres", "mysql"]),
-    /not currently supported by 'loom restore'/i
+    /not currently supported by 'devroost restore'/i
   );
 });
 

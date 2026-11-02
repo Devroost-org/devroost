@@ -1,10 +1,9 @@
 {
-  "name": "loomdev",
-  "version": "0.3.7",
-  "description": "Loom (loomdev) is a local development CLI for Podman: run full-stack dev environments with application runtimes, databases, and HTTPS.",
+  "name": "devroost",
+  "version": "0.3.8",
+  "description": "Devroost is a Podman-based local development CLI for application runtimes, databases, and HTTPS.",
   "keywords": [
-    "loom",
-    "loomdev",
+    "devroost",
     "dev",
     "development",
     "local-development",
@@ -35,7 +34,7 @@
     "access": "public"
   },
   "bin": {
-    "loom": "dist/index.js"
+    "devroost": "dist/index.js"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

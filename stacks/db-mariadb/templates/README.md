@@ -5,10 +5,10 @@ This template gives you a standalone MariaDB database environment.
 ## Quickstart
 
 ```bash
-loom init db-mariadb --dir my-mariadb
+devroost init db-mariadb --dir my-mariadb
 cd my-mariadb
-loom start
-loom status
+devroost start
+devroost status
 ```
 
 ## Service
@@ -28,6 +28,6 @@ loom status
 ## Backup and restore
 
 ```bash
-loom backup db
-loom restore db ./backup.sql
+devroost backup db
+devroost restore db ./backup.sql
 ```

@@ -5,10 +5,10 @@ This template gives you a standalone Elasticsearch environment for local develop
 ## Quickstart
 
 ```bash
-loom init db-elasticsearch --dir my-elasticsearch
+devroost init db-elasticsearch --dir my-elasticsearch
 cd my-elasticsearch
-loom start
-loom status
+devroost start
+devroost status
 ```
 
 ## Service

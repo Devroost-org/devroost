@@ -6,7 +6,7 @@ export const dotnetStack = defineStack({
   generator: { kind: "none" }, runtimeImages: [{ env: "DOTNET_IMAGE", reference: runtimeImagePins.dotnet8Sdk }],
   install: ["dotnet restore"], start: ["dotnet run --urls http://0.0.0.0:5000"],
   readiness: { kind: "http", value: "http://127.0.0.1:5000/", timeoutSeconds: 330 }, hostWrites: ["src/bin", "src/obj"],
-  verification: [{ service: "app", command: ["wget", "-qO", "/dev/null", "http://127.0.0.1:5000/"] }], loomOwnedFiles: [".env.example", "loom.yaml"],
+  verification: [{ service: "app", command: ["wget", "-qO", "/dev/null", "http://127.0.0.1:5000/"] }], devroostOwnedFiles: [".env.example", "devroost.yaml"],
   generatedPaths: [{ path: "src/bin", category: "build" }, { path: "src/obj", category: "build" }], protectedPaths: ["src"],
   compatibility: { architectures: ["arm", "arm64", "x64"], runtime: "podman-rootless" }
 });

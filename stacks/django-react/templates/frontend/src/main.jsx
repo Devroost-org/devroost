@@ -25,7 +25,7 @@ function App() {
 
   return (
     <main style={{ fontFamily: "system-ui", padding: 24, maxWidth: 720, margin: "0 auto" }}>
-      <h1>Loom Django + React template</h1>
+      <h1>Devroost Django + React template</h1>
       <p>{status}</p>
       <ul>
         {items.map((item) => (

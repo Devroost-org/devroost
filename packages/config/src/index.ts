@@ -164,7 +164,7 @@ function interpolateString(value: string, env: Record<string, string>): string {
       return defaultValue;
     }
 
-    throw new Error(`Missing required environment variable '${key}' while loading Loom config.`);
+    throw new Error(`Missing required environment variable '${key}' while loading Devroost config.`);
   });
 }
 
@@ -186,7 +186,7 @@ function interpolateConfigValue(value: unknown, env: Record<string, string>): un
   return value;
 }
 
-export async function loadLoomProject(configPath = "loom.yaml"): Promise<LoadedLoomProject> {
+export async function loadLoomProject(configPath = "devroost.yaml"): Promise<LoadedLoomProject> {
   const absolutePath = await findConfigPath(configPath);
   const raw = await readFile(absolutePath, "utf-8");
   const projectRoot = dirname(absolutePath);
@@ -199,7 +199,7 @@ export async function loadLoomProject(configPath = "loom.yaml"): Promise<LoadedL
   };
 }
 
-export async function loadLoomConfig(configPath = "loom.yaml"): Promise<LoomConfig> {
+export async function loadLoomConfig(configPath = "devroost.yaml"): Promise<LoomConfig> {
   const loaded = await loadLoomProject(configPath);
   return loaded.config;
 }

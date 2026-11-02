@@ -58,5 +58,5 @@ test("buildExecArgs omits tty flags for non-interactive terminal", () => {
 });
 
 test("buildExecArgs rejects empty command", () => {
-  assert.throws(() => buildExecArgs("demo-app", [], false), /Command required for loom exec/i);
+  assert.throws(() => buildExecArgs("demo-app", [], false), /Command required for devroost exec/i);
 });

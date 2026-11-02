@@ -1,7 +1,7 @@
 {
   "name": "@loom/tasks",
   "version": "0.1.1",
-  "description": "Task execution helpers for Loom project workflows.",
+  "description": "Task execution helpers for Devroost project workflows.",
   "keywords": [
     "loom",
     "tasks",

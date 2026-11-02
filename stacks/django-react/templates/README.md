@@ -5,7 +5,7 @@ This template gives you a small full-stack project with:
 - Django backend service
 - React frontend served by Vite
 - Local source mounts for both services
-- HTTPS route at `https://django-react.loom.local`
+- HTTPS route at `https://django-react.devroost.local`
 
 ## Services
 
@@ -23,7 +23,7 @@ This template gives you a small full-stack project with:
 
 ## Route
 
-- Frontend: `https://django-react.loom.local`
+- Frontend: `https://django-react.devroost.local`
 - Backend health: `http://127.0.0.1:8001/health`
 - Backend API through frontend proxy: `/api/health`, `/api/todos`
 
@@ -31,23 +31,23 @@ This template gives you a small full-stack project with:
 
 - `backend/` — Django app and settings
 - `frontend/` — React app with Vite dev server
-- `loom.yaml` — Loom service and route definition
+- `devroost.yaml` — Devroost service and route definition
 - `.env.example` — runtime image defaults
 
 ## Quickstart
 
 ```bash
-loom init django-react --dir my-django-react
+devroost init django-react --dir my-django-react
 cd my-django-react
-loom start
-loom status
+devroost start
+devroost status
 ```
 
-The backend and frontend both run directly as the host-aligned UID:GID under `userns: keep-id`. This template avoids privileged bootstrap work, so startup stays lighter while still keeping `pip`, migrations, `npm install`, and `loom exec` aligned with the host user on Linux rootless Podman.
+The backend and frontend both run directly as the host-aligned UID:GID under `userns: keep-id`. This template avoids privileged bootstrap work, so startup stays lighter while still keeping `pip`, migrations, `npm install`, and `devroost exec` aligned with the host user on Linux rootless Podman.
 
 ## Image overrides
 
-`loom init` copies `.env.example` to `.env`, so you can switch runtime versions without editing `loom.yaml`.
+`devroost init` copies `.env.example` to `.env`, so you can switch runtime versions without editing `devroost.yaml`.
 
 ```bash
 # Python runtime
@@ -60,5 +60,5 @@ NODE_IMAGE=ghcr.io/loom-development/loom-node-24@sha256:5bdb11d871f1cea2d5c20305
 You can also choose these during init interactively or pass them directly:
 
 ```bash
-loom init django-react --image PYTHON_IMAGE=ghcr.io/loom-development/loom-python-3.12@sha256:dfc56d79d2e1ec7552b172f58bab8468929cf80dca40a33078654bc5fb8d9a94 --image NODE_IMAGE=ghcr.io/loom-development/loom-node-24@sha256:5bdb11d871f1cea2d5c20305e35d63ab199d23d9b8be69135fc615425f38420c
+devroost init django-react --image PYTHON_IMAGE=ghcr.io/loom-development/loom-python-3.12@sha256:dfc56d79d2e1ec7552b172f58bab8468929cf80dca40a33078654bc5fb8d9a94 --image NODE_IMAGE=ghcr.io/loom-development/loom-node-24@sha256:5bdb11d871f1cea2d5c20305e35d63ab199d23d9b8be69135fc615425f38420c
 ```

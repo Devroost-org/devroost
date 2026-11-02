@@ -61,7 +61,7 @@ services:
       retries: 20
       startPeriodSeconds: 30
 routes:
-  - host: drupal.loom.local
+  - host: drupal.devroost.local
     service: app
     port: 80
     https: true

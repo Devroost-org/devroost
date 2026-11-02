@@ -54,9 +54,9 @@ test("every canonical stack publishes complete launch documentation", async () =
   assert.equal(stackDefinitions.length, 31);
   for (const definition of stackDefinitions) {
     assert.doesNotThrow(() => validateStackDocumentation(definition.id, definition.documentation));
-    assert.equal(definition.documentation.initCommand.startsWith(`loom init ${definition.id} `), true, definition.id);
+    assert.equal(definition.documentation.initCommand.startsWith(`devroost init ${definition.id} `), true, definition.id);
 
-    const yaml = await readFile(resolve(fileURLToPath(new URL(".", import.meta.url)), "..", definition.assetPath, "loom.yaml"), "utf8");
+    const yaml = await readFile(resolve(fileURLToPath(new URL(".", import.meta.url)), "..", definition.assetPath, "devroost.yaml"), "utf8");
     assert.deepEqual(
       definition.documentation.services.map(({ name }) => name).sort(),
       templateServiceNames(yaml).sort(),
@@ -73,7 +73,7 @@ test("database stack documentation cannot advertise optional databases", () => {
   );
 });
 
-test("runtime defaults use immutable images published by Loom", () => {
+test("runtime defaults use immutable images published by Devroost", () => {
   for (const definition of stackDefinitions) {
     for (const image of definition.runtimeImages) {
       assert.match(
@@ -358,7 +358,7 @@ test("database verification checks target existing services and cover every db-a
   ] as const;
   for (const id of databaseIds) {
     const definition = findStackDefinition(id)!;
-    const yaml = await readFile(resolve(fileURLToPath(new URL(".", import.meta.url)), "..", definition.assetPath, "loom.yaml"), "utf8");
+    const yaml = await readFile(resolve(fileURLToPath(new URL(".", import.meta.url)), "..", definition.assetPath, "devroost.yaml"), "utf8");
     const serviceNames = templateServiceNames(yaml);
     const checks = definition.verification;
     assert.ok(checks.length > 0, `${id} verification checks`);
@@ -370,7 +370,7 @@ test("database verification checks target existing services and cover every db-a
 
 test("verification checks only target services declared by their templates", async () => {
   for (const definition of stackDefinitions.filter(({ definitionVersion }) => definitionVersion === 2)) {
-    const yaml = await readFile(resolve(fileURLToPath(new URL(".", import.meta.url)), "..", definition.assetPath, "loom.yaml"), "utf8");
+    const yaml = await readFile(resolve(fileURLToPath(new URL(".", import.meta.url)), "..", definition.assetPath, "devroost.yaml"), "utf8");
     const serviceNames = templateServiceNames(yaml);
     for (const check of definition.verification) {
       if (check.service !== undefined) assert.ok(serviceNames.includes(check.service), `${definition.id} service ${check.service}`);
@@ -387,8 +387,8 @@ test("Node template inventory and bytes match the approved migration fixture", a
     let bytes = await readFile(resolve(root, "templates", entry));
     if (entry === ".env.example") bytes = Buffer.from(bytes.toString("utf8").replace(/^NODE_IMAGE=.*$/m, "NODE_IMAGE=<IMAGE>"));
     if (entry === "README.md") bytes = Buffer.from(bytes.toString("utf8").replace(/\$\{NODE_IMAGE:-[^}\s]+\}/g, "${NODE_IMAGE:-<IMAGE>}"));
-    if (entry === "loom.yaml") bytes = Buffer.from(bytes.toString("utf8").replace(/\$\{NODE_IMAGE:-[^}\s]+\}/g, "${NODE_IMAGE:-<IMAGE>}"));
+    if (entry === "devroost.yaml") bytes = Buffer.from(bytes.toString("utf8").replace(/\$\{NODE_IMAGE:-[^}\s]+\}/g, "${NODE_IMAGE:-<IMAGE>}"));
     assert.equal(createHash("sha256").update(bytes).digest("hex"), expected[entry], entry);
   }
-  assert.match(await readFile(resolve(root, "templates/loom.yaml"), "utf8"), /ghcr\.io\/loom-development\/loom-node-24@sha256:[a-f0-9]{64}/);
+  assert.match(await readFile(resolve(root, "templates/devroost.yaml"), "utf8"), /ghcr\.io\/loom-development\/loom-node-24@sha256:[a-f0-9]{64}/);
 });

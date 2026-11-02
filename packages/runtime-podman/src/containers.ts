@@ -33,7 +33,7 @@ export function ipv4ForwardingError(platform: NodeJS.Platform, value: string): s
   }
 
   return [
-    "IPv4 forwarding is disabled, so Loom's Podman bridge networks cannot access the internet.",
+    "IPv4 forwarding is disabled, so Devroost's Podman bridge networks cannot access the internet.",
     "Enable it for the current session with: sudo sysctl -w net.ipv4.ip_forward=1",
     "To keep it enabled after reboot, add net.ipv4.ip_forward=1 to /etc/sysctl.d/99-podman-forwarding.conf and run: sudo sysctl --system"
   ].join("\n");
@@ -73,7 +73,7 @@ async function isDnsWorking(networkName: string): Promise<boolean> {
 }
 
 async function restartAardvarkDns(): Promise<void> {
-  process.stderr.write("Loom: aardvark-dns is not responding, restarting it...\n");
+  process.stderr.write("Devroost: aardvark-dns is not responding, restarting it...\n");
 
   if (process.platform === "linux") {
     try {
@@ -94,7 +94,7 @@ async function restartAardvarkDns(): Promise<void> {
       await execFileAsync("podman", ["machine", "start"], { timeout: 60_000 });
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      process.stderr.write(`Loom: could not restart Podman Machine: ${msg}\n`);
+      process.stderr.write(`Devroost: could not restart Podman Machine: ${msg}\n`);
     }
   }
 }
@@ -113,7 +113,7 @@ export async function ensurePodmanNetwork(networkName: string): Promise<void> {
   if (!(await isDnsWorking(networkName))) {
     await restartAardvarkDns();
     if (!(await isDnsWorking(networkName))) {
-      process.stderr.write(`Loom: DNS is still not working on network '${networkName}'. ` +
+      process.stderr.write(`Devroost: DNS is still not working on network '${networkName}'. ` +
         `Try: podman system reset --force\n`);
     }
   }
@@ -155,7 +155,7 @@ export async function listProjectContainers(
     "ps",
     "-a",
     "--filter",
-    `label=loom.project=${projectName}`,
+    `label=devroost.project=${projectName}`,
     "--format",
     "{{.Names}}"
   ]);
@@ -337,7 +337,7 @@ export async function buildPodmanRunArgs(
   }
 
   appendHealthcheckArgs(args, service);
-  args.push("--label", `loom.project=${projectName}`);
+  args.push("--label", `devroost.project=${projectName}`);
   args.push("--label", `loom.service-hash=${expectedServiceHash}`);
   args.push(expectedImage);
 
@@ -354,7 +354,7 @@ export async function assertContainerOwnership(
   name: string,
   inspectLabel: typeof inspectContainerLabel = inspectContainerLabel
 ): Promise<void> {
-  const owner = await inspectLabel(name, "loom.project");
+  const owner = await inspectLabel(name, "devroost.project");
   const missingOwner = !owner || owner === "<no value>";
   // Preserve compatibility with simple, unambiguous pre-label container names.
   if (missingOwner && !name.includes("--p")) return;

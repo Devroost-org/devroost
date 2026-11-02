@@ -41,7 +41,7 @@ services:
       retries: 80
       startPeriodSeconds: 5
 routes:
-  - host: jamstack.loom.local
+  - host: jamstack.devroost.local
     service: web
     port: 5174
     https: true

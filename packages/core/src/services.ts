@@ -34,7 +34,7 @@ export async function buildServiceNotFoundError(
   const suggestion = closestMatch ? ` Did you mean '${closestMatch}'?` : "";
 
   return new Error(
-    `Service '${serviceName}' is not defined in loom.yaml.${suggestion} Available services: ${availableMessage}. Running services: ${runningMessage}.`
+    `Service '${serviceName}' is not defined in devroost.yaml.${suggestion} Available services: ${availableMessage}. Running services: ${runningMessage}.`
   );
 }
 

@@ -50,7 +50,7 @@ services:
       APACHE_CONF
       a2enmod rewrite >/dev/null
       if [ ! -f /app/index.php ]; then
-        printf '%s\n' '<?php echo "Loom PHP example is running.";' > /app/index.php
+        printf '%s\n' '<?php echo "Devroost PHP example is running.";' > /app/index.php
       fi
       exec apache2-foreground
     volumes:
@@ -64,7 +64,7 @@ services:
       retries: 20
       startPeriodSeconds: 30
 routes:
-  - host: php.loom.local
+  - host: php.devroost.local
     service: app
     port: 80
     https: true

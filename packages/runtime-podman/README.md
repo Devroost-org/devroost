@@ -1,6 +1,6 @@
 # @loom/runtime-podman
 
-Podman runtime adapter for Loom.
+Podman runtime adapter for Devroost.
 
 - Container/network lifecycle helpers
 - Readiness checks
@@ -22,10 +22,10 @@ Podman runtime adapter for Loom.
 
 The package keeps a stable public surface through `src/index.ts`, while the internal split keeps Podman command execution, container inspection, lifecycle decisions, and backup/readiness behavior independently testable.
 
-New service containers carry a `loom.project` label. Project listings and bulk
+New service containers carry a `devroost.project` label. Project listings and bulk
 recreation select that exact label, avoiding overlapping project-name prefixes.
 Older unlabeled containers are excluded from bulk deletion; remove those
-containers explicitly by their exact names and run `loom start` to recreate them
+containers explicitly by their exact names and run `devroost start` to recreate them
 with ownership labels. Bind-mounted database data is preserved by container removal.
 
 Redis restore requires a stopped primary container. A temporary container uses the

@@ -163,7 +163,7 @@ export async function runStackGeneratorWithDependencies(
   } catch (error) {
     if (errorCode(error) === "ENOENT") {
       throw new Error(
-        `Podman is required to initialize '${definition.id}'. Install Podman and retry 'loom init ${definition.id}'.`
+        `Podman is required to initialize '${definition.id}'. Install Podman and retry 'devroost init ${definition.id}'.`
       );
     }
 
@@ -287,13 +287,13 @@ export async function prepareInitTarget(
       if (await looksLikeDrupalProject(targetDir, dependencies)) {
         return {
           overwriteTemplateFiles: true,
-          templateEntriesToUpdate: ["loom.yaml"],
+          templateEntriesToUpdate: ["devroost.yaml"],
           templateEntriesToCreateIfMissing: [".env.example"]
         };
       }
 
       throw new Error(
-        `Target directory '${targetDir}' must be empty to initialize '${template}' because Loom runs composer create-project in that directory.`
+        `Target directory '${targetDir}' must be empty to initialize '${template}' because Devroost runs composer create-project in that directory.`
       );
     }
 
@@ -307,13 +307,13 @@ export async function prepareInitTarget(
       if (await looksLikeWordPressProject(targetDir, dependencies)) {
         return {
           overwriteTemplateFiles: true,
-          templateEntriesToUpdate: ["loom.yaml"],
+          templateEntriesToUpdate: ["devroost.yaml"],
           templateEntriesToCreateIfMissing: [".env.example", "wp-config.php"]
         };
       }
 
       throw new Error(
-        `Target directory '${targetDir}' must be empty to initialize '${template}' because Loom bootstraps WordPress files in that directory.`
+        `Target directory '${targetDir}' must be empty to initialize '${template}' because Devroost bootstraps WordPress files in that directory.`
       );
     }
 
@@ -327,13 +327,13 @@ export async function prepareInitTarget(
       if (await looksLikeRailsProject(targetDir, dependencies)) {
         return {
           overwriteTemplateFiles: true,
-          templateEntriesToUpdate: ["loom.yaml"],
+          templateEntriesToUpdate: ["devroost.yaml"],
           templateEntriesToCreateIfMissing: [".env.example"]
         };
       }
 
       throw new Error(
-        `Target directory '${targetDir}' must be empty to initialize '${template}' because Loom bootstraps the Rails project in that directory.`
+        `Target directory '${targetDir}' must be empty to initialize '${template}' because Devroost bootstraps the Rails project in that directory.`
       );
     }
 
@@ -347,13 +347,13 @@ export async function prepareInitTarget(
       if (await looksLikeRailsProject(targetDir, dependencies)) {
         return {
           overwriteTemplateFiles: true,
-          templateEntriesToUpdate: ["loom.yaml"],
+          templateEntriesToUpdate: ["devroost.yaml"],
           templateEntriesToCreateIfMissing: [".env.example"]
         };
       }
 
       throw new Error(
-        `Target directory '${targetDir}' must be empty to initialize '${template}' because Loom bootstraps the Rails project in that directory.`
+        `Target directory '${targetDir}' must be empty to initialize '${template}' because Devroost bootstraps the Rails project in that directory.`
       );
     }
 
@@ -367,13 +367,13 @@ export async function prepareInitTarget(
       if (await looksLikeSymfonyProject(targetDir, dependencies)) {
         return {
           overwriteTemplateFiles: true,
-          templateEntriesToUpdate: ["loom.yaml"],
+          templateEntriesToUpdate: ["devroost.yaml"],
           templateEntriesToCreateIfMissing: [".env.example"]
         };
       }
 
       throw new Error(
-        `Target directory '${targetDir}' must be empty to initialize '${template}' because Loom bootstraps the Symfony project in that directory.`
+        `Target directory '${targetDir}' must be empty to initialize '${template}' because Devroost bootstraps the Symfony project in that directory.`
       );
     }
 
@@ -381,7 +381,7 @@ export async function prepareInitTarget(
     await bootstrapSymfony(targetDir);
     return {
       overwriteTemplateFiles: false,
-      templateEntriesToUpdate: ["loom.yaml"],
+      templateEntriesToUpdate: ["devroost.yaml"],
       templateEntriesToCreateIfMissing: [".env.example"]
     };
   }
@@ -398,7 +398,7 @@ export async function prepareInitTarget(
   if (nonEmpty) {
     return {
       overwriteTemplateFiles: false,
-      templateEntriesToUpdate: ["loom.yaml"],
+      templateEntriesToUpdate: ["devroost.yaml"],
       templateEntriesToCreateIfMissing: [".env.example"]
     };
   }

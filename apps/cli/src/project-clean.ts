@@ -45,7 +45,7 @@ const defaultDependencies: ProjectCleanDependencies = {
   rm: nodeRm
 };
 
-const fixedProtectedPaths = [".env", "loom.yaml"] as const;
+const fixedProtectedPaths = [".env", "devroost.yaml"] as const;
 const dependencyManifestNames = new Set([
   "Cargo.toml", "Gemfile", "Pipfile", "composer.json", "package.json", "pom.xml",
   "pyproject.toml", "requirements.txt", "build.gradle", "build.gradle.kts",
@@ -63,14 +63,14 @@ function dependencies(overrides?: Partial<ProjectCleanDependencies>): ProjectCle
 
 function isKnownProtectedFile(path: string): boolean {
   const name = path.split("/").at(-1)!;
-  return name === ".env" || name === "loom.yaml" || dependencyManifestNames.has(name) || lockfileNames.has(name) ||
+  return name === ".env" || name === "devroost.yaml" || dependencyManifestNames.has(name) || lockfileNames.has(name) ||
     name.endsWith(".csproj") || name.endsWith(".sln") || /^requirements(?:-[^/]+)?\.txt$/.test(name);
 }
 
 function assertSafeRelativePath(path: string): void {
   const parts = path.split("/");
   if (!path || path === "." || isAbsolute(path) || /^[A-Za-z]:[\\/]/.test(path) || path.includes("\\") ||
-      parts.some((part) => !part || part === "." || part === "..") || path === ".loom" || path.startsWith(".loom/")) {
+      parts.some((part) => !part || part === "." || part === "..") || path === ".devroost" || path.startsWith(".devroost/")) {
     throw new Error(`Unsafe generated path '${path}'`);
   }
 }
@@ -147,7 +147,7 @@ async function discoverProjectManifests(
     const entries = (await fs.readdir(directory, { withFileTypes: true })).sort((a, b) => a.name.localeCompare(b.name));
     for (const entry of entries) {
       const childRelative = directoryRelative ? `${directoryRelative}/${entry.name}` : entry.name;
-      if (childRelative === ".loom" || childRelative.startsWith(".loom/") || childRelative === ".git" ||
+      if (childRelative === ".devroost" || childRelative.startsWith(".devroost/") || childRelative === ".git" ||
           generatedPaths.some((generatedPath) => childRelative === generatedPath || childRelative.startsWith(`${generatedPath}/`))) {
         continue;
       }

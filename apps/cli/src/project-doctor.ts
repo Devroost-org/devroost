@@ -106,10 +106,10 @@ async function manifestCheck(options: RunProjectDoctorOptions): Promise<DoctorRe
   if (options.manifest.kind === "missing") return result("manifest", "failure", "Project manifest is missing");
   if (!options.stack || options.stack.id !== options.manifest.manifest.stack.id) return result("manifest", "failure", "Manifest selects an unknown stack", options.manifest.manifest.stack.id);
   const compatibility = classifyProjectManifestStack(options.manifest.manifest, options.stack);
-  if (compatibility.kind === "incompatible") return result("manifest", "failure", "Project manifest is incompatible with this Loom release", compatibility.reason);
-  if (options.manifest.kind === "migration-required") return result("manifest", "warning", "Project manifest requires migration", "Run loom upgrade --initialize-baseline.");
+  if (compatibility.kind === "incompatible") return result("manifest", "failure", "Project manifest is incompatible with this Devroost release", compatibility.reason);
+  if (options.manifest.kind === "migration-required") return result("manifest", "warning", "Project manifest requires migration", "Run devroost upgrade --initialize-baseline.");
   if (compatibility.kind === "legacy-compatible") {
-    return result("manifest", "warning", "Project definition metadata requires upgrade", "Run loom upgrade to record the current definition version.");
+    return result("manifest", "warning", "Project definition metadata requires upgrade", "Run devroost upgrade to record the current definition version.");
   }
   return result("manifest", "pass", "Project manifest is current");
 }

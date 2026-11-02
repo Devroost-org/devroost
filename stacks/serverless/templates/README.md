@@ -5,10 +5,10 @@ This template gives you a 2026-style serverless-inspired workflow with a FaaS ba
 ## Quickstart
 
 ```bash
-loom init serverless --dir my-serverless
+devroost init serverless --dir my-serverless
 cd my-serverless
-loom start
-loom status
+devroost start
+devroost status
 ```
 
 ## What changed for 2026
@@ -48,7 +48,7 @@ loom status
 
 ## Route
 
-- Web app: `https://serverless.loom.local`
+- Web app: `https://serverless.devroost.local`
 
 ## Image overrides
 

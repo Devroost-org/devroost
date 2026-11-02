@@ -1,16 +1,16 @@
 # PHP starter
 
-This project was generated from Loom's versioned `php` stack package. It runs
+This project was generated from Devroost's versioned `php` stack package. It runs
 Apache with PHP and serves the selected document root from the host project.
 
 ```bash
-loom start
-loom status
-loom exec app -- php -v
-loom stop
+devroost start
+devroost status
+devroost exec app -- php -v
+devroost stop
 ```
 
-Pass `--php-docroot <path>` to `loom init php` when the application entrypoint
+Pass `--php-docroot <path>` to `devroost init php` when the application entrypoint
 is not the project root. The generated `.env` exposes the exact default PHP
 image tag and may be edited for an explicit runtime override:
 
