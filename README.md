@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Loom-development/Loom/main/assets/branding/devroost-logo.png" alt="Devroost — connected infinity-loop wordmark" width="800">
+  <img src="https://raw.githubusercontent.com/Devroost-org/devroost/main/assets/branding/devroost-logo.png" alt="Devroost — connected infinity-loop wordmark" width="800">
 </p>
 
 # Devroost — local development CLI
@@ -80,7 +80,7 @@ npx devroost@latest --help
 `npx` downloads the package if needed and stores it in npm's cache. It may ask
 before downloading. Use `npx devroost@latest` in place of `devroost` in the examples
 throughout this documentation. The `@latest` suffix explicitly requests npm's
-latest published release; use a specific version, such as `devroost@0.3.8`, when
+latest published release; use a specific version, such as `devroost@0.3.9`, when
 you need repeatable runs. See the [npm npx documentation](https://docs.npmjs.com/cli/v11/commands/npx/)
 for package selection and caching details.
 
@@ -104,13 +104,13 @@ Your project files stay in place, and the command remains `devroost`.
 Linux and macOS:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Loom-development/Loom/main/scripts/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/Devroost-org/devroost/main/scripts/install.sh | sh
 ```
 
 Windows PowerShell:
 
 ```powershell
-irm https://raw.githubusercontent.com/Loom-development/Loom/main/scripts/install.ps1 | iex
+irm https://raw.githubusercontent.com/Devroost-org/devroost/main/scripts/install.ps1 | iex
 ```
 
 Check the installation:
@@ -387,7 +387,7 @@ choice in `.env` avoids changing `devroost.yaml` directly.
 
 - Run `devroost --help` or `devroost <command> --help`.
 - Use `devroost doctor` inside a project.
-- Report bugs or request features in [GitHub Issues](https://github.com/Loom-development/Loom/issues).
+- Report bugs or request features in [GitHub Issues](https://github.com/Devroost-org/devroost/issues).
 
 ## License
 

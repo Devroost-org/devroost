@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 set -eu
 
-REPO="${DEVROOST_REPO:-Loom-development/Loom}"
+REPO="${DEVROOST_REPO:-Devroost-org/devroost}"
 VERSION="${DEVROOST_VERSION:-latest}"
 INSTALL_DIR="${DEVROOST_INSTALL_DIR:-$HOME/.local/bin}"
 

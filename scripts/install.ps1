@@ -1,5 +1,5 @@
 param(
-  [string]$Repo = $(if ($env:DEVROOST_REPO) { $env:DEVROOST_REPO } else { "Loom-development/Loom" }),
+  [string]$Repo = $(if ($env:DEVROOST_REPO) { $env:DEVROOST_REPO } else { "Devroost-org/devroost" }),
   [string]$Version = $(if ($env:DEVROOST_VERSION) { $env:DEVROOST_VERSION } else { "latest" }),
   [string]$InstallDir = $(if ($env:DEVROOST_INSTALL_DIR) { $env:DEVROOST_INSTALL_DIR } else { "$HOME\\.devroost\\bin" })
 )

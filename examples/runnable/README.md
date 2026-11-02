@@ -18,5 +18,5 @@ devroost start
 
 Install the `loomdev` npm package globally to use `loom`, or replace `devroost` in
 these commands with `npx loomdev@latest` to run without a global installation.
-See the [installation guide](https://github.com/Loom-development/Loom#install)
+See the [installation guide](https://github.com/Devroost-org/devroost#install)
 for requirements and update instructions.

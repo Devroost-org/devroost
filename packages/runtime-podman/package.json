@@ -9,13 +9,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/Loom-development/Loom.git",
+    "url": "https://github.com/Devroost-org/devroost.git",
     "directory": "packages/runtime-podman"
   },
   "bugs": {
-    "url": "https://github.com/Loom-development/Loom/issues"
+    "url": "https://github.com/Devroost-org/devroost/issues"
   },
-  "homepage": "https://github.com/Loom-development/Loom#readme",
+  "homepage": "https://github.com/Devroost-org/devroost#readme",
   "license": "Elastic-2.0",
   "type": "module",
   "main": "dist/index.js",
