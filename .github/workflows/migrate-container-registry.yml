@@ -1,0 +1,62 @@
+name: Migrate Container Registry
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/migrate-container-registry.yml]
+  workflow_dispatch:
+permissions:
+  contents: write
+  packages: write
+  id-token: write
+jobs:
+  migrate:
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - name: Install registry tools
+        run: sudo apt-get update && sudo apt-get install -y skopeo
+      - uses: sigstore/cosign-installer@v4.1.2
+      - name: Authenticate to destination registry
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$HOME/.docker"
+          printf '%s' "$GH_TOKEN" | skopeo login --authfile "$HOME/.docker/config.json" --username "${{ github.actor }}" --password-stdin ghcr.io
+      - name: Copy and sign published immutable images
+        env:
+          REGISTRY_AUTH_FILE: /home/runner/.docker/config.json
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          import {execFileSync} from 'node:child_process';
+          const source=JSON.parse(fs.readFileSync('images/digests.json'));
+          const migrated={...source, registry:'ghcr.io/devroost-org', signatureIdentity:'https://github.com/Devroost-org/devroost/.github/workflows/migrate-container-registry.yml@refs/heads/main', images:[]};
+          for(const record of source.images){
+            const name=record.name.replace(/^loom-/, 'devroost-');
+            const version=record.version.replace(/-loom\./, '-devroost.');
+            const destination=`${migrated.registry}/${name}`;
+            execFileSync('skopeo',['copy','--all','--preserve-digests','--retry-times','3',`docker://${record.image}@${record.digest}`,`docker://${destination}:${version}`],{stdio:'inherit'});
+            const digest=execFileSync('skopeo',['inspect','--format','{{.Digest}}',`docker://${destination}:${version}`],{encoding:'utf8'}).trim();
+            if(digest!==record.digest)throw Error(`Digest mismatch for ${name}`);
+            execFileSync('cosign',['sign','--yes',`${destination}@${digest}`],{stdio:'inherit'});
+            migrated.images.push({...record,name,version,image:destination,digest});
+            fs.writeFileSync('images/registry-migration.json',JSON.stringify(migrated,null,2)+'\n');
+            console.log(`Migrated ${name}:${version} (${digest})`);
+          }
+          JS
+      - name: Record verified migration results
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add images/registry-migration.json
+          git commit -m 'chore(images): record verified Devroost registry migration'
+          git push origin HEAD:main
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: registry-migration
+          path: images/registry-migration.json
+          if-no-files-found: ignore
