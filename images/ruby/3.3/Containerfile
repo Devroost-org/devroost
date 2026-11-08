@@ -11,6 +11,7 @@ RUN set -eux; \
         libpq-dev \
         libsqlite3-dev \
         libyaml-dev \
+        linux-libc-dev \
         pkg-config; \
     rm -rf /var/lib/apt/lists/*
 
