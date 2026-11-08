@@ -16,7 +16,7 @@ devroost status
 ## Services
 
 - `app`
-  - Runtime: `${PHP_IMAGE:-ghcr.io/devroost-org/devroost-php@sha256:d9f67c2ee13bdc0f17cb836c435acb5787062311ac1843aa3ee4cb7ff11c799d}`
+  - Runtime: `${PHP_IMAGE:-ghcr.io/devroost-org/devroost-php@sha256:4f09d53d6d196828b0aa0586c64959328cb6973007ea7bebef23913b94f89036}`
   - Port: `8092`
   - Purpose: Apache + PHP application server serving Symfony from `/app/public`
 

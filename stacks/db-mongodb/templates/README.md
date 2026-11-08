@@ -14,7 +14,7 @@ devroost status
 ## Service
 
 - `db`
-  - Runtime: `${MONGO_IMAGE:-ghcr.io/devroost-org/mongo-7.0@sha256:406a4fdca9fc763443268f000218d3849ef8996f66ed9e92ba0b501b446ab822}`
+  - Runtime: `${MONGO_IMAGE:-ghcr.io/devroost-org/mongo-7.0@sha256:94aea1479556ad4e5aba7a31a6d53eb7b0ae76741950da45a13d5df5cddf1b3b}`
   - Port: `27017`
 
 ## Route

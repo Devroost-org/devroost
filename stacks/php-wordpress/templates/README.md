@@ -14,7 +14,7 @@ devroost status
 ## Services
 
 - `app`
-  - Runtime: `${WORDPRESS_IMAGE:-ghcr.io/devroost-org/devroost-wordpress@sha256:56b061e053c09046384493bffe0849642856ab413890547ca4b3dd8a121e4013}`
+  - Runtime: `${WORDPRESS_IMAGE:-ghcr.io/devroost-org/devroost-wordpress@sha256:b2576bf9e5c8f74637c86ebb03913164aa112ebe9ed28cd6f0450f992f0f3200}`
   - Port: `8090`
   - Purpose: WordPress app server
 

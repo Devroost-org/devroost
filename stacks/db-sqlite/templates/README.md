@@ -14,7 +14,7 @@ devroost status
 ## Service
 
 - `db`
-  - Runtime: `${SQLITE_IMAGE:-ghcr.io/devroost-org/devroost-sqlite-3@sha256:fb5d256f745a6e26fc5a416e2491f33e02eaba00abd4d786f51a5c8e74667f07}`
+  - Runtime: `${SQLITE_IMAGE:-ghcr.io/devroost-org/devroost-sqlite-3@sha256:3f4b2421a867320ec0fdd7ae60d3106fde34afb95ceadbb78f94871ffc7b3af4}`
   - Port: none
   - Purpose: create and expose the SQLite database file under the project data directory
 

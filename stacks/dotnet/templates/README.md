@@ -14,7 +14,7 @@ devroost status
 ## Services
 
 - `app`
-  - Runtime: `${DOTNET_IMAGE:-ghcr.io/devroost-org/devroost-dotnet-8@sha256:9dc76e1a67889eb32b9fab8b4665bc40cbb497fe2abe704d83fd7c5cc9ee53ec}`
+  - Runtime: `${DOTNET_IMAGE:-ghcr.io/devroost-org/devroost-dotnet-8@sha256:974fbadc459e0978702bf720e6a0ab184e61fe0ad9329e82c36e48fc4c7a8f42}`
   - Port: `5000`
   - Purpose: .NET development server
 

@@ -14,7 +14,7 @@ devroost status
 ## Services
 
 - `app`
-  - Runtime: `${PYTHON_IMAGE:-ghcr.io/devroost-org/devroost-python-3.12@sha256:dfc56d79d2e1ec7552b172f58bab8468929cf80dca40a33078654bc5fb8d9a94}`
+  - Runtime: `${PYTHON_IMAGE:-ghcr.io/devroost-org/devroost-python-3.12@sha256:884a0f59134fbdb22320961af5568f4f2664e38b18d445a7d72000d905338fba}`
   - Port: `8001`
   - Purpose: Django development server
 
