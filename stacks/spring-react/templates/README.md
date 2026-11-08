@@ -14,11 +14,11 @@ devroost status
 ## Services
 
 - `backend`
-  - Runtime: `${JAVA_IMAGE:-ghcr.io/devroost-org/devroost-java-21@sha256:dd2c87a716b9f86d94cacc5db4b7b44ec3ba864f33ca3d6823461f84522dbe7e}`
+  - Runtime: `${JAVA_IMAGE:-ghcr.io/devroost-org/devroost-java-21@sha256:576bb2470a390e3f1aa1f751a3a6dd586c619050032084beffad52a48c46a97e}`
   - Port: `8081`
   - Purpose: Spring Boot API
 - `web`
-  - Runtime: `${NODE_IMAGE:-ghcr.io/devroost-org/devroost-node-22@sha256:25823da1bec192be0882fa20a0838f576e2b6cc7e7aefbb1183ebc3cf1c924e6}`
+  - Runtime: `${NODE_IMAGE:-ghcr.io/devroost-org/devroost-node-22@sha256:d619f341b065fc1bf6c0e3b793847f202fad1478c37b54c0f11aed1b55ca798b}`
   - Port: `5175`
   - Purpose: built React frontend served locally with `/api` proxied to Spring Boot
 

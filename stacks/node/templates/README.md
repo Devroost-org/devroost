@@ -12,5 +12,5 @@ devroost stop
 ```
 
 The app serves its health endpoint at `/health`. Its exact default runtime is
-`${NODE_IMAGE:-ghcr.io/devroost-org/devroost-node-24@sha256:5bdb11d871f1cea2d5c20305e35d63ab199d23d9b8be69135fc615425f38420c}`. Change `NODE_IMAGE` in
+`${NODE_IMAGE:-ghcr.io/devroost-org/devroost-node-24@sha256:47887d26da9d5e31892f351297e03004ffd61f2d5c443ca4e56d89768e365f5c}`. Change `NODE_IMAGE` in
 `.env` to make an explicit runtime override without editing `devroost.yaml`.

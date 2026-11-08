@@ -6,87 +6,87 @@ export const publishedImageDocument = {
     {
       "name": "devroost-bun-1",
       "image": "ghcr.io/devroost-org/devroost-bun-1",
-      "digest": "sha256:4d640f6c2554c4ba738d1713dbec45be112cd59f6939d53fef7dc5ec78d9acda"
+      "digest": "sha256:abd226888f2a3ee913344acec1be36e96b0832858932ce2e2f2a0b09dd0131c0"
     },
     {
       "name": "devroost-dotnet-8",
       "image": "ghcr.io/devroost-org/devroost-dotnet-8",
-      "digest": "sha256:9dc76e1a67889eb32b9fab8b4665bc40cbb497fe2abe704d83fd7c5cc9ee53ec"
+      "digest": "sha256:974fbadc459e0978702bf720e6a0ab184e61fe0ad9329e82c36e48fc4c7a8f42"
     },
     {
       "name": "devroost-java-21",
       "image": "ghcr.io/devroost-org/devroost-java-21",
-      "digest": "sha256:dd2c87a716b9f86d94cacc5db4b7b44ec3ba864f33ca3d6823461f84522dbe7e"
+      "digest": "sha256:576bb2470a390e3f1aa1f751a3a6dd586c619050032084beffad52a48c46a97e"
     },
     {
       "name": "devroost-node-22",
       "image": "ghcr.io/devroost-org/devroost-node-22",
-      "digest": "sha256:25823da1bec192be0882fa20a0838f576e2b6cc7e7aefbb1183ebc3cf1c924e6"
+      "digest": "sha256:d619f341b065fc1bf6c0e3b793847f202fad1478c37b54c0f11aed1b55ca798b"
     },
     {
       "name": "devroost-node-24",
       "image": "ghcr.io/devroost-org/devroost-node-24",
-      "digest": "sha256:5bdb11d871f1cea2d5c20305e35d63ab199d23d9b8be69135fc615425f38420c"
+      "digest": "sha256:47887d26da9d5e31892f351297e03004ffd61f2d5c443ca4e56d89768e365f5c"
     },
     {
       "name": "devroost-php",
       "image": "ghcr.io/devroost-org/devroost-php",
-      "digest": "sha256:d9f67c2ee13bdc0f17cb836c435acb5787062311ac1843aa3ee4cb7ff11c799d"
+      "digest": "sha256:4f09d53d6d196828b0aa0586c64959328cb6973007ea7bebef23913b94f89036"
     },
     {
       "name": "devroost-python-3.12",
       "image": "ghcr.io/devroost-org/devroost-python-3.12",
-      "digest": "sha256:dfc56d79d2e1ec7552b172f58bab8468929cf80dca40a33078654bc5fb8d9a94"
+      "digest": "sha256:884a0f59134fbdb22320961af5568f4f2664e38b18d445a7d72000d905338fba"
     },
     {
       "name": "devroost-ruby-3.3",
       "image": "ghcr.io/devroost-org/devroost-ruby-3.3",
-      "digest": "sha256:fa3ff65b942751619cecc93a2fbecd23aee0c03400d99390c0be4242938e99e1"
+      "digest": "sha256:22adac98a37af8a24e2b4c59a1b003f4fcf165431ae3967fdedd01f83b72f8ae"
     },
     {
       "name": "devroost-sqlite-3",
       "image": "ghcr.io/devroost-org/devroost-sqlite-3",
-      "digest": "sha256:fb5d256f745a6e26fc5a416e2491f33e02eaba00abd4d786f51a5c8e74667f07"
+      "digest": "sha256:3f4b2421a867320ec0fdd7ae60d3106fde34afb95ceadbb78f94871ffc7b3af4"
     },
     {
       "name": "devroost-wordpress",
       "image": "ghcr.io/devroost-org/devroost-wordpress",
-      "digest": "sha256:56b061e053c09046384493bffe0849642856ab413890547ca4b3dd8a121e4013"
+      "digest": "sha256:b2576bf9e5c8f74637c86ebb03913164aa112ebe9ed28cd6f0450f992f0f3200"
     },
     {
       "name": "elasticsearch-8.19",
       "image": "ghcr.io/devroost-org/elasticsearch-8.19",
-      "digest": "sha256:e4797708584bd0df7c746b33a6640d243018a0ae8c8b088391c6f4675a3bef52"
+      "digest": "sha256:4d0724bb8d78d7a2330693623e26ca4d621079d062ecc8a30b3e1fc180ec14c1"
     },
     {
       "name": "mariadb-11.8",
       "image": "ghcr.io/devroost-org/mariadb-11.8",
-      "digest": "sha256:2439dcd7d14010ecd1ff7a4e1c5abe8e208c34fe35290744deeeaac3569043c3"
+      "digest": "sha256:c4124d1afa875e47f2892edf26b482fa54f796e2f342d3717a04ca091a22a9bd"
     },
     {
       "name": "mongo-7.0",
       "image": "ghcr.io/devroost-org/mongo-7.0",
-      "digest": "sha256:406a4fdca9fc763443268f000218d3849ef8996f66ed9e92ba0b501b446ab822"
+      "digest": "sha256:94aea1479556ad4e5aba7a31a6d53eb7b0ae76741950da45a13d5df5cddf1b3b"
     },
     {
       "name": "mssql-2022",
       "image": "ghcr.io/devroost-org/mssql-2022",
-      "digest": "sha256:ba4c8329f48fb8f02e1416be6a930ebfd71268caee78aa985f3af4315e457c89"
+      "digest": "sha256:4402d880dd4c34bfa7d8705e56a86cd6c88da80a1f6bbbe741f999e76264a090"
     },
     {
       "name": "mysql-8.4",
       "image": "ghcr.io/devroost-org/mysql-8.4",
-      "digest": "sha256:b3b90af2a6552ae30c266fdb7d5dd55f3afb72404bb78d37fe8a23eb857fd3fb"
+      "digest": "sha256:200b8d4d14f72cb6dbea7686a14d8591f5b5fb3e0b83a1a662dc9094efa1bbf0"
     },
     {
       "name": "postgres-16",
       "image": "ghcr.io/devroost-org/postgres-16",
-      "digest": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685"
+      "digest": "sha256:0cefaabd882e42bcb2a2f3dc56d3ce4770560ba62fd7f197f1a2e008fd5731ab"
     },
     {
       "name": "redis-7.4",
       "image": "ghcr.io/devroost-org/redis-7.4",
-      "digest": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf"
+      "digest": "sha256:8da19c7399dca900c6822a1cf30f9d2285585e2c4b457ff4095b0f4500054d3f"
     }
   ]
 } as const;
