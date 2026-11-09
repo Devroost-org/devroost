@@ -5,7 +5,7 @@
     {
       "name": "devroost-php",
       "kind": "custom",
-      "source": "docker.io/library/php:8.4.27-apache@sha256:4af38a0245996e700e20ec211b9f1c44fb789ad8cc7d24c7ea81ff382b641052",
+      "source": "docker.io/library/php:8.4.27-apache@sha256:884f64b47174de2c0e813270fe7b24a18605729fcebe201302d98c38805530d0",
       "version": "8.4.27-devroost.1",
       "platforms": [
         "linux/amd64",
@@ -28,7 +28,7 @@
     {
       "name": "devroost-node-22",
       "kind": "custom",
-      "source": "docker.io/library/node:22.23.4-alpine@sha256:fe4f6d74e20370acb04ad889077d14d0f64a9c8ea6a42bc60cddf1e844699914",
+      "source": "docker.io/library/node:22.23.4-alpine@sha256:0e1754758c2df4cfa3e68d59e2e1b7374bb7fd9ea6328eaaacf15cc934af8202",
       "version": "22.23.4-devroost.1",
       "platforms": [
         "linux/amd64",
@@ -39,7 +39,7 @@
     {
       "name": "devroost-node-24",
       "kind": "custom",
-      "source": "docker.io/library/node:24.22.2-alpine@sha256:8a32c8cf649a49915a66e81e7a609223c708d0adabf288ee3f4077d765542f85",
+      "source": "docker.io/library/node:24.22.2-alpine@sha256:a34ab6d7f6f4813f4d0c5469d74685604b962fbdbf5793a7bc7b4998ecb867c8",
       "version": "24.22.2-devroost.1",
       "platforms": [
         "linux/amd64",
@@ -50,7 +50,7 @@
     {
       "name": "devroost-python-3.12",
       "kind": "custom",
-      "source": "docker.io/library/python:3.12.16-slim@sha256:8523d6abeb48ceae0b7240d30c5808fc26cb79c1a635bacdf19cf3baecfbec07",
+      "source": "docker.io/library/python:3.12.16-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b",
       "version": "3.12.16-devroost.1",
       "platforms": [
         "linux/amd64",
@@ -61,7 +61,7 @@
     {
       "name": "devroost-ruby-3.3",
       "kind": "custom",
-      "source": "docker.io/library/ruby:3.3.13@sha256:93b2a7cba3da102ff8f4f0ed030ccde44a2bda11dfc6a130c7ad9821f4002abc",
+      "source": "docker.io/library/ruby:3.3.13@sha256:1a23507b0dce53a9c8fde7d8777390d647738495e4badb7ef5dc84f51ec5304b",
       "version": "3.3.13-devroost.1",
       "platforms": [
         "linux/amd64",
@@ -94,7 +94,7 @@
     {
       "name": "devroost-dotnet-8",
       "kind": "custom",
-      "source": "mcr.microsoft.com/dotnet/sdk:8.0.427@sha256:6ba9644da07bb5b560a402acec9ca38711a0762969f1b61da261df5c9f6f85da",
+      "source": "mcr.microsoft.com/dotnet/sdk:8.0.427@sha256:341aa6e8bbaceb1194732328ca27c15bfa9c531687db83a66af3c0c1833f5534",
       "version": "8.0.427-devroost.1",
       "platforms": [
         "linux/amd64",
@@ -116,7 +116,7 @@
     {
       "name": "postgres-16",
       "kind": "mirror",
-      "source": "docker.io/library/postgres:16.15-alpine3.24@sha256:0cefaabd882e42bcb2a2f3dc56d3ce4770560ba62fd7f197f1a2e008fd5731ab",
+      "source": "docker.io/library/postgres:16.15-alpine3.24@sha256:aa6cb33cf4c19c765cefcf48d96176258800870a9a1e930ad126200f9d825139",
       "version": "16.15-alpine3.24",
       "platforms": [
         "linux/amd64",
@@ -126,7 +126,7 @@
     {
       "name": "mysql-8.4",
       "kind": "custom",
-      "source": "docker.io/library/mysql:8.4.13@sha256:a0225d1ea6631c8bc2385dc4c2faba17bbf1834ecf369e1659a9a382bd8d5dd7",
+      "source": "docker.io/library/mysql:8.4.13@sha256:a81d043930e51745522bd5c430961cf8286f0a23f0a9a2a6e0108f7ea71b0902",
       "version": "8.4.13-devroost.1",
       "platforms": [
         "linux/amd64",
@@ -147,7 +147,7 @@
     {
       "name": "redis-7.4",
       "kind": "mirror",
-      "source": "docker.io/library/redis:7.4.12-alpine3.21@sha256:8da19c7399dca900c6822a1cf30f9d2285585e2c4b457ff4095b0f4500054d3f",
+      "source": "docker.io/library/redis:7.4.12-alpine3.21@sha256:c5d34a98396a4775e223c74e929162c35c5a2182901ba26b50ade939941ce14b",
       "version": "7.4.12-alpine3.21",
       "platforms": [
         "linux/amd64",
